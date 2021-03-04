@@ -99,7 +99,7 @@ function sendMessage(e) {
     value: {
       step: (step++),
       action: etype,
-      locator: getLocator(e.target),
+      target: getLocator(e.target),
       input: [e.target.value],
       other: {       
         tagName: e.target.tagName,
