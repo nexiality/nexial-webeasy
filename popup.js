@@ -132,9 +132,7 @@ inspec_btn.addEventListener("click", function() {
   });
 });
 
-document.getElementById("copyToAmplify").addEventListener("click", function() {
-  copyToAmplify();
-})
+document.getElementById("copyToAmplify").addEventListener("click", copyToAmplify)
 chrome.runtime.sendMessage({cmd: 'inspect_status', value: ''}, function(response) {
   console.log(response)
   inspectCaption('', response.res)
