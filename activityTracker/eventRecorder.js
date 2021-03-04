@@ -88,9 +88,9 @@ function sendMessage(e) {
   var etype = e.type;
   // step = step + 1;
   if(etype === 'submit') {
-    etype = 'Click'
+    etype = 'click'
   } else if(etype === 'focusout' && e.target.tagName == 'INPUT') {
-    etype = 'Type'
+    etype = 'type'
   }
 
   const paths = getDomPath(e.target)
