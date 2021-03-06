@@ -115,12 +115,23 @@ function tableFromJson(inspectElementList) {
   // document.getElementById('msg').innerHTML = '<br />You can later <a href="https://www.encodedna.com/javascript/dynamically-add-remove-rows-to-html-table-using-javascript-and-save-data.htm" target="_blank" style="color:#1464f4;text-decoration:none;">get all the data from table and save it in a database.</a>';
 }
 
+document.getElementById('url').addEventListener('focusout', function(e) {
+  // checking is url validated
+  var res = (e.target.value).match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+  if(res == null) {
+    console.log(document.getElementsByClassName('valid-feedback')[0])
+    document.getElementsByClassName('valid-feedback')[0].classList.add("d-block");
+    // document.getElementsByClassName('valid-feedback')[0].style.display === 'none' ? 'block' : 'none';
+    e.target.value = '';
+  }
+});
+
 inspec_btn.addEventListener("click", function() {
-  console.log('------------------------------')
-  var command = 'start_inspecting', commandValue = true;  
+
+  var command = 'start_inspecting', commandValue = document.getElementById("url").value;
   if(inspec_btn.value !== 'Start Inspect') { 
     command = 'stop_inspecting';
-    commandValue = false;    
+    commandValue = false;
   }
   inspectCaption(inspec_btn.value, '')
   chrome.runtime.sendMessage({cmd: command, value: commandValue}, function(response) {

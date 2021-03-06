@@ -25,15 +25,24 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   }
 })
 
+function loadListener() {
+  is_inspecting = true;
+  inspectElementList = [];
+  chrome.tabs.executeScript(null, {file: '/activityTracker/eventRecorder.js'});
+}
+
 chrome.runtime.onMessage.addListener(function(action, sender, sendResponse) {
 
   //Todo : Change to switch case
   if (action.cmd === 'start_inspecting') {
-
-    is_inspecting = action.value;
-    inspectElementList = [];
-    chrome.tabs.executeScript(null, {file: '/activityTracker/eventRecorder.js'});
-    sendResponse({msg: 'start user inspecting user action'});
+    if (action.value) {
+      chrome.tabs.create({"url": action.value, "selected": true}, function (tab) {
+        loadListener();
+      });
+    } else {
+      loadListener();
+    }
+    sendResponse({msg: 'start inspecting'});
   }  else if(action.cmd === "stop_inspecting") {
 
     is_inspecting = action.value;
