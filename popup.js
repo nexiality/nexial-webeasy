@@ -6,11 +6,9 @@ var testCaseList ;
 //   console.log( 'Current URL ', tabArray[0].url);
 // });
 function clear() {
-
 }
 
 function copyToAmplify() {
-  console.log('*****************************')
   var dummy = document.createElement("textarea");
     // dummy.style.display = 'none'
     document.body.appendChild(dummy);
@@ -33,20 +31,12 @@ function inspectCaption(inspect_btn_caption, is_inspecting) {
   }
 }
 
-// function create(array, index) {
-//   console.log(index, '  ji')
-//   array.splice(index, 1);
-// }
-
-
-
 document.getElementById('url').addEventListener('focusout', function(e) {
   // checking is url validated
   var res = (e.target.value).match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
   if(res == null) {
     console.log(document.getElementsByClassName('valid-feedback')[0])
     document.getElementsByClassName('valid-feedback')[0].classList.add("d-block");
-    // document.getElementsByClassName('valid-feedback')[0].style.display === 'none' ? 'block' : 'none';
     e.target.value = '';
   }
 });

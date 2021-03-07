@@ -1,3 +1,24 @@
+function createDuplicateButton() {
+
+}
+
+function createDeleteButton(i) {
+  var button = document.createElement('button');
+  button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
+  button.innerHTML = '<i class="fa fa-trash"></i>';
+  button.onclick = function(e) {
+    console.log(i, '  == i ')
+    inspectElementList.splice(i-1, 1);
+    table.deleteRow(i);
+    console.log(inspectElementList, '  inspectElementList')
+  };
+  return button;
+}
+
+function createSelectElement() {
+
+}
+
 function tableFromJson(inspectElementList) {
   var col = [];
   for (var i = 0; i < inspectElementList.length; i++) {
@@ -29,19 +50,10 @@ function tableFromJson(inspectElementList) {
     for (var j = 0; j < col.length; j++) {
       var tabCell = tr.insertCell(-1);
 
-      if (col[j] === "other") {
-        var button = document.createElement('button');
-        button.innerHTML = 'Delete';
-        button.onclick = function(e) {
-        // alert('here be dragons');return false;
-        console.log(i, '  == i ')
-        inspectElementList.splice(i-1, 1);
-        table.deleteRow(i);
-        console.log(inspectElementList, '  inspectElementList')
-      };
-      tabCell.appendChild(button);
-      // tabCell.innerHTML = "<button type='button' onclick='deleteInspect(inspectElementList,i)'>Delete</button>"
-      } else if(col[j] === 'locator') {
+      if (col[j] === "edits") {
+        const button = createDeleteButton(i)
+        tabCell.appendChild(button);
+      } else if(col[j] === 'target') {
         //Create and append select list
         var selectList = document.createElement("select");
         selectList.id = "mySelect";
