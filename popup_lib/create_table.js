@@ -15,8 +15,20 @@ function createDeleteButton(i) {
   return button;
 }
 
-function createSelectElement() {
+function createSelectElement(items) {
+  // Create and append select list
+  var selectList = document.createElement("select");
+  selectList.id = "mySelect";
+  // console.log(items)
 
+  //Create and append the options
+  for (var index = 0; index < items.length; index++) {
+    var option = document.createElement("option");
+    option.value = items[index];
+    option.text = items[index];
+    selectList.appendChild(option);
+  }
+  return selectList;
 }
 
 function tableFromJson(inspectElementList) {
@@ -54,20 +66,7 @@ function tableFromJson(inspectElementList) {
         const button = createDeleteButton(i)
         tabCell.appendChild(button);
       } else if(col[j] === 'target') {
-        //Create and append select list
-        var selectList = document.createElement("select");
-        selectList.id = "mySelect";
-        // tabCell.appendChild(selectList);
-        console.log(inspectElementList[i][col[j]])
-        const locatorList = inspectElementList[i][col[j]]; 
-        console.log(typeof locatorList)
-        //Create and append the options
-        for (var index = 0; index < locatorList.length; index++) {
-          var option = document.createElement("option");
-          option.value = locatorList[index];
-          option.text = locatorList[index];
-          selectList.appendChild(option);
-        }
+        const selectList = createSelectElement(inspectElementList[i][col[j]])
         tabCell.appendChild(selectList);
       } else {
         tabCell.setAttribute('class', 'pt-3-half');
