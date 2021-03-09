@@ -2,7 +2,7 @@ function createDuplicateButton() {
 
 }
 
-function createDeleteButton(i) {
+function createDeleteButton(i, inspectElementList) {
   var button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
   button.innerHTML = '<i class="fa fa-trash"></i>';
@@ -63,11 +63,16 @@ function tableFromJson(inspectElementList) {
       var tabCell = tr.insertCell(-1);
 
       if (col[j] === "edits") {
-        const button = createDeleteButton(i)
+        const button = createDeleteButton(i,inspectElementList)
         tabCell.appendChild(button);
       } else if(col[j] === 'target') {
         const selectList = createSelectElement(inspectElementList[i][col[j]])
-        tabCell.appendChild(selectList);
+        console.log(inspectElementList[i][col[j]])
+        if(inspectElementList[i][col[j]]) {
+          tabCell.appendChild(selectList);
+        } else {
+          tabCell.innerHTML = 'NULL'
+        }
       } else {
         tabCell.setAttribute('class', 'pt-3-half');
         tabCell.setAttribute('contenteditable', 'true');
