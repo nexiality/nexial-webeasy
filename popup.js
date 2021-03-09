@@ -13,11 +13,10 @@ function copyToAmplify() {
     // dummy.style.display = 'none'
     document.body.appendChild(dummy);
     for (var i = 0; i < testCaseList.length; i++) {
-      console.log(testCaseList[i])
+      // console.log(testCaseList[i])
       dummy.value += testCaseList[i].action+ '\t' + testCaseList[i].locator[0] + '\t' + testCaseList[i].input + '    ' +'text' + '\n';
-    
     }
-    console.log(dummy.value)
+    // console.log(dummy.value)
     dummy.select();
     document.execCommand("copy");
     document.body.removeChild(dummy);

@@ -61,18 +61,22 @@ function tableFromJson(inspectElementList) {
 
     for (var j = 0; j < col.length; j++) {
       var tabCell = tr.insertCell(-1);
+      console.log(col[j], inspectElementList[i][col[j]])
 
       if (col[j] === "edits") {
         const button = createDeleteButton(i,inspectElementList)
         tabCell.appendChild(button);
       } else if(col[j] === 'target') {
         const selectList = createSelectElement(inspectElementList[i][col[j]])
-        console.log(inspectElementList[i][col[j]])
         if(inspectElementList[i][col[j]]) {
           tabCell.appendChild(selectList);
         } else {
           tabCell.innerHTML = 'NULL'
         }
+      } else if(col[j] === 'action') {
+        const items = cmd.find(x => x.command_type === 'web').command;
+        const selectList = createSelectElement(items)
+        tabCell.appendChild(selectList);
       } else {
         tabCell.setAttribute('class', 'pt-3-half');
         tabCell.setAttribute('contenteditable', 'true');
