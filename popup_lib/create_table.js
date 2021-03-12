@@ -144,7 +144,9 @@ function tableFromJson(inspectElementList) {
         tabCell.setAttribute('class', 'pt-3-half');
         tabCell.setAttribute('contenteditable', 'false');
         tabCell.setAttribute('id', (col[j] + '_' + i))
-        tabCell.innerHTML = inspectElementList[i][col[j]];
+        var cellText = inspectElementList[i][col[j]];
+        if (cellText.length > 20) { cellText = cellText.substring(0,20) + '...';}
+        tabCell.innerHTML = cellText;
       }
     }
   }
