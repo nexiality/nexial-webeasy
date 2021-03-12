@@ -1,3 +1,34 @@
+function editRow(i, inspectElementList) {
+  document.getElementById("delete_"+i).style.display="none";
+  document.getElementById("edit_"+i).style.display="none";
+  document.getElementById("save_"+i).style.display="block";
+
+  var action = document.getElementById('action_' + i);
+  var target = document.getElementById('target_' + i);
+  var input = document.getElementById('input_' + i);
+
+  var action_data = action.innerHTML;
+  var target_data = target.innerHTML;
+  var input_data = input.innerHTML;
+	
+  const items = cmd.find(x => x.command_type === 'web').command;
+  const actionList = createSelectElement(items)
+  action.innerHTML = '';
+  action.appendChild(actionList);
+
+  const selectList = createSelectElement(inspectElementList[i].target)
+  target.innerHTML = '';
+  if(inspectElementList[i].target) {
+    target.appendChild(selectList);
+  } else {
+    target.innerHTML = 'NULL'
+  }
+
+  // action.innerHTML="<input type='text' id='action_text" + i + "' value='" + action_data + "'>";
+  //  target.innerHTML="<input type='text' id='target_text" + i + "' value='" + target_data + "'>";
+  input.innerHTML="<input type='text' id='input_text" + i + "' value='" + input_data + "'>";
+}
+
 function createDuplicateButton() {
 
 }
@@ -5,12 +36,40 @@ function createDuplicateButton() {
 function createDeleteButton(i, inspectElementList) {
   var button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
+  button.setAttribute('id',('delete_' + i));
   button.innerHTML = '<i class="fa fa-trash"></i>';
   button.onclick = function(e) {
     console.log(i, '  == i ')
     inspectElementList.splice(i-1, 1);
     table.deleteRow(i);
     console.log(inspectElementList, '  inspectElementList')
+  };
+  return button;
+}
+
+function createEditButton(i, inspectElementList) {
+  var button = document.createElement('button');
+  button.setAttribute('class', 'btn text-dark')
+  button.setAttribute('id',('edit_' + i));
+  button.innerHTML = '<i class="fa fa-edit"></i>';
+  button.onclick = function(e) {
+    console.log(i, '  == i ')
+    editRow(i, inspectElementList);
+  };
+  return button;
+}
+
+function createSaveButton(i) {
+  var button = document.createElement('button');
+  button.setAttribute('class', 'btn text-dark')
+  button.setAttribute('id',('save_' + i));
+  button.setAttribute('style',('display: none'));
+  button.innerHTML = '<i class="fa fa-check"></i>';
+  button.onclick = function(e) {
+    console.log(i, '  == i ')
+    // inspectElementList.splice(i-1, 1);
+    // table.deleteRow(i);
+    // console.log(inspectElementList, '  inspectElementList')
   };
   return button;
 }
@@ -46,7 +105,7 @@ function tableFromJson(inspectElementList) {
   table.setAttribute('class', 'table table-hover table-bordered table-responsive-md text-center');
 
   // Create table header row using the extracted headers above.
-  var tr = table.insertRow(-1);                   // table row.
+  var tr = table.insertRow(-1);                    // table row.
 
   for (var i = 0; i < col.length; i++) {
     var th = document.createElement("th");      // table header.
@@ -64,22 +123,27 @@ function tableFromJson(inspectElementList) {
       console.log(col[j], inspectElementList[i][col[j]])
 
       if (col[j] === "edits") {
-        const button = createDeleteButton(i,inspectElementList)
-        tabCell.appendChild(button);
-      } else if(col[j] === 'target') {
-        const selectList = createSelectElement(inspectElementList[i][col[j]])
-        if(inspectElementList[i][col[j]]) {
-          tabCell.appendChild(selectList);
-        } else {
-          tabCell.innerHTML = 'NULL'
-        }
-      } else if(col[j] === 'action') {
-        const items = cmd.find(x => x.command_type === 'web').command;
-        const selectList = createSelectElement(items)
-        tabCell.appendChild(selectList);
+        const delete_button = createDeleteButton(i,inspectElementList)
+        tabCell.appendChild(delete_button);
+        const edit_button = createEditButton(i,inspectElementList)
+        tabCell.appendChild(edit_button);
+        const save_button = createSaveButton(i,inspectElementList)
+        tabCell.appendChild(save_button);
+      // } else if(col[j] === 'target') {
+      //   const selectList = createSelectElement(inspectElementList[i][col[j]])
+      //   if(inspectElementList[i][col[j]]) {
+      //     tabCell.appendChild(selectList);
+      //   } else {
+      //     tabCell.innerHTML = 'NULL'
+      //   }
+      // } else if(col[j] === 'action') {
+      //   const items = cmd.find(x => x.command_type === 'web').command;
+      //   const selectList = createSelectElement(items)
+      //   tabCell.appendChild(selectList);
       } else {
         tabCell.setAttribute('class', 'pt-3-half');
-        tabCell.setAttribute('contenteditable', 'true');
+        tabCell.setAttribute('contenteditable', 'false');
+        tabCell.setAttribute('id', (col[j] + '_' + i))
         tabCell.innerHTML = inspectElementList[i][col[j]];
       }
     }
