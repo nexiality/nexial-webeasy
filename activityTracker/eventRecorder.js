@@ -98,7 +98,7 @@ function sendMessage(e) {
     cmd: 'inspecting',
     value: {
       step: (step++),
-      action: etype,
+      command: etype,
       target: getLocator(e.target),
       input: [e.target.value],
       edits: {

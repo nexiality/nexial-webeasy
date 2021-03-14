@@ -36,8 +36,6 @@ function editRow(i, inspectElementList) {
     target.innerHTML = 'NULL'
   }
 
-  // action.innerHTML="<input type='text' id='action_text" + i + "' value='" + action_data + "'>";
-  //  target.innerHTML="<input type='text' id='target_text" + i + "' value='" + target_data + "'>";
   input.innerHTML="<input type='text' id='input_text" + i + "' value='" + input_data + "'>";
 }
 
@@ -53,7 +51,7 @@ function saveRow(i, inspectElementList) {
   input.innerHTML = input_data
   action.innerHTML = cmd_selected
   target.innerHTML = target_selected
-  console.log(cmd_selected, target_selected , input_data)
+  // console.log(cmd_selected, target_selected , input_data)
 }
 
 function createDuplicateButton() {
@@ -66,10 +64,10 @@ function createDeleteButton(i, inspectElementList) {
   button.setAttribute('id',('delete_' + i));
   button.innerHTML = '<i class="fa fa-trash"></i>';
   button.onclick = function(e) {
-    console.log(i, '  == i ')
+    // console.log(i, '  == i ')
     inspectElementList.splice(i-1, 1);
     table.deleteRow(i);
-    console.log(inspectElementList, '  inspectElementList')
+    // console.log(inspectElementList, '  inspectElementList')
   };
   return button;
 }
@@ -80,7 +78,7 @@ function createEditButton(i, inspectElementList) {
   button.setAttribute('id',('edit_' + i));
   button.innerHTML = '<i class="fa fa-edit"></i>';
   button.onclick = function(e) {
-    console.log(i, '  == i ')
+    // console.log(i, '  == i ')
     editRow(i, inspectElementList);
   };
   return button;
@@ -93,7 +91,7 @@ function createSaveButton(i, inspectElementList) {
   button.setAttribute('style',('display: none'));
   button.innerHTML = '<i class="fa fa-check"></i>';
   button.onclick = function(e) {
-    console.log(i, '  == i ')
+    // console.log(i, '  == i ')
     saveRow(i , inspectElementList)
     // inspectElementList.splice(i-1, 1);
     // table.deleteRow(i);
@@ -148,7 +146,7 @@ function tableFromJson(inspectElementList) {
 
     for (var j = 0; j < col.length; j++) {
       var tabCell = tr.insertCell(-1);
-      console.log(col[j], inspectElementList[i][col[j]])
+      // console.log(col[j], inspectElementList[i][col[j]])
 
       if (col[j] === "edits") {
         const delete_button = createDeleteButton(i,inspectElementList)
