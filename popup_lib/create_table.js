@@ -1,3 +1,5 @@
+let cmd_selected = '', target_selected = '', input_data;
+
 function editRow(i, inspectElementList) {
   document.getElementById("delete_"+i).style.display="none";
   document.getElementById("edit_"+i).style.display="none";
@@ -7,14 +9,24 @@ function editRow(i, inspectElementList) {
   var target = document.getElementById('target_' + i);
   var input = document.getElementById('input_' + i);
 
-  var action_data = action.innerHTML;
-  var target_data = target.innerHTML;
-  var input_data = input.innerHTML;
+  cmd_selected = action.innerHTML;
+  target_selected = target.innerHTML;
+  input_data = input.innerHTML;
 	
   const items = cmd.find(x => x.command_type === 'web').command;
   const actionList = createSelectElement(items)
   action.innerHTML = '';
   action.appendChild(actionList);
+
+  action.onchange =  function(e) {
+    cmd_selected = e.target.value;
+  }
+  target.onchange = function(e) {
+    target_selected = e.target.value;
+  }
+  input.onchange = function(e) {
+    input_data = e.target.value;
+  }
 
   const selectList = createSelectElement(inspectElementList[i].target)
   target.innerHTML = '';
@@ -27,6 +39,21 @@ function editRow(i, inspectElementList) {
   // action.innerHTML="<input type='text' id='action_text" + i + "' value='" + action_data + "'>";
   //  target.innerHTML="<input type='text' id='target_text" + i + "' value='" + target_data + "'>";
   input.innerHTML="<input type='text' id='input_text" + i + "' value='" + input_data + "'>";
+}
+
+function saveRow(i, inspectElementList) {
+  document.getElementById("delete_"+i).style.display="block";
+  document.getElementById("edit_"+i).style.display="block";
+  document.getElementById("save_"+i).style.display="none";
+
+  var action = document.getElementById('action_' + i);
+  var target = document.getElementById('target_' + i);
+  var input = document.getElementById('input_' + i);
+
+  input.innerHTML = input_data
+  action.innerHTML = cmd_selected
+  target.innerHTML = target_selected
+  console.log(cmd_selected, target_selected , input_data)
 }
 
 function createDuplicateButton() {
@@ -59,7 +86,7 @@ function createEditButton(i, inspectElementList) {
   return button;
 }
 
-function createSaveButton(i) {
+function createSaveButton(i, inspectElementList) {
   var button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id',('save_' + i));
@@ -67,6 +94,7 @@ function createSaveButton(i) {
   button.innerHTML = '<i class="fa fa-check"></i>';
   button.onclick = function(e) {
     console.log(i, '  == i ')
+    saveRow(i , inspectElementList)
     // inspectElementList.splice(i-1, 1);
     // table.deleteRow(i);
     // console.log(inspectElementList, '  inspectElementList')
