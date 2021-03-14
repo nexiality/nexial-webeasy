@@ -6,6 +6,8 @@ var testCaseList ;
 //   console.log( 'Current URL ', tabArray[0].url);
 // });
 function clear() {
+  var table = document.getElementById("inspect_table");
+  table.remove();
 }
 
 function copyToAmplify() {
@@ -62,13 +64,14 @@ inspec_btn.addEventListener("click", function() {
   chrome.runtime.sendMessage({cmd: command, value: commandValue}, function(response) {
     console.log(response)
     if (response.hasOwnProperty('json')) {
-      testCaseList = (response.json);
+      inspectElementList = (response.json);
       tableFromJson(response.json)
     }
   });
 });
 
 document.getElementById("copyToAmplify").addEventListener("click", copyToAmplify)
+document.getElementById("clear").addEventListener("click", clear)
 chrome.runtime.sendMessage({cmd: 'inspect_status', value: ''}, function(response) {
   console.log(response)
   inspectCaption('', response.res)
