@@ -33,7 +33,7 @@ function loadListener(url) {
     command: 'openURl',
     target: '',
     input: url,
-    edits: ''
+    Actions: ''
   });
   chrome.tabs.executeScript(null, {file: '/activityTracker/eventRecorder.js'});
 }
