@@ -44,7 +44,7 @@ function saveRow(i) {
   document.getElementById("edit_"+i).style.display="block";
   document.getElementById("save_"+i).style.display="none";
 
-  var action = document.getElementById('action_' + i);
+  var action = document.getElementById('command_' + i);
   var target = document.getElementById('target_' + i);
   var input = document.getElementById('input_' + i);
 
