@@ -151,7 +151,7 @@ function tableFromJson() {
       var tabCell = tr.insertCell(-1);
       // console.log(col[j], inspectElementList[i][col[j]])
 
-      if (col[j] === "edits") {
+      if (col[j] === "Actions") {
         // tabCell.setAttribute('style','width: 20%');
         const delete_button = createDeleteButton(i)
         tabCell.appendChild(delete_button);

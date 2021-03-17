@@ -74,7 +74,7 @@ var clickHandler = function(info,tab) {
     //   command: 'assertElementPresent(locator)',
     //   target: getLocator(e.target),
     //   input: '',
-    //   edits: ''
+    //   Actions: ''
     // }})
   }
 }
@@ -84,7 +84,7 @@ function callbackContextmenu(info, tab) {
     // elt.value = data.value;
     if (currentContextmenu === 'nexialElementPresent') {
       data.command = 'assertElementPresent(locator)';
-      data['edits'] = ''
+      data['Actions'] = ''
     }
     console.log(data, '--- callback ---', currentContextmenu)
     inspectElementList.push(data)

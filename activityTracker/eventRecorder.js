@@ -104,7 +104,7 @@ function sendMessage(e) {
       command: etype,
       target: getLocator(e.target),
       input: [e.target.value],
-      edits: {
+      Actions: {
         tagName: e.target.tagName,
         tagType: e.target.type,
         path: paths.slice(-1),
