@@ -129,9 +129,12 @@ function tableFromJson() {
   // Create a table.
   var table = document.createElement("table");
   table.setAttribute('class', 'table table-hover table-bordered table-responsive-md text-center');
+  table.setAttribute('style',('table-layout:fixed;width:100%;'));
+  table.setAttribute('id', 'inspect_table')
 
   // Create table header row using the extracted headers above.
   var tr = table.insertRow(-1);                    // table row.
+  // tr.setAttribute('style','d-flex');
 
   for (var i = 0; i < col.length; i++) {
     var th = document.createElement("th");      // table header.
@@ -168,8 +171,8 @@ function tableFromJson() {
       //   const selectList = createSelectElement(items)
       //   tabCell.appendChild(selectList);
       } else {
-        tabCell.setAttribute('class', 'pt-3-half');
-        tabCell.setAttribute('contenteditable', 'false');
+        // tabCell.setAttribute('style','width: 30%');
+        // tabCell.setAttribute('contenteditable', 'false');
         tabCell.setAttribute('id', (col[j] + '_' + i))
         var cellText = inspectElementList[i][col[j]];
         if (cellText.length > 20) { cellText = cellText.substring(0,20) + '...';}
