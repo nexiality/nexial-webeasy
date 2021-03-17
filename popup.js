@@ -1,5 +1,6 @@
 const inspec_btn = document.getElementById("inspectAction");
-var testCaseList ;
+// var inspectElementList ;
+var inspectElementList = [];
 
 // fetch current tab url while opening the popup [without tabs permission]
 // chrome.tabs.query({active:true,currentWindow:true}, function(tabArray){
@@ -14,9 +15,9 @@ function copyToAmplify() {
   var dummy = document.createElement("textarea");
     // dummy.style.display = 'none'
     document.body.appendChild(dummy);
-    for (var i = 0; i < testCaseList.length; i++) {
-      // console.log(testCaseList[i])
-      dummy.value += testCaseList[i].action+ '\t' + testCaseList[i].locator[0] + '\t' + testCaseList[i].input + '    ' +'text' + '\n';
+    for (var i = 0; i < inspectElementList.length; i++) {
+      // console.log(inspectElementList[i])
+      dummy.value += inspectElementList[i].action+ '\t' + inspectElementList[i].locator[0] + '\t' + inspectElementList[i].input + '    ' +'text' + '\n';
     }
     // console.log(dummy.value)
     dummy.select();
@@ -65,7 +66,7 @@ inspec_btn.addEventListener("click", function() {
     console.log(response)
     if (response.hasOwnProperty('json')) {
       inspectElementList = (response.json);
-      tableFromJson(response.json)
+      tableFromJson()
     }
   });
 });

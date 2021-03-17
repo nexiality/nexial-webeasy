@@ -1,11 +1,11 @@
 let cmd_selected = '', target_selected = '', input_data;
 
-function editRow(i, inspectElementList) {
+function editRow(i) {
   document.getElementById("delete_"+i).style.display="none";
   document.getElementById("edit_"+i).style.display="none";
   document.getElementById("save_"+i).style.display="block";
 
-  var action = document.getElementById('action_' + i);
+  var action = document.getElementById('command_' + i);
   var target = document.getElementById('target_' + i);
   var input = document.getElementById('input_' + i);
 
@@ -39,7 +39,7 @@ function editRow(i, inspectElementList) {
   input.innerHTML="<input type='text' id='input_text" + i + "' value='" + input_data + "'>";
 }
 
-function saveRow(i, inspectElementList) {
+function saveRow(i) {
   document.getElementById("delete_"+i).style.display="block";
   document.getElementById("edit_"+i).style.display="block";
   document.getElementById("save_"+i).style.display="none";
@@ -58,7 +58,7 @@ function createDuplicateButton() {
 
 }
 
-function createDeleteButton(i, inspectElementList) {
+function createDeleteButton(i) {
   var button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
   button.setAttribute('id',('delete_' + i));
@@ -72,19 +72,19 @@ function createDeleteButton(i, inspectElementList) {
   return button;
 }
 
-function createEditButton(i, inspectElementList) {
+function createEditButton(i) {
   var button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id',('edit_' + i));
   button.innerHTML = '<i class="fa fa-edit"></i>';
   button.onclick = function(e) {
     // console.log(i, '  == i ')
-    editRow(i, inspectElementList);
+    editRow(i);
   };
   return button;
 }
 
-function createSaveButton(i, inspectElementList) {
+function createSaveButton(i) {
   var button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id',('save_' + i));
@@ -92,7 +92,7 @@ function createSaveButton(i, inspectElementList) {
   button.innerHTML = '<i class="fa fa-check"></i>';
   button.onclick = function(e) {
     // console.log(i, '  == i ')
-    saveRow(i , inspectElementList)
+    saveRow(i)
     // inspectElementList.splice(i-1, 1);
     // table.deleteRow(i);
     // console.log(inspectElementList, '  inspectElementList')
@@ -116,7 +116,7 @@ function createSelectElement(items) {
   return selectList;
 }
 
-function tableFromJson(inspectElementList) {
+function tableFromJson() {
   var col = [];
   for (var i = 0; i < inspectElementList.length; i++) {
     for (var key in inspectElementList[i]) {
@@ -149,11 +149,12 @@ function tableFromJson(inspectElementList) {
       // console.log(col[j], inspectElementList[i][col[j]])
 
       if (col[j] === "edits") {
-        const delete_button = createDeleteButton(i,inspectElementList)
+        // tabCell.setAttribute('style','width: 20%');
+        const delete_button = createDeleteButton(i)
         tabCell.appendChild(delete_button);
-        const edit_button = createEditButton(i,inspectElementList)
+        const edit_button = createEditButton(i)
         tabCell.appendChild(edit_button);
-        const save_button = createSaveButton(i,inspectElementList)
+        const save_button = createSaveButton(i)
         tabCell.appendChild(save_button);
       // } else if(col[j] === 'target') {
       //   const selectList = createSelectElement(inspectElementList[i][col[j]])

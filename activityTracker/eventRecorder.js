@@ -88,12 +88,15 @@ function sendMessage(e) {
   var etype = e.type;
   // step = step + 1;
   if(etype === 'submit') {
-    etype = 'click'
+    etype = 'click(locator)'
   } else if(etype === 'focusout' && e.target.tagName == 'INPUT') {
-    etype = 'type'
+    etype = 'type(locator,value)'
+  } else if(etype === 'change') {
+    etype = 'select(locator,text)'
   }
 
   const paths = getDomPath(e.target)
+  // ToDo: for payload create user define datatype
   const payload = {
     cmd: 'inspecting',
     value: {
