@@ -16,7 +16,7 @@ function copyToAmplify() {
     document.body.appendChild(dummy);
     for (var i = 0; i < inspectElementList.length; i++) {
       // console.log(inspectElementList[i])
-      dummy.value += inspectElementList[i].action+ '\t' + inspectElementList[i].locator[0] + '\t' + inspectElementList[i].input + '    ' +'text' + '\n';
+      dummy.value += inspectElementList[i].command+ '\t' + inspectElementList[i].target[0] + '\t' + inspectElementList[i].input + '\n';
     }
     // console.log(dummy.value)
     dummy.select();
