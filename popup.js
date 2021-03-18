@@ -66,7 +66,7 @@ document.getElementById("nowInspect").addEventListener("click", function() {
 document.getElementById("stopInspect").addEventListener("click", function() {
   // startInspect('start_inspecting', currentUrl)
   document.getElementById("stopOption").style.display="none";
-  document.getElementById("startOption").style.display="block";
+  document.getElementById("startOption").style.display="flex";
   chrome.runtime.sendMessage({cmd: 'stop_inspecting', value: false}, function(response) {
     console.log(response)
     if (response.hasOwnProperty('json')) {

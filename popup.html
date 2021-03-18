@@ -68,7 +68,7 @@
             </div>
           </form> -->
           <form>
-            <div class="form-group row">
+            <div class="form-group row" id="startOption">
               <label for="url" class="col-sm-2 col-form-label">Inspect Url : </label>
               <div class="col-sm-4">
                 <input type="text" class="form-control" id="url" placeholder="Url">
@@ -78,22 +78,16 @@
               </div>
               <div class="col-sm-6">
                 <div class="row">
-                  <div id="stopOption" class="col-sm-12">
-                    <div class="row">
-                    <input type="button" class="btn btn-primary mb-2" id="pauseInspect" value="Pause Inspect">
-                    <input type="button" class="btn btn-primary mb-2" id="stopInspect" value="Stop Inspect">
-                    </div>
-                  </div>
-                  <div id="startOption" class="col-sm-12">
-                    <div class="row">
-                    <input type="button" class="btn btn-primary mb-2" id="startInspect" value="Start Inspect">
-                    <p class="text-muted  mb-2  mt-2"> - OR - </p>
-                    <input type="button" class="btn btn-primary mb-2" id="nowInspect" value="Inspect Now">
-                    </div>
-                  </div>
+                  <input type="button" class="btn btn-primary mb-2" id="startInspect" value="Start Inspect">
+                  <p class="text-muted  mb-2  mt-2"> - OR - </p>
+                  <input type="button" class="btn btn-primary mb-2" id="nowInspect" value="Inspect Now">
                 </div>
               </div>
             </div>
+            <div class="form-group row" id="stopOption">
+              <input type="button" class="btn btn-primary mr-2 mb-2" id="pauseInspect" value="Pause Inspect">
+              <input type="button" class="btn btn-primary mb-2" id="stopInspect" value="Stop Inspect">
+           </div>
           </form>
           <hr>
         </div>
