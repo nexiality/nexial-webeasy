@@ -39,6 +39,12 @@ function startInspect() {
   document.getElementById("startOption").style.display="none";
 }
 
+function pausedInspect() {
+  document.getElementById("pauseInspect").classList.toggle("btn-default");
+  document.getElementById("pauseInspect").classList.toggle("btn-primary");
+  document.getElementById("pauseInspect").value = 'Restart Inspect';
+}
+
 document.getElementById("startInspect").addEventListener("click", function() {
 
   var command = 'start_inspecting', commandValue = document.getElementById("url").value;
@@ -76,14 +82,26 @@ document.getElementById("stopInspect").addEventListener("click", function() {
   });
 });
 
+document.getElementById("pauseInspect").addEventListener("click", function() {
+  document.getElementById("pauseInspect").classList.toggle("btn-default");
+  document.getElementById("pauseInspect").classList.toggle("btn-primary");
+  if (document.getElementById("pauseInspect").value === 'Pause Inspect') {
+    document.getElementById("pauseInspect").value = 'Restart Inspect';
+    chrome.runtime.sendMessage({cmd: 'pause_inspecting', value: true}, function(response) {
+      console.log(response)
+    });
+  } else document.getElementById("pauseInspect").value = 'Pause Inspect';
+});
+
 document.getElementById("copyToAmplify").addEventListener("click", copyToAmplify)
 document.getElementById("clear").addEventListener("click", clear)
 chrome.runtime.sendMessage({cmd: 'inspect_status', value: ''}, function(response) {
   console.log('inspect_status  =  ', response)
-  if(response.res) {
+  if(response.res !== 'stop') {
     startInspect()
+    if(response.res === 'paused') pausedInspect()
   }
-  if (response.hasOwnProperty('json')) {
+  if (response.hasOwnProperty('json') && response.res === 'stop') {
     inspectElementList = (response.json);
     tableFromJson()
   }

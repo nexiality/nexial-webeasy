@@ -1,5 +1,5 @@
 console.log('background running');
-var is_inspecting = false;
+var is_inspecting = 'stop';
 var inspectElementList = [];
 var currentTab = '';
 
@@ -53,12 +53,12 @@ chrome.runtime.onMessage.addListener(function(action, sender, sendResponse) {
   console.log(action)
   if (action.cmd === 'start_inspecting') {
     inspectElementList = [];
-    is_inspecting = true;
+    is_inspecting = 'start';
     createOpenURLEntry(action.value);
     sendResponse({msg: 'start inspecting'});
   }  else if(action.cmd === "stop_inspecting") {
 
-    is_inspecting = action.value;
+    is_inspecting = 'stop';
     sendResponse({json: inspectElementList});
   } else if(action.cmd === 'inspecting') {
 
@@ -66,6 +66,8 @@ chrome.runtime.onMessage.addListener(function(action, sender, sendResponse) {
   } else if (action.cmd === 'inspect_status') {
 
     sendResponse({res: is_inspecting, json: inspectElementList});
+  } else if(action.cmd === 'pause_inspecting') {
+    is_inspecting = 'paused';
   }
 });
 
