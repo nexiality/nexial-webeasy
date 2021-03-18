@@ -65,7 +65,7 @@ chrome.runtime.onMessage.addListener(function(action, sender, sendResponse) {
     inspectElementList.push(action.value)
   } else if (action.cmd === 'inspect_status') {
 
-    sendResponse({res: is_inspecting});
+    sendResponse({res: is_inspecting, json: inspectElementList});
   }
 });
 

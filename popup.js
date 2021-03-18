@@ -83,6 +83,10 @@ chrome.runtime.sendMessage({cmd: 'inspect_status', value: ''}, function(response
   if(response.res) {
     startInspect()
   }
+  if (response.hasOwnProperty('json')) {
+    inspectElementList = (response.json);
+    tableFromJson()
+  }
 })
 
 // chrome.runtime.onMessage.addListener(function(msg) {
