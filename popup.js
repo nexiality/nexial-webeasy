@@ -1,11 +1,10 @@
-const inspec_btn = document.getElementById("inspectAction");
-// var inspectElementList ;
 var inspectElementList = [];
 
 // fetch current tab url while opening the popup [without tabs permission]
 // chrome.tabs.query({active:true,currentWindow:true}, function(tabArray){
 //   console.log( 'Current URL ', tabArray[0].url);
 // });
+
 function clear() {
   var table = document.getElementById("inspect_table");
   table.remove();
