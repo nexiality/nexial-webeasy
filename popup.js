@@ -25,14 +25,6 @@ function copyToAmplify() {
     document.body.removeChild(dummy);
 }
 
-function inspectCaption(inspect_btn_caption, is_inspecting) {
-  if(inspect_btn_caption === 'Start Inspect' || is_inspecting) {
-    inspec_btn.value = 'Stop Inspect';
-  } else if(inspect_btn_caption !== 'Start Inspect' || !is_inspecting) {
-    inspec_btn.value = 'Start Inspect';
-  }
-}
-
 function validURL(myURL) {
   var pattern = new RegExp('^(http(s)?:\/\/.)'+ // protocol
   '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
@@ -43,26 +35,40 @@ function validURL(myURL) {
   return pattern.test(myURL);
 }
 
-document.getElementById('url').addEventListener('focusout', function(e) {
-  // checking is url validated
-  var res = validURL(e.target.value);
+function startInspect() {  
+  document.getElementById("stopOption").style.display="block";
+  document.getElementById("startOption").style.display="none";
+}
 
-  if(!res) {
-    console.log(document.getElementsByClassName('valid-feedback')[0])
-    document.getElementsByClassName('valid-feedback')[0].classList.add("d-block");
-    e.target.value = '';
-  }
-});
-
-inspec_btn.addEventListener("click", function() {
+document.getElementById("startInspect").addEventListener("click", function() {
 
   var command = 'start_inspecting', commandValue = document.getElementById("url").value;
-  if(inspec_btn.value !== 'Start Inspect') { 
-    command = 'stop_inspecting';
-    commandValue = false;
+  var res = validURL(commandValue);
+  // console.log("url inspect for ", commandValue, res)
+  if (!res) {
+    console.log(document.getElementsByClassName('valid-feedback')[0])
+    document.getElementsByClassName('valid-feedback')[0].classList.add("d-block");
+    document.getElementById("url").value = '';
+    return;
   }
-  inspectCaption(inspec_btn.value, '')
+  startInspect()
   chrome.runtime.sendMessage({cmd: command, value: commandValue}, function(response) {
+    console.log('start inspecting response -- ', response)
+  });
+});
+
+document.getElementById("nowInspect").addEventListener("click", function() {
+  startInspect()
+  chrome.runtime.sendMessage({cmd: 'start_inspecting', value: ''}, function(response) {
+    console.log('Now inspecting response -- ', response)
+  });
+});
+
+document.getElementById("stopInspect").addEventListener("click", function() {
+  // startInspect('start_inspecting', currentUrl)
+  document.getElementById("stopOption").style.display="none";
+  document.getElementById("startOption").style.display="block";
+  chrome.runtime.sendMessage({cmd: 'stop_inspecting', value: false}, function(response) {
     console.log(response)
     if (response.hasOwnProperty('json')) {
       inspectElementList = (response.json);
@@ -74,8 +80,10 @@ inspec_btn.addEventListener("click", function() {
 document.getElementById("copyToAmplify").addEventListener("click", copyToAmplify)
 document.getElementById("clear").addEventListener("click", clear)
 chrome.runtime.sendMessage({cmd: 'inspect_status', value: ''}, function(response) {
-  console.log(response)
-  inspectCaption('', response.res)
+  console.log('inspect_status  =  ', response)
+  if(response.res) {
+    startInspect()
+  }
 })
 
 // chrome.runtime.onMessage.addListener(function(msg) {

@@ -25,6 +25,9 @@
       width: 262px;
       font-size: 12px;
     }
+    #stopOption {
+      display: none;
+    }
     footer, header {
       background-color: #555;
       color: white;
@@ -52,16 +55,47 @@
       <br>
       <div class="col-12">
         <div class=" mt-2">
-          <form class="form-inline">
+          <!-- <form class="form-inline">
             <div class="form-group">
               <label for="url">Open Url : </label>
-              <input type="text" class="form-control" id="url">
+              <input type="text" class="form-control mb-2 mr-sm-2" id="url">
               <div class="valid-feedback">
                 Please enter validate url (ex: "https://www.google.com")
               </div>
-              <input type="button" class="btn btn-default" id="inspectAction" value="Start Inspect">
+                <input type="button" class="btn btn-primary mb-2" id="startInspect" value="Start Inspect">
+                <p class="text-muted">- OR -</p>
+                <input type="button" class="btn btn-primary mb-2" id="nowInspect" value="Inspect Now">
+            </div>
+          </form> -->
+          <form>
+            <div class="form-group row">
+              <label for="url" class="col-sm-2 col-form-label">Inspect Url : </label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" id="url" placeholder="Url">
+                <div class="valid-feedback">
+                  Please enter valid url (ex: "https://www.google.com")
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="row">
+                  <div id="stopOption" class="col-sm-12">
+                    <div class="row">
+                    <input type="button" class="btn btn-primary mb-2" id="pauseInspect" value="Pause Inspect">
+                    <input type="button" class="btn btn-primary mb-2" id="stopInspect" value="Stop Inspect">
+                    </div>
+                  </div>
+                  <div id="startOption" class="col-sm-12">
+                    <div class="row">
+                    <input type="button" class="btn btn-primary mb-2" id="startInspect" value="Start Inspect">
+                    <p class="text-muted  mb-2  mt-2"> - OR - </p>
+                    <input type="button" class="btn btn-primary mb-2" id="nowInspect" value="Inspect Now">
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </form>
+          <hr>
         </div>
         <br>
         <div id="showData">
