@@ -149,30 +149,14 @@ function tableFromJson() {
 
     for (var j = 0; j < col.length; j++) {
       var tabCell = tr.insertCell(-1);
-      // console.log(col[j], inspectElementList[i][col[j]])
-
       if (col[j] === "Actions") {
-        // tabCell.setAttribute('style','width: 20%');
         const delete_button = createDeleteButton(i)
         tabCell.appendChild(delete_button);
         const edit_button = createEditButton(i)
         tabCell.appendChild(edit_button);
         const save_button = createSaveButton(i)
         tabCell.appendChild(save_button);
-      // } else if(col[j] === 'target') {
-      //   const selectList = createSelectElement(inspectElementList[i][col[j]])
-      //   if(inspectElementList[i][col[j]]) {
-      //     tabCell.appendChild(selectList);
-      //   } else {
-      //     tabCell.innerHTML = 'NULL'
-      //   }
-      // } else if(col[j] === 'action') {
-      //   const items = cmd.find(x => x.command_type === 'web').command;
-      //   const selectList = createSelectElement(items)
-      //   tabCell.appendChild(selectList);
       } else {
-        // tabCell.setAttribute('style','width: 30%');
-        // tabCell.setAttribute('contenteditable', 'false');
         tabCell.setAttribute('id', (col[j] + '_' + i))
         var cellText = inspectElementList[i][col[j]];
         if (cellText && cellText.length > 20) { cellText = cellText.substring(0,20) + '...';}
