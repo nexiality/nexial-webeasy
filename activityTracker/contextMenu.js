@@ -7,52 +7,53 @@ function getElement(info,tab) {
 
 }
 
-chrome.contextMenus.create({
-  id: "nexialElementPresent",
-  title: "Assert element preset",
-  contexts: ["selection"]
-});
+chrome.contextMenus.removeAll(function() {
+  chrome.contextMenus.create({
+    id: "nexialElementPresent",
+    title: "Assert element preset",
+    contexts: ["selection"]
+  });
 
-chrome.contextMenus.create({
-  id: "nexialTextPresent",
-  title: "Assert Text preset",
-  contexts: ["selection"]
-});
+  chrome.contextMenus.create({
+    id: "nexialTextPresent",
+    title: "Assert Text preset",
+    contexts: ["selection"]
+  });
 
-chrome.contextMenus.create({
-  id: "nexialAttributePresent",
-  title: "Assert attribute preset",
-  contexts: ["selection"]
-});
+  chrome.contextMenus.create({
+    id: "nexialAttributePresent",
+    title: "Assert attribute preset",
+    contexts: ["selection"]
+  });
 
-chrome.contextMenus.create({
-  id: "nexialValuePresent",
-  title: "Assert value preset",
-  contexts: ["selection"]
-});
+  chrome.contextMenus.create({
+    id: "nexialValuePresent",
+    title: "Assert value preset",
+    contexts: ["selection"]
+  });
 
-chrome.contextMenus.create({
-  id: "nexialWaitUntill",
-  title: "Waituntil",
-  contexts: ["selection"]
-});
+  chrome.contextMenus.create({
+    id: "nexialWaitUntill",
+    title: "Waituntil",
+    contexts: ["selection"]
+  });
 
-chrome.contextMenus.create({
-  id: "nexialWaitUntillVisible",
-  title: "visible/enable",
-  parentId: "nexialWaitUntill",
-  contexts:["selection"],
-  // onclick: theFirstFunction
-});
+  chrome.contextMenus.create({
+    id: "nexialWaitUntillVisible",
+    title: "visible/enable",
+    parentId: "nexialWaitUntill",
+    contexts:["selection"],
+    // onclick: theFirstFunction
+  });
 
-chrome.contextMenus.create({
-  id: "nexialWaitUntillLoaded",
-  title: "Loaded",
-  parentId: "nexialWaitUntill",
-  contexts:["selection"],
-  // onclick: theSecondFunction
+  chrome.contextMenus.create({
+    id: "nexialWaitUntillLoaded",
+    title: "Loaded",
+    parentId: "nexialWaitUntill",
+    contexts:["selection"],
+    // onclick: theSecondFunction
+  });
 });
-
 
 function getLocator(e) {
   console.log(e, 'context meny get locator')
