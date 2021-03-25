@@ -4,9 +4,9 @@ var inspectElementList = [];
 var currentTab = '';
 
 chrome.tabs.onActivated.addListener(tab => {
-  console.log(tab);
+  // console.log(tab);
   chrome.tabs.get(tab.tabId, current_tab_info => {
-    console.log(current_tab_info.url);
+    // console.log(current_tab_info.url);
     currentTab = current_tab_info.url;
     //match the url with nexial url
     if(/^https:\/\/www\.google/.test(current_tab_info.url)) {
@@ -14,16 +14,20 @@ chrome.tabs.onActivated.addListener(tab => {
       //add context menu if its nexial to downlad json
       //add button to copy or download json
       //clipbord* (tab) ... save in cookie-, file*(tab space) txt csv
-      console.log('Its google page')
+      // console.log('Its google page')
       // inject css
       // chrome.tabs.insertCSS(null, {file: 'mystyles.css'});
     }
   });
 });
 
-chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
-  if (is_inspecting) {
-    chrome.tabs.executeScript(null, {file: '/activityTracker/eventRecorder.js'})
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting)
+  if (is_inspecting === 'start' && changeInfo.status === 'complete') {
+    // console.log('LOAD executeScript: eventRecorder')
+    chrome.tabs.executeScript(null, {
+      file: '/activityTracker/eventRecorder.js'
+    }, () => chrome.runtime.lastError);
   }
 })
 
@@ -35,13 +39,19 @@ function loadListener(url) {
     input: url,
     Actions: ''
   });
-  chrome.tabs.executeScript(null, {file: '/activityTracker/eventRecorder.js'});
+  // console.log('first entry : ', inspectElementList)
+  // console.log('LOAD executeScript: eventRecorder')
+  chrome.tabs.executeScript(null, {file: '/activityTracker/eventRecorder.js'},
+  function(result) {
+    // Process |result| here (or maybe do nothing at all).
+    // console.log('execute script : ', result)
+  });
 }
 
 function createOpenURLEntry(url) {
   if(url) {
     chrome.tabs.create({"url": url}, function (tab) {
-      console.log('given url is open')
+      // console.log('given url is open', url)
       loadListener(url)
     });
   } else loadListener(currentTab);
@@ -50,12 +60,13 @@ function createOpenURLEntry(url) {
 chrome.runtime.onMessage.addListener(function(action, sender, sendResponse) {
 
   //Todo : Change to switch case
-  console.log(action)
+  // console.log('recive command  ', action)
   if (action.cmd === 'start_inspecting') {
     inspectElementList = [];
     is_inspecting = 'start';
     createOpenURLEntry(action.value);
     sendResponse({msg: 'start inspecting'});
+    // console.log('start and now inspecting response send')
   }  else if(action.cmd === "stop_inspecting") {
 
     is_inspecting = 'stop';
