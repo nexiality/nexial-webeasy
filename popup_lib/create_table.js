@@ -1,4 +1,5 @@
 let cmd_selected = '', target_selected = '', input_data;
+var table;
 
 function editRow(i) {
   document.getElementById("delete_"+i).style.display="none";
@@ -66,7 +67,7 @@ function createDeleteButton(i) {
   button.onclick = function(e) {
     // console.log(i, '  == i ')
     inspectElementList.splice(i-1, 1);
-    table.deleteRow(i);
+    table.deleteRow(i-1);
     // console.log(inspectElementList, '  inspectElementList')
   };
   return button;
@@ -127,7 +128,7 @@ function tableFromJson() {
   }
 
   // Create a table.
-  var table = document.createElement("table");
+  table = document.createElement("table");
   table.setAttribute('class', 'table table-hover table-bordered table-responsive-md text-center');
   table.setAttribute('style',('table-layout: auto;width:100%;'));
   table.setAttribute('id', 'inspect_table')
