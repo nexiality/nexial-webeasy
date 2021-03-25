@@ -14,8 +14,8 @@ function editRow(i) {
   target_selected = target.innerHTML;
   input_data = input.innerHTML;
 	
-  const items = cmd.find(x => x.command_type === 'web').command;
-  const actionList = createSelectElement(items)
+  // const items = cmd.find(x => x.command_type === 'web').command;
+  const actionList = createSelectElement(cmd)
   action.innerHTML = '';
   action.appendChild(actionList);
 
