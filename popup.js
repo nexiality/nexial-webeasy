@@ -6,8 +6,12 @@ var inspectElementList = [];
 // });
 
 function clear() {
-  var table = document.getElementById("inspect_table");
-  table.remove();
+  var Parent = document.getElementById('inspect_table');
+  while(Parent.hasChildNodes())
+  {
+    Parent.removeChild(Parent.firstChild);
+  }
+  inspectElementList = [];
 }
 
 function copyToAmplify() {
