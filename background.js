@@ -35,9 +35,10 @@ function loadListener(url) {
   inspectElementList.push({
     step: 0,
     command: 'openURl',
-    target: '',
-    input: url,
-    Actions: ''
+    param: {
+      param1: [url]
+    },
+    actions: ''
   });
   // console.log('first entry : ', inspectElementList)
   // console.log('LOAD executeScript: eventRecorder')

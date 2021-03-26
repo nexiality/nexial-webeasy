@@ -1,4 +1,4 @@
-let cmd_selected = '', target_selected = '', input_data;
+let cmd_selected = '', param1, param2;
 var table;
 
 function editRow(i) {
@@ -6,38 +6,46 @@ function editRow(i) {
   document.getElementById("edit_"+i).style.display="none";
   document.getElementById("save_"+i).style.display="block";
 
-  var action = document.getElementById('command_' + i);
-  var target = document.getElementById('target_' + i);
-  var input = document.getElementById('input_' + i);
+  var cmd_el = document.getElementById('command_' + i);
+  var param1_el = document.getElementById('param1_' + i);
+  var param2_el;
+  if(i) param2_el = document.getElementById('param2_' + i);
 
-  cmd_selected = action.innerHTML;
-  target_selected = target.innerHTML;
-  input_data = input.innerHTML;
+  cmd_selected = cmd_el.innerHTML;
+  param1 = param1_el.innerHTML;
+  if(i) param2 = param2_el.innerHTML;
 	
   // const items = cmd.find(x => x.command_type === 'web').command;
-  const actionList = createSelectElement(cmd)
-  action.innerHTML = '';
-  action.appendChild(actionList);
+  const cmdList = createSelectElement(cmd)
+  cmd_el.innerHTML = '';
+  cmd_el.appendChild(cmdList);
 
-  action.onchange =  function(e) {
+  cmd_el.onchange =  function(e) {
     cmd_selected = e.target.value;
   }
-  target.onchange = function(e) {
-    target_selected = e.target.value;
-  }
-  input.onchange = function(e) {
-    input_data = e.target.value;
-  }
+  if (i) {
 
-  const selectList = createSelectElement(inspectElementList[i].target)
-  target.innerHTML = '';
-  if(inspectElementList[i].target) {
-    target.appendChild(selectList);
   } else {
-    target.innerHTML = 'NULL'
+    param1_el.onchange = function(e) {
+      param1 = e.target.value;
+    }
   }
+  // target.onchange = function(e) {
+  //   target_selected = e.target.value;
+  // }
+  // input.onchange = function(e) {
+  //   input_data = e.target.value;
+  // }
 
-  input.innerHTML="<input type='text' id='input_text" + i + "' value='" + input_data + "'>";
+  // const selectList = createSelectElement(inspectElementList[i].target)
+  // target.innerHTML = '';
+  // if(inspectElementList[i].target) {
+  //   target.appendChild(selectList);
+  // } else {
+  //   target.innerHTML = 'NULL'
+  // }
+
+  // input.innerHTML="<input type='text' id='input_text" + i + "' value='" + input_data + "'>";
 }
 
 function saveRow(i) {
@@ -117,6 +125,24 @@ function createSelectElement(items) {
   return selectList;
 }
 
+function createSubTable(data, i) {
+  const param_table = document.createElement("table");
+  param_table.setAttribute('class', 'sub-table');
+  param_table.setAttribute('id', 'table_' + i)
+  console.log(i)
+  for (var key in data) {
+    var tr = param_table.insertRow(-1);
+    var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
+    var valueCellText = data[key][0];
+    if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
+    keyCell.innerHTML = key;
+    valueCell.setAttribute('id', (key + '_' + i))
+    valueCell.innerHTML = valueCellText
+    // console.log(key, data[key])
+   }
+  return param_table;
+}
+
 function tableFromJson() {
   var col = [];
   for (var i = 0; i < inspectElementList.length; i++) {
@@ -150,13 +176,17 @@ function tableFromJson() {
 
     for (var j = 0; j < col.length; j++) {
       var tabCell = tr.insertCell(-1);
-      if (col[j] === "Actions") {
+      if (col[j] === "actions") {
         const delete_button = createDeleteButton(i)
         tabCell.appendChild(delete_button);
         const edit_button = createEditButton(i)
         tabCell.appendChild(edit_button);
         const save_button = createSaveButton(i)
         tabCell.appendChild(save_button);
+      } else if(col[j] === "param") {
+        console.log('------------------------  ', i)
+        const sub_table = createSubTable(inspectElementList[i][col[j]], i);
+        tabCell.appendChild(sub_table);
       } else {
         tabCell.setAttribute('id', (col[j] + '_' + i))
         var cellText = inspectElementList[i][col[j]];

@@ -102,19 +102,21 @@ function sendMessage(e) {
     value: {
       step: (step++),
       command: etype,
-      target: getLocator(e.target),
-      input: [e.target.value],
-      Actions: {
-        tagName: e.target.tagName,
-        tagType: e.target.type,
-        path: paths.slice(-1),
-        parents: paths,
-        baseURI: e.target.baseURI,
-        id: e.target.id,
-        classList: e.target.className,
-        userAction: e.type,
-        value: e.target.value,
-        target: e.target
+      param: {
+        param1: getLocator(e.target),
+        param2: [e.target.value]
+      },
+      actions: {
+        // tagName: e.target.tagName,
+        // tagType: e.target.type,
+        // path: paths.slice(-1),
+        // parents: paths,
+        // baseURI: e.target.baseURI,
+        // id: e.target.id,
+        // classList: e.target.className,
+        // userAction: e.type,
+        // value: e.target.value,
+        // target: e.target
       }
     }
   }
