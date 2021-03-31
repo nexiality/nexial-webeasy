@@ -1,51 +1,50 @@
-let cmd_selected = '', param1, param2;
+let cmd_selected = '', param1, param2, param = [];
 var table;
+
+function getPAramCount(str) {
+  var arr = str.substring(
+    str.lastIndexOf("(") + 1,
+    str.lastIndexOf(")")
+  ).split(',');
+  return arr;
+}
+
+function createElementForParam() {
+
+}
 
 function editRow(i) {
   document.getElementById("delete_"+i).style.display="none";
   document.getElementById("edit_"+i).style.display="none";
   document.getElementById("save_"+i).style.display="block";
-
+  
   var cmd_el = document.getElementById('command_' + i);
-  var param1_el = document.getElementById('param1_' + i);
-  var param2_el;
-  if(i) param2_el = document.getElementById('param2_' + i);
-
   cmd_selected = cmd_el.innerHTML;
-  param1 = param1_el.innerHTML;
-  if(i) param2 = param2_el.innerHTML;
-	
+  var parameterArr = getPAramCount(cmd_selected)
+  for (let index = 0; index < (parameterArr.length); index++) {
+    var el = document.getElementById('param'+ index + '_' + i)
+    param[index] = [el, el.innerHTML];
+    el.innerHTML = '';
+    if (parameterArr[index] === 'locator') {
+      const locatorList = createSelectElement(inspectElementList[i].param['param0'])
+      el.appendChild(locatorList)
+
+      el.onchange = function(e) {
+        param[index][1] = e.target.value;
+      }
+    } else {
+      el.innerHTML="<input type='text' id='input_text" + i + "' value='" + param[index][1] + "'>";
+    }
+  }
   // const items = cmd.find(x => x.command_type === 'web').command;
   const cmdList = createSelectElement(cmd)
   cmd_el.innerHTML = '';
   cmd_el.appendChild(cmdList);
 
-  cmd_el.onchange =  function(e) {
+  cmd_el.onchange = function(e) {
     cmd_selected = e.target.value;
+    createElementForParam(cmd_selected, i);
   }
-  if (i) {
-
-  } else {
-    param1_el.onchange = function(e) {
-      param1 = e.target.value;
-    }
-  }
-  // target.onchange = function(e) {
-  //   target_selected = e.target.value;
-  // }
-  // input.onchange = function(e) {
-  //   input_data = e.target.value;
-  // }
-
-  // const selectList = createSelectElement(inspectElementList[i].target)
-  // target.innerHTML = '';
-  // if(inspectElementList[i].target) {
-  //   target.appendChild(selectList);
-  // } else {
-  //   target.innerHTML = 'NULL'
-  // }
-
-  // input.innerHTML="<input type='text' id='input_text" + i + "' value='" + input_data + "'>";
 }
 
 function saveRow(i) {

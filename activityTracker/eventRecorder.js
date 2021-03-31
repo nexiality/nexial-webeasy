@@ -103,8 +103,8 @@ function sendMessage(e) {
       step: (step++),
       command: etype,
       param: {
-        param1: getLocator(e.target),
-        param2: [e.target.value]
+        param0: getLocator(e.target),
+        param1: [e.target.value]
       },
       actions: {
         // tagName: e.target.tagName,
