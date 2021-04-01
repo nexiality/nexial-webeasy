@@ -1,7 +1,8 @@
-let cmd_selected = '', param1, param2, param = [];
+let cmd_selected = '', updatedObject = {};
 var table;
 
-function getPAramCount(str) {
+function getCommandParam(str) {
+  // console.log('command === ', str)
   var arr = str.substring(
     str.lastIndexOf("(") + 1,
     str.lastIndexOf(")")
@@ -9,42 +10,51 @@ function getPAramCount(str) {
   return arr;
 }
 
-function createElementForParam() {
-
+function updateParamRow(i) {
+  var parameterArr = getCommandParam(updatedObject.command)
+  for (let index = 0; index < (parameterArr.length); index++) {
+    var el = document.getElementById('param'+ index + '_' + i)
+    // param['param'+index] = [el, el.innerHTML];
+    if(el) {el.innerHTML = ''};
+    // else create sub table row;
+    if (parameterArr[index] === 'locator') {
+      const locatorList = createSelectElement(inspectElementList[i].param['param0'])
+      el.appendChild(locatorList)
+      el.onchange = function(e) {
+        updatedObject.param['param0'] = e.target.value;
+      }
+    } else {
+      var inputVal = ''
+      if ((inspectElementList[i].param).hasOwnProperty('param'+index)) {
+        inputVal = inspectElementList[i].param['param'+index][0]
+      }
+      // var inputVal = inspectElementList[i].param['param'+index][0] ? inspectElementList[i].param['param'+index][0] : '';
+      if (el) { el.innerHTML="<input type='text' id='input_text" + i + "' value='" + inputVal + "'>"; }
+    }
+  }
+  // console.log(updatedObject , '----------------- updatedObject')
 }
 
 function editRow(i) {
   document.getElementById("delete_"+i).style.display="none";
   document.getElementById("edit_"+i).style.display="none";
   document.getElementById("save_"+i).style.display="block";
-  
-  var cmd_el = document.getElementById('command_' + i);
-  cmd_selected = cmd_el.innerHTML;
-  var parameterArr = getPAramCount(cmd_selected)
-  for (let index = 0; index < (parameterArr.length); index++) {
-    var el = document.getElementById('param'+ index + '_' + i)
-    param[index] = [el, el.innerHTML];
-    el.innerHTML = '';
-    if (parameterArr[index] === 'locator') {
-      const locatorList = createSelectElement(inspectElementList[i].param['param0'])
-      el.appendChild(locatorList)
 
-      el.onchange = function(e) {
-        param[index][1] = e.target.value;
-      }
-    } else {
-      el.innerHTML="<input type='text' id='input_text" + i + "' value='" + param[index][1] + "'>";
-    }
-  }
-  // const items = cmd.find(x => x.command_type === 'web').command;
+  // console.log(inspectElementList[i], '###########################')
+  var cmd_el = document.getElementById('command_' + i);
   const cmdList = createSelectElement(cmd)
   cmd_el.innerHTML = '';
   cmd_el.appendChild(cmdList);
 
   cmd_el.onchange = function(e) {
-    cmd_selected = e.target.value;
-    createElementForParam(cmd_selected, i);
+    updatedObject.command = e.target.value;
+    cmd_el.value = e.target.value;
+    updateParamRow(i);
+    // console.log('data change', e.target.value)
   }
+
+  updateParamRow(i)
+  // const items = cmd.find(x => x.command_type === 'web').command;
 }
 
 function saveRow(i) {
@@ -87,6 +97,10 @@ function createEditButton(i) {
   button.innerHTML = '<i class="fa fa-edit"></i>';
   button.onclick = function(e) {
     // console.log(i, '  == i ')
+    // editObject.command = inspectElementList[i].command;
+    // editObject.param = inspectElementList[i].param;
+    updatedObject.command = inspectElementList[i].command;
+    updatedObject.param = inspectElementList[i].param;
     editRow(i);
   };
   return button;
@@ -125,10 +139,19 @@ function createSelectElement(items) {
 }
 
 function createSubTable(data, i) {
+  function clear() {
+    var Parent = document.getElementById('table_' + i);
+    while(Parent.hasChildNodes())
+    {
+      Parent.removeChild(Parent.firstChild);
+    }
+  }
+
   const param_table = document.createElement("table");
   param_table.setAttribute('class', 'sub-table');
   param_table.setAttribute('id', 'table_' + i)
-  console.log(i)
+  // console.log(i)
+  // console.log(data, 'Sub table data')
   for (var key in data) {
     var tr = param_table.insertRow(-1);
     var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
@@ -137,7 +160,7 @@ function createSubTable(data, i) {
     keyCell.innerHTML = key;
     valueCell.setAttribute('id', (key + '_' + i))
     valueCell.innerHTML = valueCellText
-    // console.log(key, data[key])
+    // console.log('KEY === ', key, 'DATA === ', data[key])
    }
   return param_table;
 }
@@ -183,7 +206,7 @@ function tableFromJson() {
         const save_button = createSaveButton(i)
         tabCell.appendChild(save_button);
       } else if(col[j] === "param") {
-        console.log('------------------------  ', i)
+        // console.log('------------------------  ', i)
         const sub_table = createSubTable(inspectElementList[i][col[j]], i);
         tabCell.appendChild(sub_table);
       } else {
