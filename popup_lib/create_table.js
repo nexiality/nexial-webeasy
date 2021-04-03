@@ -1,12 +1,9 @@
-let cmd_selected = '', updatedObject = {};
+let cmd_selected = '', updatedObject = {}, cmd_param_length = 0;
 var table;
 
-function clear() {
-  var Parent = document.getElementById('table_' + i);
-  while(Parent.hasChildNodes())
-  {
-    Parent.removeChild(Parent.firstChild);
-  }
+function deleteSubTableRow(tableIndex, rowIndex) {
+  var sub_table = document.getElementById('table_' + tableIndex);
+  sub_table.deleteRow(rowIndex)
 }
 
 function createSubTableRow(param_table, key, data, i, editable) {
@@ -15,7 +12,6 @@ function createSubTableRow(param_table, key, data, i, editable) {
     var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
     var valueCellText = '';
     if (Object.keys(data).length !== 0) {
-      // console.log('data is not empty')
       valueCellText = data[key][0];
     }
     if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
@@ -32,12 +28,24 @@ function getCommandParam(str) {
     str.lastIndexOf("(") + 1,
     str.lastIndexOf(")")
   ).split(',');
+  if(arr[0] === '') return [];
   return arr;
 }
 
 function updateParamRow(i) {
   // console.log(updatedObject, ' --------------- JSON TO EDIT -----------------')
   var parameterArr = getCommandParam(updatedObject.command)
+  // var size = Object.size(updatedObject.command);
+  // console.log('cmd_param_length =  ', cmd_param_length, parameterArr.length)
+  if(parameterArr.length < cmd_param_length) {
+    // deleteSubTableRow(i)
+    for (let index = cmd_param_length; index > parameterArr.length; index--) {
+      // console.log(index, parameterArr.length)
+      deleteSubTableRow(i, index-1)
+    }
+    // console.log('DELETE ROW ')
+  }
+  cmd_param_length = parameterArr.length;
   for (let index = 0; index < (parameterArr.length); index++) {
     var el = document.getElementById('param'+ index + '_' + i)
     // param['param'+index] = [el, el.innerHTML];
@@ -130,6 +138,8 @@ function createEditButton(i) {
     // editObject.param = inspectElementList[i].param;
     updatedObject.command = inspectElementList[i].command;
     updatedObject.param = inspectElementList[i].param;
+    cmd_param_length = getCommandParam(inspectElementList[i].command).length;
+    console.log('assign cmd_param _length', cmd_param_length)
     editRow(i);
   };
   return button;
