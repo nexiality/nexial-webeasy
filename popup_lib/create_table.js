@@ -10,12 +10,12 @@ function clear() {
 }
 
 function createSubTableRow(param_table, key, data, i, editable) {
-  console.log('KEY ______ ', key, '    VALUE _________ ', data)
+  // console.log('KEY ______ ', key, '    VALUE _________ ', data)
   var tr = param_table.insertRow(-1);
     var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
     var valueCellText = '';
     if (Object.keys(data).length !== 0) {
-      console.log('data is not empty')
+      // console.log('data is not empty')
       valueCellText = data[key][0];
     }
     if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
@@ -36,7 +36,7 @@ function getCommandParam(str) {
 }
 
 function updateParamRow(i) {
-  console.log(updatedObject, ' --------------- JSON TO EDIT -----------------')
+  // console.log(updatedObject, ' --------------- JSON TO EDIT -----------------')
   var parameterArr = getCommandParam(updatedObject.command)
   for (let index = 0; index < (parameterArr.length); index++) {
     var el = document.getElementById('param'+ index + '_' + i)
