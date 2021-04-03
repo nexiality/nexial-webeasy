@@ -22,7 +22,7 @@ function createSubTableRow(param_table, key, data, i, editable) {
     keyCell.innerHTML = key;
     valueCell.setAttribute('id', (key + '_' + i))
     if (editable) {
-      valueCell.innerHTML="<input type='text' id='input_text" + i + "' value='" + valueCellText + "'>";
+      valueCell.innerHTML="<input type='text' id='input_" + i + "' value='" + valueCellText + "'>";
     } else valueCell.innerHTML = valueCellText
 }
 
@@ -58,7 +58,7 @@ function updateParamRow(i) {
         inputVal = inspectElementList[i].param['param'+index][0]
       }
       // var inputVal = inspectElementList[i].param['param'+index][0] ? inspectElementList[i].param['param'+index][0] : '';
-      if (el) { el.innerHTML="<input type='text' id='input_text" + i + "' value='" + inputVal + "'>"; }
+      if (el) { el.innerHTML="<input type='text' id='input_" + i + "' value='" + inputVal + "'>"; }
     }
   }
   // console.log(updatedObject , '----------------- updatedObject')
