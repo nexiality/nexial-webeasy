@@ -1,6 +1,31 @@
 let cmd_selected = '', updatedObject = {};
 var table;
 
+function clear() {
+  var Parent = document.getElementById('table_' + i);
+  while(Parent.hasChildNodes())
+  {
+    Parent.removeChild(Parent.firstChild);
+  }
+}
+
+function createSubTableRow(param_table, key, data, i, editable) {
+  console.log('KEY ______ ', key, '    VALUE _________ ', data)
+  var tr = param_table.insertRow(-1);
+    var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
+    var valueCellText = '';
+    if (Object.keys(data).length !== 0) {
+      console.log('data is not empty')
+      valueCellText = data[key][0];
+    }
+    if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
+    keyCell.innerHTML = key;
+    valueCell.setAttribute('id', (key + '_' + i))
+    if (editable) {
+      valueCell.innerHTML="<input type='text' id='input_text" + i + "' value='" + valueCellText + "'>";
+    } else valueCell.innerHTML = valueCellText
+}
+
 function getCommandParam(str) {
   // console.log('command === ', str)
   var arr = str.substring(
@@ -11,11 +36,15 @@ function getCommandParam(str) {
 }
 
 function updateParamRow(i) {
+  console.log(updatedObject, ' --------------- JSON TO EDIT -----------------')
   var parameterArr = getCommandParam(updatedObject.command)
   for (let index = 0; index < (parameterArr.length); index++) {
     var el = document.getElementById('param'+ index + '_' + i)
     // param['param'+index] = [el, el.innerHTML];
-    if(el) {el.innerHTML = ''};
+    if(el) {el.innerHTML = '';}
+    else {
+      createSubTableRow(document.getElementById('table_' + i), ('param'+ index), {}, i, true);
+    }
     // else create sub table row;
     if (parameterArr[index] === 'locator') {
       const locatorList = createSelectElement(inspectElementList[i].param['param0'])
@@ -139,13 +168,6 @@ function createSelectElement(items) {
 }
 
 function createSubTable(data, i) {
-  function clear() {
-    var Parent = document.getElementById('table_' + i);
-    while(Parent.hasChildNodes())
-    {
-      Parent.removeChild(Parent.firstChild);
-    }
-  }
 
   const param_table = document.createElement("table");
   param_table.setAttribute('class', 'sub-table');
@@ -153,13 +175,14 @@ function createSubTable(data, i) {
   // console.log(i)
   // console.log(data, 'Sub table data')
   for (var key in data) {
-    var tr = param_table.insertRow(-1);
-    var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
-    var valueCellText = data[key][0];
-    if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
-    keyCell.innerHTML = key;
-    valueCell.setAttribute('id', (key + '_' + i))
-    valueCell.innerHTML = valueCellText
+    createSubTableRow(param_table, key, data, i, false)
+    // var tr = param_table.insertRow(-1);
+    // var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
+    // var valueCellText = data[key][0];
+    // if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
+    // keyCell.innerHTML = key;
+    // valueCell.setAttribute('id', (key + '_' + i))
+    // valueCell.innerHTML = valueCellText
     // console.log('KEY === ', key, 'DATA === ', data[key])
    }
   return param_table;
