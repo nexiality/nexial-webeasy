@@ -76,6 +76,7 @@ function editRow(i) {
   document.getElementById("delete_"+i).style.display="none";
   document.getElementById("edit_"+i).style.display="none";
   document.getElementById("save_"+i).style.display="block";
+  document.getElementById("close_"+i).style.display="block";
 
   // console.log(inspectElementList[i], '###########################')
   var cmd_el = document.getElementById('command_' + i);
@@ -98,6 +99,7 @@ function saveRow(i) {
   document.getElementById("delete_"+i).style.display="block";
   document.getElementById("edit_"+i).style.display="block";
   document.getElementById("save_"+i).style.display="none";
+  document.getElementById("close_"+i).style.display="none";
 
   var action = document.getElementById('command_' + i);
   var target = document.getElementById('target_' + i);
@@ -157,6 +159,27 @@ function createSaveButton(i) {
     // inspectElementList.splice(i-1, 1);
     // table.deleteRow(i);
     // console.log(inspectElementList, '  inspectElementList')
+  };
+  return button;
+}
+
+function createCloseButton(i) {
+  var button = document.createElement('button');
+  button.setAttribute('class', 'btn text-dark')
+  button.setAttribute('id',('close_' + i));
+  button.setAttribute('style',('display: none'));
+  button.innerHTML = '<i class="fa fa-times"></i>';
+  button.onclick = function(e) {
+    const data = inspectElementList[i].param;
+    let index = 0;
+    for (var key in data) {
+      document.getElementById('param'+ index + '_' + i).innerHTML = data[key][0];
+      index++;
+    }
+    document.getElementById("delete_"+i).style.display="block";
+    document.getElementById("edit_"+i).style.display="block";
+    document.getElementById("save_"+i).style.display="none";
+    document.getElementById("close_"+i).style.display="none";
   };
   return button;
 }
@@ -238,6 +261,8 @@ function tableFromJson() {
         tabCell.appendChild(edit_button);
         const save_button = createSaveButton(i)
         tabCell.appendChild(save_button);
+        const close_button = createCloseButton(i)
+        tabCell.appendChild(close_button);
       } else if(col[j] === "param") {
         // console.log('------------------------  ', i)
         const sub_table = createSubTable(inspectElementList[i][col[j]], i);
