@@ -101,13 +101,17 @@ function saveRow(i) {
   document.getElementById("save_"+i).style.display="none";
   document.getElementById("close_"+i).style.display="none";
 
-  var action = document.getElementById('command_' + i);
-  var target = document.getElementById('target_' + i);
-  var input = document.getElementById('input_' + i);
+  var cmd_el = document.getElementById('command_' + i);
+  // var target = document.getElementById('target_' + i);
+  // var input = document.getElementById('input_' + i);
 
-  input.innerHTML = input_data
-  action.innerHTML = cmd_selected
-  target.innerHTML = target_selected
+  cmd_el.innerHTML = updatedObject.command;
+  const data = updatedObject.param;
+  let index = 0;
+  for (var key in data) {
+    document.getElementById('param'+ index + '_' + i).innerHTML = data[key][0];
+    index++;
+  }
   // console.log(cmd_selected, target_selected , input_data)
 }
 
