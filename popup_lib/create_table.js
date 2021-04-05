@@ -9,17 +9,17 @@ function deleteSubTableRow(tableIndex, rowIndex) {
 function createSubTableRow(param_table, key, data, i, editable) {
   // console.log('KEY ______ ', key, '    VALUE _________ ', data)
   var tr = param_table.insertRow(-1);
-    var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
-    var valueCellText = '';
-    if (Object.keys(data).length !== 0) {
-      valueCellText = data[key][0];
-    }
-    if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
-    keyCell.innerHTML = key;
-    valueCell.setAttribute('id', (key + '_' + i))
-    if (editable) {
-      valueCell.innerHTML="<input type='text' id='input_" + i + "' value='" + valueCellText + "'>";
-    } else valueCell.innerHTML = valueCellText
+  var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
+  var valueCellText = '';
+  if (Object.keys(data).length !== 0) {
+    valueCellText = data[key][0];
+  }
+  if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
+  keyCell.innerHTML = key;
+  valueCell.setAttribute('id', (key + '_' + i))
+  if (editable) {
+    valueCell.innerHTML="<input type='text' id='input_" + i + "' value='" + valueCellText + "'>";
+  } else valueCell.innerHTML = valueCellText
 }
 
 function getCommandParam(str) {
