@@ -1,6 +1,14 @@
 let cmd_selected = '', updatedObject = {}, cmd_param_length = 0;
 var table;
 
+function deleteSubTable(tableIndex) {
+  var Parent = document.getElementById('table_'+ tableIndex);
+  while(Parent.hasChildNodes())
+  {
+    Parent.removeChild(Parent.firstChild);
+  }
+}
+
 function deleteSubTableRow(tableIndex, rowIndex) {
   var sub_table = document.getElementById('table_' + tableIndex);
   sub_table.deleteRow(rowIndex)
@@ -52,9 +60,10 @@ function updateParamRow(i) {
     if(el) {el.innerHTML = '';}
     else {
       createSubTableRow(document.getElementById('table_' + i), ('param'+ index), {}, i, true);
+      el = document.getElementById('param'+ index + '_' + i)
     }
     // else create sub table row;
-    if (parameterArr[index] === 'locator') {
+    if (parameterArr[index - 1] === 'locator') {
       const locatorList = createSelectElement(inspectElementList[i].param['param1'])
       el.appendChild(locatorList)
       el.onchange = function(e) {
@@ -174,11 +183,11 @@ function createCloseButton(i) {
   button.setAttribute('style',('display: none'));
   button.innerHTML = '<i class="fa fa-times"></i>';
   button.onclick = function(e) {
+    document.getElementById('command' + '_' + i).innerHTML = inspectElementList[i].command;
+    deleteSubTable(i);
     const data = inspectElementList[i].param;
-    let index = 1;
     for (var key in data) {
-      document.getElementById('param'+ index + '_' + i).innerHTML = data[key][0];
-      index++;
+      createSubTableRow(document.getElementById('table_' + i), key, data, i, false)
     }
     document.getElementById("delete_"+i).style.display="block";
     document.getElementById("edit_"+i).style.display="block";
