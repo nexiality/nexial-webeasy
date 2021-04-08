@@ -15,7 +15,7 @@ function createSubTableRow(param_table, key, data, i, editable) {
     valueCellText = data[key][0];
   }
   if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
-  keyCell.innerHTML = key;
+  keyCell.innerHTML = key.replace("param", "#");
   valueCell.setAttribute('id', (key + '_' + i))
   if (editable) {
     valueCell.innerHTML="<input type='text' id='input_" + i + "' value='" + valueCellText + "'>";
@@ -46,7 +46,7 @@ function updateParamRow(i) {
     // console.log('DELETE ROW ')
   }
   cmd_param_length = parameterArr.length;
-  for (let index = 0; index < (parameterArr.length); index++) {
+  for (let index = 1; index <= (parameterArr.length); index++) {
     var el = document.getElementById('param'+ index + '_' + i)
     // param['param'+index] = [el, el.innerHTML];
     if(el) {el.innerHTML = '';}
@@ -55,10 +55,10 @@ function updateParamRow(i) {
     }
     // else create sub table row;
     if (parameterArr[index] === 'locator') {
-      const locatorList = createSelectElement(inspectElementList[i].param['param0'])
+      const locatorList = createSelectElement(inspectElementList[i].param['param1'])
       el.appendChild(locatorList)
       el.onchange = function(e) {
-        updatedObject.param['param0'] = e.target.value;
+        updatedObject.param['param1'] = e.target.value;
       }
     } else {
       var inputVal = ''
@@ -107,7 +107,7 @@ function saveRow(i) {
 
   cmd_el.innerHTML = updatedObject.command;
   const data = updatedObject.param;
-  let index = 0;
+  let index = 1;
   for (var key in data) {
     document.getElementById('param'+ index + '_' + i).innerHTML = data[key][0];
     index++;
@@ -175,7 +175,7 @@ function createCloseButton(i) {
   button.innerHTML = '<i class="fa fa-times"></i>';
   button.onclick = function(e) {
     const data = inspectElementList[i].param;
-    let index = 0;
+    let index = 1;
     for (var key in data) {
       document.getElementById('param'+ index + '_' + i).innerHTML = data[key][0];
       index++;

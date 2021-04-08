@@ -36,7 +36,7 @@ function loadListener(url) {
     step: 0,
     command: 'open(url)',
     param: {
-      param0: [url]
+      param1: [url]
     },
     actions: ''
   });

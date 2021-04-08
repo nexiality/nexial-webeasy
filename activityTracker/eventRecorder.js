@@ -102,8 +102,8 @@ function sendInspectInfo(e) {
       step: (step++),
       command: webCmd,
       param: {
-        param0: getLocator(e.target),
-        param1: [e.target.value]
+        param1: getLocator(e.target),
+        param2: [e.target.value]
       },
       actions: {
         // tagName: e.target.tagName,
