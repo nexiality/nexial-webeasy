@@ -256,7 +256,9 @@ function tableFromJson() {
 
   for (var i = 0; i < col.length; i++) {
     var th = document.createElement("th");      // table header.
-    th.innerHTML = col[i];
+    if (col[i] === 'command') th.innerHTML = 'Command(web)';
+    else if(col[i] === 'param')th.innerHTML = 'Parameters';
+    else th.innerHTML = col[i];
     tr.appendChild(th);
   }
 
