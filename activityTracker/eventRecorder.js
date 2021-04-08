@@ -27,7 +27,7 @@
 
   function handleFocusout (e) {
     console.log(e, '---------------INPUT TEXTAREA------------')    
-    sendMessage(e)
+    sendInspectInfo(e)
   }
 
   function handleClick (e) {
@@ -37,14 +37,13 @@
         action: 'url',
         value: e.target.href
       })
-    }
-    sendMessage(e)
+    } else sendInspectInfo(e)
   }
 
   function handleChangeEvent(e) {
     console.log(e, '---------------SELECT------------')
     console.log('selected value', e.target[e.target.selectedIndex].text)
-    sendMessage(e)
+    sendInspectInfo(e)
   }
 // }
 
@@ -83,16 +82,16 @@ function getLocator(e) {
   ]
 }
 
-function sendMessage(e) {
+function sendInspectInfo(e) {
   //Todo: Action
-  var etype = e.type;
+  var webCmd;
   // step = step + 1;
-  if(etype === 'submit') {
-    etype = 'click(locator)'
-  } else if(etype === 'focusout' && e.target.tagName == 'INPUT') {
-    etype = 'type(locator,value)'
-  } else if(etype === 'change') {
-    etype = 'select(locator,text)'
+  if(e.type === 'submit') {
+    webCmd = 'click(locator)'
+  } else if(e.type === 'focusout' && e.target.tagName == 'INPUT') {
+    webCmd = 'type(locator,value)'
+  } else if(e.type === 'change') {
+    webCmd = 'select(locator,text)'
   }
 
   const paths = getDomPath(e.target)
@@ -101,7 +100,7 @@ function sendMessage(e) {
     cmd: 'inspecting',
     value: {
       step: (step++),
-      command: etype,
+      command: webCmd,
       param: {
         param0: getLocator(e.target),
         param1: [e.target.value]
