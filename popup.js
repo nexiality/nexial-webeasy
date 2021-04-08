@@ -16,16 +16,20 @@ function clear() {
 
 function copyToAmplify() {
   var dummy = document.createElement("textarea");
-    // dummy.style.display = 'none'
-    document.body.appendChild(dummy);
-    for (var i = 0; i < inspectElementList.length; i++) {
-      // console.log(inspectElementList[i])
-      dummy.value += inspectElementList[i].command+ '\t' + inspectElementList[i].target[0] + '\t' + inspectElementList[i].input + '\n';
+  // dummy.style.display = 'none'
+  document.body.appendChild(dummy);
+  for (var i = 0; i < inspectElementList.length; i++) {
+    dummy.value += inspectElementList[i].command + '\t';
+    const data = inspectElementList[i].param;
+    for (var key in data) {
+      dummy.value += data[key][0] + '\t'
     }
-    // console.log(dummy.value)
-    dummy.select();
-    document.execCommand("copy");
-    document.body.removeChild(dummy);
+    dummy.value += '\n';
+  }
+  // console.log(dummy.value)
+  dummy.select();
+  document.execCommand("copy");
+  document.body.removeChild(dummy);
 }
 
 function validURL(myURL) {
