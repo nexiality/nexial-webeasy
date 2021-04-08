@@ -34,7 +34,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 function loadListener(url) {
   inspectElementList.push({
     step: 0,
-    command: 'openURl',
+    command: 'open(url)',
     param: {
       param0: [url]
     },
