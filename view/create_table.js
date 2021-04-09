@@ -247,7 +247,7 @@ function tableFromJson() {
   // Create a table.
   table = document.createElement("table");
   table.setAttribute('class', 'table table-hover table-bordered table-responsive-md text-center');
-  table.setAttribute('style',('table-layout: auto;width:100%;'));
+  table.setAttribute('style',('table-layout: fixed;width:100%;'));
   table.setAttribute('id', 'inspect_table')
 
   // Create table header row using the extracted headers above.
@@ -256,8 +256,8 @@ function tableFromJson() {
 
   for (var i = 0; i < col.length; i++) {
     var th = document.createElement("th");      // table header.
-    if (col[i] === 'command') th.innerHTML = 'Command(web)';
-    else if(col[i] === 'param')th.innerHTML = 'Parameters';
+    if (col[i] === 'command') th.innerHTML = 'command (web)';
+    else if(col[i] === 'param')th.innerHTML = 'parameters';
     else th.innerHTML = col[i];
     tr.appendChild(th);
   }

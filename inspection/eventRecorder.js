@@ -74,12 +74,39 @@ function getDomPath(el) {
   return stack.slice(1); // removes the html element
 }
 
-function getLocator(e) {
-  return [
-    ('xpath=//' + (e.tagName).toLowerCase() + '#' + e.id),
-    ('xpath=//' + (e.tagName).toLowerCase() + '#' + e.id + '.' + e.classList[0]),
-    ('id=' + e.id),
-  ]
+function getLocator(e, paths) {
+  // console.log(e)
+  var locator = [], parentWithId;
+  const tag = (e.tagName).toLowerCase();
+  
+  if(e.id) {         // element has Id
+    locator.push('//' + tag + "[@id='"+  e.id + "']")
+    // locator.push('//form' + "[@id='"+  parentNode[1] + "']//" + tag + "[@id='"+  e.id + "']")
+  }
+  if (e.name) {      // element has name attribute
+    locator.push('//' + tag + "[@name='"+  e.name + "']");
+  }
+  paths.forEach(element => {
+    const parentNode = element.split('#');
+    if (parentNode[0] === 'form' && parentNode.length > 1) {            // parent element is form
+      if (e.name) {      // element has name attribute
+        locator.push('//form' + "[@id='"+  parentNode[1] + "']//" + tag + "[@name='"+  e.name + "']");
+      }
+      if(e.id) {         // element has Id
+        locator.push('//form' + "[@id='"+  parentNode[1] + "']//" + tag + "[@id='"+  e.id + "']")
+      }
+    }
+    if (parentNode.length > 1) {
+      parentWithId = parentNode;
+    }
+  });
+  
+  return locator;
+  // return [
+  //   ('xpath=//' + (e.tagName).toLowerCase() + '#' + e.id),
+  //   ('xpath=//' + (e.tagName).toLowerCase() + '#' + e.id + '.' + e.classList[0]),
+  //   ('id=' + e.id),
+  // ]
 }
 
 function sendInspectInfo(e) {
@@ -95,14 +122,15 @@ function sendInspectInfo(e) {
   }
 
   const paths = getDomPath(e.target)
+  console.log('parents ', getLocator(e.target, paths))
   // ToDo: for payload create user define datatype
-  const payload = {
+  var payload = {
     cmd: 'inspecting',
     value: {
       step: (step++),
       command: webCmd,
       param: {
-        param1: getLocator(e.target),
+        param1: getLocator(e.target, paths),
         param2: [e.target.value]
       },
       actions: {
@@ -119,9 +147,9 @@ function sendInspectInfo(e) {
       }
     }
   }
-  if(e.type === 'change') {
-    payload['selectedText'] = e.target[e.target.selectedIndex].text
-  }
+  // if(e.type === 'change') {
+  //   payload['selectedText'] = e.target[e.target.selectedIndex].text
+  // }
 
   console.log(payload)
   chrome.runtime.sendMessage(payload)
