@@ -251,7 +251,8 @@ function tableFromJson() {
   table.setAttribute('id', 'inspect_table')
 
   // Create table header row using the extracted headers above.
-  var tr = table.insertRow(-1);                    // table row.
+  var head = table.createTHead();
+  var tr = head.insertRow(-1);                    // table row.
   // tr.setAttribute('style','d-flex');
 
   for (var i = 0; i < col.length; i++) {
@@ -261,11 +262,11 @@ function tableFromJson() {
     else th.innerHTML = col[i];
     tr.appendChild(th);
   }
-
+  var body = table.createTBody();
   // add json data to the table as rows.
   for (var i = 0; i < inspectElementList.length; i++) {
 
-    tr = table.insertRow(-1);
+    tr = body.insertRow(-1);
 
     for (var j = 0; j < col.length; j++) {
       var tabCell = tr.insertCell(-1);
