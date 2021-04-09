@@ -9,7 +9,7 @@
 		}
 	],
 	"background": { 
-    "scripts": ["background.js", "activityTracker/contextMenu.js"], 
+    "scripts": ["background.js", "inspection/contextMenu.js"],
     "persistent": false
   },
   "permissions": [
