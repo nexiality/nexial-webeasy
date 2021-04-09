@@ -32,6 +32,19 @@ th, td {
   border: solid 1px;
   text-align: center;
 }
+/* nth-child(1) = the first td in each tr */
+td:nth-child(1) {
+  width: 5%;
+  }
+
+/* the second */
+td:nth-child(2) {
+  width: 40%;
+}
+/* the third */
+td:nth-child(3) {
+  width: 40%;
+ }
 footer, header {
   background-color: #555;
   color: white;

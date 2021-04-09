@@ -246,8 +246,8 @@ function tableFromJson() {
 
   // Create a table.
   table = document.createElement("table");
-  table.setAttribute('class', 'table table-hover table-bordered table-responsive-md text-center');
-  table.setAttribute('style',('table-layout: fixed;width:100%;'));
+  table.setAttribute('class', 'table table-hover table-bordered text-center');
+  table.setAttribute('style',('width:100%;'));
   table.setAttribute('id', 'inspect_table')
 
   // Create table header row using the extracted headers above.
