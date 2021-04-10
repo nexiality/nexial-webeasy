@@ -6,27 +6,26 @@ var inspectElementList = [];
 // });
 
 function clear() {
-  var Parent = document.getElementById('inspect_table');
-  while(Parent.hasChildNodes())
-  {
-    Parent.removeChild(Parent.firstChild);
-  }
+  let table = document.getElementById('inspect_table');
+  while(table.hasChildNodes()) { table.removeChild(table.firstChild); }
   inspectElementList = [];
 }
 
-function copyToAmplify() {
-  var dummy = document.createElement("textarea");
-  // dummy.style.display = 'none'
-  document.body.appendChild(dummy);
-  for (var i = 0; i < inspectElementList.length; i++) {
-    dummy.value += inspectElementList[i].command + '\t';
-    const data = inspectElementList[i].param;
-    for (var key in data) {
-      dummy.value += data[key][0] + '\t'
+function copyToNexial() {
+  let delim = '\t';
+  let script = '';
+
+  for (let i = 0; i < inspectElementList.length; i++) {
+    script += 'web' + delim + inspectElementList[i].command + delim;
+    for (let parameter in inspectElementList[i].param) {
+      script += inspectElementList[i].param[parameter][0] + delim
     }
-    dummy.value += '\n';
+    script += '\n';
   }
-  // console.log(dummy.value)
+
+  let dummy = document.createElement("textarea");
+  dummy.value = script;
+  document.body.appendChild(dummy);
   dummy.select();
   document.execCommand("copy");
   document.body.removeChild(dummy);
@@ -47,10 +46,12 @@ function startInspect() {
   document.getElementById("startOption").style.display="none";
 }
 
+let pauseInspect = document.getElementById("pauseInspect");
+
 function pausedInspect() {
-  document.getElementById("pauseInspect").classList.toggle("btn-default");
-  document.getElementById("pauseInspect").classList.toggle("btn-primary");
-  document.getElementById("pauseInspect").value = 'Restart Inspect';
+  pauseInspect.classList.toggle("btn-default");
+  pauseInspect.classList.toggle("btn-primary");
+  pauseInspect.value = 'Restart Inspect';
 }
 
 document.getElementById("startInspect").addEventListener("click", function() {
@@ -64,25 +65,22 @@ document.getElementById("startInspect").addEventListener("click", function() {
     document.getElementById("url").value = '';
     return;
   }
-  startInspect()
-  chrome.runtime.sendMessage({cmd: command, value: commandValue}, function(response) {
-    console.log('start inspecting response -- ', response)
-  });
+  startInspect();
+  Messenger.sendInternalMessage({cmd: command, value: commandValue});
 });
 
-document.getElementById("nowInspect").addEventListener("click", function() {
-  startInspect()
-  chrome.runtime.sendMessage({cmd: 'start_inspecting', value: ''}, function(response) {
-    console.log('Now inspecting response -- ', response)
-  });
-});
+document.getElementById("nowInspect").addEventListener("click", function () {
+    startInspect();
+    Messenger.sendInternalMessage({cmd: 'start_inspecting', value: ''});
+  }
+);
 
 document.getElementById("stopInspect").addEventListener("click", function() {
   // startInspect('start_inspecting', currentUrl)
   document.getElementById("stopOption").style.display="none";
   document.getElementById("startOption").style.display="flex";
-  chrome.runtime.sendMessage({cmd: 'stop_inspecting', value: false}, function(response) {
-    console.log(response)
+  Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function(response) {
+    Logger.debug(response);
     if (response.hasOwnProperty('json')) {
       inspectElementList = (response.json);
       tableFromJson()
@@ -90,18 +88,21 @@ document.getElementById("stopInspect").addEventListener("click", function() {
   });
 });
 
-document.getElementById("pauseInspect").addEventListener("click", function() {
-  document.getElementById("pauseInspect").classList.toggle("btn-default");
-  document.getElementById("pauseInspect").classList.toggle("btn-primary");
-  if (document.getElementById("pauseInspect").value === 'Pause Inspect') {
-    document.getElementById("pauseInspect").value = 'Restart Inspect';
-    chrome.runtime.sendMessage({cmd: 'pause_inspecting', value: true}, function(response) {
-      console.log(response)
-    });
-  } else document.getElementById("pauseInspect").value = 'Pause Inspect';
+pauseInspect.addEventListener("click", function () {
+  pauseInspect.classList.toggle("btn-default");
+  pauseInspect.classList.toggle("btn-primary");
+  if (pauseInspect.value === 'Pause Inspect') {
+    pauseInspect.value = 'Restart Inspect';
+    // chrome.runtime.sendMessage({cmd: 'pause_inspecting', value: true}, function(response) {
+    //   console.log(response)
+    // });
+    Messenger.sendInternalMessage({cmd: 'pause_inspecting', value: true});
+  } else {
+    pauseInspect.value = 'Pause Inspect';
+  }
 });
 
-document.getElementById("copyToAmplify").addEventListener("click", copyToAmplify)
+document.getElementById("copyToNexial").addEventListener("click", copyToNexial)
 document.getElementById("clear").addEventListener("click", clear)
 chrome.runtime.sendMessage({cmd: 'inspect_status', value: ''}, function(response) {
   console.log('inspect_status  =  ', response)

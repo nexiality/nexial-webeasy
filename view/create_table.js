@@ -16,14 +16,14 @@ function deleteSubTableRow(tableIndex, rowIndex) {
 
 function createSubTableRow(param_table, key, data, i, editable) {
   // console.log('KEY ______ ', key, '    VALUE _________ ', data)
-  var tr = param_table.insertRow(-1);
-  var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
-  var valueCellText = '';
-  if (Object.keys(data).length !== 0) {
-    valueCellText = data[key][0];
-  }
+  let tr = param_table.insertRow(-1);
+
+  let keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
+  keyCell.innerHTML = '<span class="param-idx">' + + key.replace("param", "") + '</span>';
+
+  let valueCellText = '';
+  if (Object.keys(data).length !== 0) { valueCellText = data[key][0]; }
   if (valueCellText && valueCellText.length > 20) { valueCellText = valueCellText.substring(0,20) + '...';}
-  keyCell.innerHTML = key.replace("param", "#");
   valueCell.setAttribute('id', (key + '_' + i))
   if (editable) {
     valueCell.innerHTML="<input type='text' id='input_" + i + "' value='" + valueCellText + "'>";
@@ -217,10 +217,10 @@ function createSubTable(data, i) {
 
   const param_table = document.createElement("table");
   param_table.setAttribute('class', 'sub-table');
-  param_table.setAttribute('id', 'table_' + i)
+  param_table.setAttribute('id', 'table_' + i);
   // console.log(i)
   // console.log(data, 'Sub table data')
-  for (var key in data) {
+  for (let key in data) {
     createSubTableRow(param_table, key, data, i, false)
     // var tr = param_table.insertRow(-1);
     // var keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
@@ -230,13 +230,14 @@ function createSubTable(data, i) {
     // valueCell.setAttribute('id', (key + '_' + i))
     // valueCell.innerHTML = valueCellText
     // console.log('KEY === ', key, 'DATA === ', data[key])
-   }
+  }
   return param_table;
 }
 
 function tableFromJson() {
+  let i;
   var col = [];
-  for (var i = 0; i < inspectElementList.length; i++) {
+  for (i = 0; i < inspectElementList.length; i++) {
     for (var key in inspectElementList[i]) {
       if (col.indexOf(key) === -1) {
         col.push(key);
@@ -247,38 +248,37 @@ function tableFromJson() {
   // Create a table.
   table = document.createElement("table");
   table.setAttribute('class', 'table table-hover text-center');
-  table.setAttribute('style',('width:100%;'));
-  table.setAttribute('id', 'inspect_table')
+  table.setAttribute('id', 'inspect_table');
+  table.setAttribute('cellspacing', '0');
 
   // Create table header row using the extracted headers above.
   var head = table.createTHead();
   var tr = head.insertRow(-1);                    // table row.
   // tr.setAttribute('style','d-flex');
 
-  for (var i = 0; i < col.length; i++) {
-    var th = document.createElement("th");      // table header.
-    if (col[i] === 'command') th.innerHTML = 'command (web)';
-    else if(col[i] === 'param')th.innerHTML = 'parameters';
-    else th.innerHTML = col[i];
+  // table header.
+  for (i = 0; i < col.length; i++) {
+    let heading = col[i] === 'command' ? 'command (web)' :
+                  col[i] === 'param' ? 'parameters' :
+                  col[i];
+    let th = document.createElement("th");
+    th.innerHTML = heading;
     tr.appendChild(th);
   }
+
   var body = table.createTBody();
   // add json data to the table as rows.
-  for (var i = 0; i < inspectElementList.length; i++) {
+  for (i = 0; i < inspectElementList.length; i++) {
 
     tr = body.insertRow(-1);
 
     for (var j = 0; j < col.length; j++) {
       var tabCell = tr.insertCell(-1);
       if (col[j] === "actions") {
-        const delete_button = createDeleteButton(i)
-        tabCell.appendChild(delete_button);
-        const edit_button = createEditButton(i)
-        tabCell.appendChild(edit_button);
-        const save_button = createSaveButton(i)
-        tabCell.appendChild(save_button);
-        const close_button = createCloseButton(i)
-        tabCell.appendChild(close_button);
+        tabCell.appendChild(createDeleteButton(i));
+        tabCell.appendChild(createEditButton(i));
+        tabCell.appendChild(createSaveButton(i));
+        tabCell.appendChild(createCloseButton(i));
       } else if(col[j] === "param") {
         // console.log('------------------------  ', i)
         const sub_table = createSubTable(inspectElementList[i][col[j]], i);
