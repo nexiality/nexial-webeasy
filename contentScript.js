@@ -16,13 +16,13 @@ function getLocator(e) {
 
 document.addEventListener("contextmenu", function (event) {
   clickedEl = event;
-  Logger.debug('in side contentscript contextmenu', event)
+  console.log('in side contentscript contextmenu', event)
 }, true);
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  Logger.debug(request, ' ---------------- request')
+  console.log(request, ' ---------------- request')
   if (request === "getClickedEl") {
-    Logger.debug(clickedEl, ' ---------------- clickedEl')
+    console.log(clickedEl, ' ---------------- clickedEl')
     sendResponse({command: "contextmenu", target: getLocator(clickedEl.target), input: ''});
   }
 });
