@@ -1,18 +1,14 @@
-let cmd_selected = '', updatedObject = {}, cmd_param_length = 0;
-var table;
+let cmd_selected = '';
+let updatedObject = {};
+let cmd_param_length = 0;
+let table;
 
 function deleteSubTable(tableIndex) {
-  var Parent = document.getElementById('table_'+ tableIndex);
-  while(Parent.hasChildNodes())
-  {
-    Parent.removeChild(Parent.firstChild);
-  }
+  let inspectTable = document.getElementById('table_' + tableIndex);
+  while(inspectTable.hasChildNodes()) { inspectTable.removeChild(inspectTable.firstChild); }
 }
 
-function deleteSubTableRow(tableIndex, rowIndex) {
-  var sub_table = document.getElementById('table_' + tableIndex);
-  sub_table.deleteRow(rowIndex)
-}
+function deleteSubTableRow(tableIndex, rowIndex) { document.getElementById('table_' + tableIndex).deleteRow(rowIndex); }
 
 function createSubTableRow(param_table, key, data, i, editable) {
   // console.log('KEY ______ ', key, '    VALUE _________ ', data)
@@ -82,18 +78,14 @@ function updateParamRow(i) {
 }
 
 function editRow(i) {
-  document.getElementById("delete_"+i).style.display="none";
-  document.getElementById("edit_"+i).style.display="none";
-  document.getElementById("save_"+i).style.display="block";
-  document.getElementById("close_"+i).style.display="block";
+  toggleRowEdit(i, false);
 
   // console.log(inspectElementList[i], '###########################')
-  var cmd_el = document.getElementById('command_' + i);
   const cmdList = createSelectElement(cmd)
+  let cmd_el = document.getElementById('command_' + i);
   cmd_el.innerHTML = '';
   cmd_el.appendChild(cmdList);
-
-  cmd_el.onchange = function(e) {
+  cmd_el.onchange = function (e) {
     updatedObject.command = e.target.value;
     cmd_el.value = e.target.value;
     updateParamRow(i);
@@ -105,23 +97,28 @@ function editRow(i) {
 }
 
 function saveRow(i) {
-  document.getElementById("delete_"+i).style.display="block";
-  document.getElementById("edit_"+i).style.display="block";
-  document.getElementById("save_"+i).style.display="none";
-  document.getElementById("close_"+i).style.display="none";
+  toggleRowEdit(i, true);
 
-  var cmd_el = document.getElementById('command_' + i);
+  const data = updatedObject.param;
+
+  let cmd_el = document.getElementById('command_' + i);
   // var target = document.getElementById('target_' + i);
   // var input = document.getElementById('input_' + i);
-
   cmd_el.innerHTML = updatedObject.command;
-  const data = updatedObject.param;
   let index = 1;
-  for (var key in data) {
-    document.getElementById('param'+ index + '_' + i).innerHTML = data[key][0];
+  for (let key in data) {
+    document.getElementById('param' + index + '_' + i).innerHTML = data[key][0];
     index++;
   }
   // console.log(cmd_selected, target_selected , input_data)
+}
+
+
+function toggleRowEdit(/*Number*/i, /*Boolean*/enable) {
+  document.getElementById("delete_" + i).style.display = enable ? "block" : "none";
+  document.getElementById("edit_" + i).style.display = enable ? "block" : "none";
+  document.getElementById("save_" + i).style.display = enable ? "none" : "block";
+  document.getElementById("close_" + i).style.display = enable ? "none" : "block";
 }
 
 function createDuplicateButton() {
@@ -143,7 +140,7 @@ function createDeleteButton(i) {
 }
 
 function createEditButton(i) {
-  var button = document.createElement('button');
+  let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id',('edit_' + i));
   button.innerHTML = '<i class="fa fa-edit"></i>';
@@ -154,7 +151,7 @@ function createEditButton(i) {
     updatedObject.command = inspectElementList[i].command;
     updatedObject.param = inspectElementList[i].param;
     cmd_param_length = getCommandParam(inspectElementList[i].command).length;
-    console.log('assign cmd_param _length', cmd_param_length)
+    Logger.debug('assign cmd_param _length', cmd_param_length);
     editRow(i);
   };
   return button;
@@ -177,7 +174,7 @@ function createSaveButton(i) {
 }
 
 function createCloseButton(i) {
-  var button = document.createElement('button');
+  let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id',('close_' + i));
   button.setAttribute('style',('display: none'));
@@ -186,13 +183,8 @@ function createCloseButton(i) {
     document.getElementById('command' + '_' + i).innerHTML = inspectElementList[i].command;
     deleteSubTable(i);
     const data = inspectElementList[i].param;
-    for (var key in data) {
-      createSubTableRow(document.getElementById('table_' + i), key, data, i, false)
-    }
-    document.getElementById("delete_"+i).style.display="block";
-    document.getElementById("edit_"+i).style.display="block";
-    document.getElementById("save_"+i).style.display="none";
-    document.getElementById("close_"+i).style.display="none";
+    for (let key in data) { createSubTableRow(document.getElementById('table_' + i), key, data, i, false); }
+    toggleRowEdit(i, true);
   };
   return button;
 }
@@ -280,7 +272,6 @@ function tableFromJson() {
         tabCell.appendChild(createSaveButton(i));
         tabCell.appendChild(createCloseButton(i));
       } else if(col[j] === "param") {
-        // console.log('------------------------  ', i)
         const sub_table = createSubTable(inspectElementList[i][col[j]], i);
         tabCell.appendChild(sub_table);
       } else {

@@ -17,7 +17,6 @@ let Logger = {
 }
 
 let Messenger = {
-
   sendInternalMessage: function (/*any*/message, /*function?*/callback) {
     if (!message) { return; }
 

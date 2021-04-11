@@ -9,7 +9,7 @@ chrome.tabs.onActivated.addListener(tab => {
     // console.log(current_tab_info.url);
     currentTab = current_tab_info.url;
     //match the url with nexial url
-    if(/^https:\/\/www\.google/.test(current_tab_info.url)) {
+    if (/^https:\/\/www\.google/.test(current_tab_info.url)) {
       //toDo
       //add context menu if its nexial to downlad json
       //add button to copy or download json
@@ -21,65 +21,67 @@ chrome.tabs.onActivated.addListener(tab => {
   });
 });
 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting)
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting);
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
     // console.log('LOAD executeScript: eventRecorder')
-    chrome.tabs.executeScript(null, {
-      file: '/inspection/eventInspecting.js'
-    }, () => chrome.runtime.lastError);
+    chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
   }
 })
 
 function loadListener(url) {
-  inspectElementList.push({
-    step: 0,
-    command: 'open(url)',
-    param: {
-      param1: [url]
-    },
-    actions: ''
-  });
+  inspectElementList.push({step: 0, command: 'open(url)', param: {param1: [url]}, actions: ''});
   // console.log('first entry : ', inspectElementList)
   // console.log('LOAD executeScript: eventRecorder')
-  chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'},
-  function(result) {
+  chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
     // Process |result| here (or maybe do nothing at all).
     // console.log('execute script : ', result)
   });
 }
 
 function createOpenURLEntry(url) {
-  if(url) {
+  if (url) {
     chrome.tabs.create({"url": url}, function (tab) {
       // console.log('given url is open', url)
       loadListener(url)
     });
-  } else loadListener(currentTab);
+  } else {
+    chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
+       currentTab = tabs[0].url;
+      loadListener(currentTab);
+    });
+  }
 }
 
-chrome.runtime.onMessage.addListener(function(action, sender, sendResponse) {
-
-  //Todo : Change to switch case
-  // console.log('recive command  ', action)
-  if (action.cmd === 'start_inspecting') {
-    inspectElementList = [];
-    is_inspecting = 'start';
-    createOpenURLEntry(action.value);
-    sendResponse({msg: 'start inspecting'});
-    // console.log('start and now inspecting response send')
-  }  else if(action.cmd === "stop_inspecting") {
-
-    is_inspecting = 'stop';
-    sendResponse({json: inspectElementList});
-  } else if(action.cmd === 'inspecting') {
-
-    inspectElementList.push(action.value)
-  } else if (action.cmd === 'inspect_status') {
-
-    sendResponse({res: is_inspecting, json: inspectElementList});
-  } else if(action.cmd === 'pause_inspecting') {
-    is_inspecting = 'paused';
+chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
+  switch (action.cmd) {
+    case 'start_inspecting': {
+      inspectElementList = [];
+      is_inspecting = 'start';
+      createOpenURLEntry(action.value);
+      sendResponse({msg: 'start inspecting'});
+      break;
+    }
+    case 'stop_inspecting': {
+      is_inspecting = 'stop';
+      sendResponse({json: inspectElementList});
+      break;
+    }
+    case 'inspecting': {
+      inspectElementList.push(action.value);
+      break;
+    }
+    case 'inspect_status': {
+      sendResponse({res: is_inspecting, json: inspectElementList});
+      break;
+    }
+    case 'pause_inspecting': {
+      is_inspecting = 'paused';
+      break;
+    }
+    case 'clear_inspection': {
+      inspectElementList = [];
+      break;
+    }
   }
 });
-

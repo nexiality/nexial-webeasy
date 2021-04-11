@@ -20,8 +20,6 @@ var cmd = [
   "assertFocus(locator)",
   "assertFrameCount(count)",
   "assertFramePresent(frameName)",
-  "assertIECompatMode()",
-  "assertIENavtiveMode()",
   "assertLinkByLabel(label)",
   "assertMultiSelect(locator)",
   "assertNotChecked(locator)",

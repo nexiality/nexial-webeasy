@@ -9,6 +9,7 @@ function clear() {
   let table = document.getElementById('inspect_table');
   while(table.hasChildNodes()) { table.removeChild(table.firstChild); }
   inspectElementList = [];
+  Messenger.sendInternalMessage({cmd: 'clear_inspection', value: ''});
 }
 
 function copyToNexial() {
@@ -54,19 +55,20 @@ function pausedInspect() {
   pauseInspect.value = 'Restart Inspect';
 }
 
-document.getElementById("startInspect").addEventListener("click", function() {
-
-  var command = 'start_inspecting', commandValue = document.getElementById("url").value;
+document.getElementById("startInspect").addEventListener("click", function () {
+  var commandValue = document.getElementById("url").value;
   var res = validURL(commandValue);
   // console.log("url inspect for ", commandValue, res)
+
   if (!res) {
-    console.log(document.getElementsByClassName('valid-feedback')[0])
-    document.getElementsByClassName('valid-feedback')[0].classList.add("d-block");
+    let validFeedback = document.getElementsByClassName('valid-feedback')[0];
+    Logger.debug(validFeedback)
+    validFeedback.classList.add("d-block");
     document.getElementById("url").value = '';
     return;
   }
   startInspect();
-  Messenger.sendInternalMessage({cmd: command, value: commandValue});
+  Messenger.sendInternalMessage({cmd: 'start_inspecting', value: commandValue});
 });
 
 document.getElementById("nowInspect").addEventListener("click", function () {
@@ -82,7 +84,7 @@ document.getElementById("stopInspect").addEventListener("click", function() {
   Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function(response) {
     Logger.debug(response);
     if (response.hasOwnProperty('json')) {
-      inspectElementList = (response.json);
+      inspectElementList = response.json;
       tableFromJson()
     }
   });
@@ -93,28 +95,26 @@ pauseInspect.addEventListener("click", function () {
   pauseInspect.classList.toggle("btn-primary");
   if (pauseInspect.value === 'Pause Inspect') {
     pauseInspect.value = 'Restart Inspect';
-    // chrome.runtime.sendMessage({cmd: 'pause_inspecting', value: true}, function(response) {
-    //   console.log(response)
-    // });
     Messenger.sendInternalMessage({cmd: 'pause_inspecting', value: true});
   } else {
     pauseInspect.value = 'Pause Inspect';
   }
 });
 
-document.getElementById("copyToNexial").addEventListener("click", copyToNexial)
-document.getElementById("clear").addEventListener("click", clear)
-chrome.runtime.sendMessage({cmd: 'inspect_status', value: ''}, function(response) {
-  console.log('inspect_status  =  ', response)
+document.getElementById("copyToNexial").addEventListener("click", copyToNexial);
+
+document.getElementById("clear").addEventListener("click", clear);
+
+Messenger.sendInternalMessage({cmd: 'inspect_status', value: ''}, function(response) {
+  Logger.debug('inspect_status  =  ', response)
   if(response.res !== 'stop') {
-    startInspect()
-    if(response.res === 'paused') pausedInspect()
+    startInspect();
+    if(response.res === 'paused') pausedInspect();
+  } else if (response.hasOwnProperty('json')) {
+    inspectElementList = response.json;
+    tableFromJson();
   }
-  if (response.hasOwnProperty('json') && response.res === 'stop') {
-    inspectElementList = (response.json);
-    tableFromJson()
-  }
-})
+});
 
 // chrome.runtime.onMessage.addListener(function(msg) {
 //   console.log("message recieved in popup js - " + msg);

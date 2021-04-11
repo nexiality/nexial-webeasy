@@ -19,7 +19,7 @@
     }
   ],
   "background": {
-    "scripts": ["background.js", "inspection/contextMenu.js"],
+    "scripts": ["inspection/utils.js", "background.js", "inspection/contextMenu.js"],
     "persistent": false
   },
   "permissions": [
