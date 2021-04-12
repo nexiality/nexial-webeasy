@@ -239,7 +239,7 @@ function tableFromJson() {
 
   // Create a table.
   table = document.createElement("table");
-  table.setAttribute('class', 'table table-hover text-center');
+  table.setAttribute('class', 'table table-hover');
   table.setAttribute('id', 'inspect_table');
   table.setAttribute('cellspacing', '0');
 
