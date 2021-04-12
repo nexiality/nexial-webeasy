@@ -1,7 +1,7 @@
 // class EventRecorder {
 function start() {
-  step = 1;
-  console.log('start Todo: checkbox radio password file')
+  // step = 2;
+  // console.log('start Todo: checkbox radio password file')
 
   const typeableElements = document.querySelectorAll('input:not([type=submit]), textarea')
   const clickableElements = document.querySelectorAll('a, button')
@@ -151,5 +151,5 @@ function sendInspectInfo(e) {
   chrome.runtime.sendMessage(payload);
 }
 
-var step = 1;
+var step = 2;
 start();
