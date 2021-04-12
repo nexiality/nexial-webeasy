@@ -115,10 +115,10 @@ function saveRow(i) {
 
 
 function toggleRowEdit(/*Number*/i, /*Boolean*/enable) {
-  document.getElementById("delete_" + i).style.display = enable ? "block" : "none";
-  document.getElementById("edit_" + i).style.display = enable ? "block" : "none";
-  document.getElementById("save_" + i).style.display = enable ? "none" : "block";
-  document.getElementById("close_" + i).style.display = enable ? "none" : "block";
+  document.getElementById("delete_" + i).style.display = enable ? "inline-block" : "none";
+  document.getElementById("edit_" + i).style.display = enable ? "inline-block" : "none";
+  document.getElementById("save_" + i).style.display = enable ? "none" : "inline-block";
+  document.getElementById("close_" + i).style.display = enable ? "none" : "inline-block";
 }
 
 function createDuplicateButton() {
