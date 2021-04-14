@@ -28,6 +28,7 @@ function createSubTableRow(param_table, key, data, i, editable) {
 
 function getCommandParam(str) {
   // console.log('command === ', str)
+  // ToDo : (Case) Command is undefined and has no param
   var arr = str.substring(
     str.lastIndexOf("(") + 1,
     str.lastIndexOf(")")
