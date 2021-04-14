@@ -26,12 +26,12 @@ function start() {
 }
 
 function handleFocusout(e) {
-  console.log(e, '---------------INPUT TEXTAREA------------')
+  // console.log(e, '---------------INPUT TEXTAREA------------')
   sendInspectInfo(e)
 }
 
 function handleClick(e) {
-  console.log(e, '---------------A BUTTON------------')
+  // console.log(e, '---------------A BUTTON------------')
   if (e.target.href) {
     Messenger.sendInternalMessage({action: 'url', value: e.target.href});
   } else {
@@ -40,8 +40,8 @@ function handleClick(e) {
 }
 
 function handleChangeEvent(e) {
-  console.log(e, '---------------SELECT------------')
-  console.log('selected value', e.target[e.target.selectedIndex].text)
+  // console.log(e, '---------------SELECT------------')
+  // console.log('selected value', e.target[e.target.selectedIndex].text)
   sendInspectInfo(e)
 }
 
@@ -127,7 +127,6 @@ function sendInspectInfo(e) {
   }
 
   const paths = getDomPath(e.target)
-  console.log('parents ', getLocator(e.target, paths))
   // ToDo: for payload create user define datatype
   var payload = {
     cmd:   'inspecting',
