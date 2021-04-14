@@ -196,11 +196,19 @@ function createSelectElement(items) {
   // console.log(items)
 
   //Create and append the options
+  var optgroup = '';
   for (var index = 0; index < items.length; index++) {
+    if ((items[index]).includes('=')) {
+      optgroup = document.createElement("optgroup");
+      optgroup.setAttribute('label', items[index].split('=')[0].toUpperCase())
+    }
     var option = document.createElement("option");
     option.value = items[index];
     option.text = items[index];
-    selectList.appendChild(option);
+    if(optgroup) {
+      optgroup.appendChild(option);
+      selectList.appendChild(optgroup);
+    } else selectList.appendChild(option);
   }
   return selectList;
 }
