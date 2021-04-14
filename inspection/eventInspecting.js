@@ -60,6 +60,8 @@ function getDomPath(el) {
     }
     if (el.hasAttribute('id') && el.id != '') {
       stack.unshift(el.nodeName.toLowerCase() + '#' + el.id);
+    } else if (el.hasAttribute('class') && el.className != '') {
+      stack.unshift(el.nodeName.toLowerCase() + '.' + el.className);
     } else if (sibCount > 1) {
       stack.unshift(el.nodeName.toLowerCase() + ':eq(' + sibIndex + ')');
     } else {
