@@ -72,39 +72,46 @@ function getDomPath(el) {
   return stack.slice(1); // removes the html element
 }
 
+function createLocator(e, parentTag, parentNode, tag, identifiedBy, xpath, css) {
+
+  if (e.name) {                                               // element has name attribute
+    xpath.push('xpath=//' + parentTag + "[@id='" + parentNode + "']//" + tag + "[@name='" + e.name + "']");
+    css.push('css=' + parentTag + identifiedBy + parentNode + ' > ' + tag + "[name='" + e.name + "']")
+  }
+  if (e.id) {                                                 // element has Id
+    css.push('css=' + parentTag + identifiedBy + parentNode + ' > ' + tag + identifiedBy + e.id)
+    xpath.push('xpath=//' + parentTag + "[@id='" + parentNode + "']//" + tag + "[@id='" + e.id + "']")
+  }
+}
+
 function getLocator(e, paths) {
   // console.log(e)
-  var locator = [], parentWithId;
+  var locator = [], xpath = [], css = [], hasParent = false;
   const tag = (e.tagName).toLowerCase();
 
-  if (e.id) {         // element has Id
-    locator.push('//' + tag + "[@id='" + e.id + "']")
-    // locator.push('//form' + "[@id='"+  parentNode[1] + "']//" + tag + "[@id='"+  e.id + "']")
+  if (e.id) {                                                     // element has Id
+    locator.push("id='" + e.id + "'")
   }
-  if (e.name) {      // element has name attribute
-    locator.push('//' + tag + "[@name='" + e.name + "']");
-  }
-  paths.forEach(element => {
-    const parentNode = element.split('#');
-    if (parentNode[0] === 'form' && parentNode.length > 1) {            // parent element is form
-      if (e.name) {      // element has name attribute
-        locator.push('//form' + "[@id='" + parentNode[1] + "']//" + tag + "[@name='" + e.name + "']");
-      }
-      if (e.id) {         // element has Id
-        locator.push('//form' + "[@id='" + parentNode[1] + "']//" + tag + "[@id='" + e.id + "']")
-      }
+  if (e.name) {                                                   // element has name attribute
+    locator.push("name='" + e.name + "'");
+  }  
+  for (var i = (paths.length - 1); i >= 0; i--) {
+    var parentNode = parentNode = paths[i].split('#'), identifiedBy = '#';
+    if (paths[i].includes(".")) {
+      parentNode = paths[i].split('.');
+      identifiedBy = '.';
     }
-    if (parentNode.length > 1) {
-      parentWithId = parentNode;
-    }
-  });
 
-  return locator;
-  // return [
-  //   ('xpath=//' + (e.tagName).toLowerCase() + '#' + e.id),
-  //   ('xpath=//' + (e.tagName).toLowerCase() + '#' + e.id + '.' + e.classList[0]),
-  //   ('id=' + e.id),
-  // ]
+    if (parentNode.length > 1) {
+      if (parentNode[0] === 'form') {      // parent element is form
+        hasParent = true;
+        createLocator(e, 'form', parentNode[1], tag, identifiedBy, xpath, css);
+      } else if (parentNode[0] === 'header' &&  !hasParent) {
+        createLocator(e, 'header', parentNode[1], tag, identifiedBy, xpath, css);
+      }
+    }
+  };
+  return locator.concat(css, xpath);
 }
 
 function sendInspectInfo(e) {
