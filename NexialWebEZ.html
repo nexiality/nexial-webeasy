@@ -61,6 +61,7 @@
             <div class="form-group float-right">
               <button class="btn btn-secondary mr-2" id="clear">Clear</button>
               <button class="btn btn-success mr-2" id="copyToNexial">Copy to Nexial script</button>
+              <span class="badge" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
             </div>
           </form>
         </div>
@@ -68,10 +69,32 @@
       </div>
     </div>
   </div>
+  <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
   <script src="inspection/utils.js" type="text/javascript"></script>
   <script src="view/web_cmd.js" type="text/javascript"></script>
   <script src="view/create_table.js" type="text/javascript"></script>
   <script src="popup.js" type="text/javascript"></script>
+  <script src="resources/js/jquery-3.5.1.slim.min.js"></script>
+  <script src="resources/js/bootstrap.min.js"></script>
   <!-- <script src="popup_lib/dnd.js" type="text/javascript"></script> -->
 </body>
 </html>
