@@ -118,7 +118,7 @@ select {
 }
 
 .sub-table td, .sub-table th {
-    border: none;
+    border: none !important;
 }
 
 .sub-table .param-idx {
