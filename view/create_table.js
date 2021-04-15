@@ -246,8 +246,8 @@ function tableFromJson() {
     for (let j = 0; j < col.length; j++) {
       let tabCell = tr.insertCell(-1);
       if (col[j] === "actions") {
-        tabCell.appendChild(createDeleteButton(i));
         tabCell.appendChild(createEditButton(i));
+        tabCell.appendChild(createDeleteButton(i));
         tabCell.appendChild(createSaveButton(i));
         tabCell.appendChild(createCloseButton(i));
       } else if(col[j] === "param") {
