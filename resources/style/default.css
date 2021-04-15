@@ -110,6 +110,7 @@ select {
 /* the third */
 #inspect_table td:nth-child(3) {
     width: 40%;
+    padding: 0;
 }
 
 .sub-table {
