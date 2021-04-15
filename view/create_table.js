@@ -26,6 +26,7 @@ function createSubTableRow(param_table, key, data, i, editable) {
   if (data.length <= 1) {                                 // param is other than locator
     element = document.createElement("INPUT");
     element.setAttribute("type", "text");
+    element.setAttribute("class", "form-control");
     element.setAttribute("value", data[0] ? data[0]: '');
     if (!editable) element.setAttribute('disabled', editable)
   } else if (data.length > 1) {                           // param is locator
