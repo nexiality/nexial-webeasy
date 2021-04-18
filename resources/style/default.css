@@ -54,6 +54,8 @@ select {
 
 #stopOption {
     display: none;
+    margin: 0 auto;
+    width: 34%;
 }
 
 #showData {
@@ -132,8 +134,39 @@ select {
     vertical-align: middle;
 }
 
-#inspectFeature {
+#inspectFeature, #showStatus {
     display: none;
+}
+
+#showStatus {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+    padding: 60px;
+    border: 3px gray dashed;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.loader {
+    margin: 0 auto;
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #3498db;
+    width: 30px;
+    height: 30px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+}
+
+  /* Safari */
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 footer {

@@ -52,6 +52,7 @@ function validURL(myURL) {
 function startInspect() {  
   document.getElementById("stopOption").style.display="block";
   document.getElementById("startOption").style.display="none";
+  document.getElementById("showStatus").style.display="block";
 }
 
 let pauseInspect = document.getElementById("pauseInspect");
@@ -89,6 +90,7 @@ document.getElementById("stopInspect").addEventListener("click", function() {
   document.getElementById("stopOption").style.display="none";
   document.getElementById("startOption").style.display="flex";
   document.getElementById("inspectFeature").style.display="block";
+  document.getElementById("showStatus").style.display="none";
   Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function(response) {
     Logger.debug(response);
     if (response.hasOwnProperty('json')) {
