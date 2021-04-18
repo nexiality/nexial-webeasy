@@ -55,6 +55,13 @@ function startInspect() {
   document.getElementById("showStatus").style.display="block";
 }
 
+function stopInspect() {
+  document.getElementById("stopOption").style.display="none";
+  document.getElementById("startOption").style.display="flex";
+  document.getElementById("inspectFeature").style.display="block";
+  document.getElementById("showStatus").style.display="none";
+}
+
 let pauseInspect = document.getElementById("pauseInspect");
 
 function pausedInspect() {
@@ -86,11 +93,7 @@ document.getElementById("nowInspect").addEventListener("click", function () {
 );
 
 document.getElementById("stopInspect").addEventListener("click", function() {
-  // startInspect('start_inspecting', currentUrl)
-  document.getElementById("stopOption").style.display="none";
-  document.getElementById("startOption").style.display="flex";
-  document.getElementById("inspectFeature").style.display="block";
-  document.getElementById("showStatus").style.display="none";
+  stopInspect();
   Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function(response) {
     Logger.debug(response);
     if (response.hasOwnProperty('json')) {
@@ -111,16 +114,16 @@ pauseInspect.addEventListener("click", function () {
   }
 });
 
-document.getElementById("startInspectInfo").addEventListener("click", function(){
+document.getElementById("startInspectInfo").addEventListener("click", function() {
   info('startInspectInfo');
 }, false);
-document.getElementById("nowInspectInfo").addEventListener("click", function(){
+document.getElementById("nowInspectInfo").addEventListener("click", function() {
   info('nowInspectInfo');
 }, false);
-document.getElementById("clearInfo").addEventListener("click", function(){
+document.getElementById("clearInfo").addEventListener("click", function() {
   info('clearInfo');
 }, false);
-document.getElementById("copyToNexialInfo").addEventListener("click", function(){
+document.getElementById("copyToNexialInfo").addEventListener("click", function() {
   info('copyToNexialInfo');
 }, false);
 
