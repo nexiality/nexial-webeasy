@@ -14,7 +14,7 @@
     <ul class="nav float-right">
       <li><a href="/"><i class="fa fa-question-circle" aria-hidden="true"></i></a></li>
       <li id="maximize"><a><i class="fa fa-window-maximize" aria-hidden="true"></i></a></li>
-      <li id="restore"><a><i class="fa fa-window-minimize" aria-hidden="true"></i></a></li>
+      <li id="restore"><a><i class="fa fa-times" aria-hidden="true"></i></a></li>
     </ul>
   </header>
   <div class="container-fluid">
@@ -28,9 +28,11 @@
                 <input type="text" class="col-sm-6 form-control" id="url" placeholder="URL">
                 <div class="valid-feedback">Please enter a valid URL (e.g. <code>https://www.google.com</code>)</div>
                 <input type="button" class="col-sm-2 btn btn-primary mb-1" id="startInspect" value="Inspect">
+                <span class="badge" data-toggle="modal" data-target="#exampleModal" id="startInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
               </div>
-              <div class="col-sm-3 ml-auto mr-3">
+              <div class="col-sm-4 ml-auto mr-3">
                 <input type="button" class="btn btn-primary mb-1" id="nowInspect" value="Inspect Current Page">
+                <span class="badge" data-toggle="modal" data-target="#exampleModal" id="nowInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
               </div>
             </div>
 
@@ -47,8 +49,9 @@
           <form>
             <div class="form-group float-right">
               <button class="btn btn-secondary mr-2" id="clear">Clear</button>
+              <span class="badge" data-toggle="modal" data-target="#exampleModal" id="clearInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
               <button class="btn btn-success mr-2" id="copyToNexial">Copy to Nexial script</button>
-              <span class="badge" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+              <span class="badge" data-toggle="modal" data-target="#exampleModal" id="copyToNexialInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
             </div>
           </form>
         </div>
