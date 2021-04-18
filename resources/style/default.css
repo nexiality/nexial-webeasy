@@ -19,7 +19,7 @@ header {
 .nav i {
     font-size: 20px;
 }
- .badge {
+.badge {
     position: relative;
     top: -15px;
     right: 26px;
@@ -130,6 +130,10 @@ select {
     font-size: 9pt;
     color: #777;
     vertical-align: middle;
+}
+
+#inspectFeature {
+    display: none;
 }
 
 footer {

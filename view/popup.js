@@ -16,6 +16,7 @@ function clear() {
   while(table.hasChildNodes()) { table.removeChild(table.firstChild); }
   inspectElementList = [];
   Messenger.sendInternalMessage({cmd: 'clear_inspection', value: ''});
+  document.getElementById("inspectFeature").style.display="none";
 }
 
 function copyToNexial() {
@@ -87,6 +88,7 @@ document.getElementById("stopInspect").addEventListener("click", function() {
   // startInspect('start_inspecting', currentUrl)
   document.getElementById("stopOption").style.display="none";
   document.getElementById("startOption").style.display="flex";
+  document.getElementById("inspectFeature").style.display="block";
   Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function(response) {
     Logger.debug(response);
     if (response.hasOwnProperty('json')) {
@@ -131,7 +133,10 @@ Messenger.sendInternalMessage({cmd: 'inspect_status', value: ''}, function(respo
     if(response.res === 'paused') pausedInspect();
   } else if (response.hasOwnProperty('json')) {
     inspectElementList = response.json;
-    tableFromJson();
+    if(inspectElementList.length) {
+      tableFromJson();
+      document.getElementById("inspectFeature").style.display="block";
+    }
   }
 });
 
