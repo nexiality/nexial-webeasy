@@ -5,6 +5,12 @@ var inspectElementList = [];
 //   console.log( 'Current URL ', tabArray[0].url);
 // });
 
+function info(text) {
+  console.log('*****************')
+  document.getElementById('modelBody').innerHTML = ''
+  document.getElementById('modelBody').innerHTML = text;
+}
+
 function clear() {
   let table = document.getElementById('inspect_table');
   while(table.hasChildNodes()) { table.removeChild(table.firstChild); }
@@ -100,6 +106,19 @@ pauseInspect.addEventListener("click", function () {
     pauseInspect.value = 'Pause Inspect';
   }
 });
+
+document.getElementById("startInspectInfo").addEventListener("click", function(){
+  info('startInspectInfo');
+}, false);
+document.getElementById("nowInspectInfo").addEventListener("click", function(){
+  info('nowInspectInfo');
+}, false);
+document.getElementById("clearInfo").addEventListener("click", function(){
+  info('clearInfo');
+}, false);
+document.getElementById("copyToNexialInfo").addEventListener("click", function(){
+  info('copyToNexialInfo');
+}, false);
 
 document.getElementById("copyToNexial").addEventListener("click", copyToNexial);
 
