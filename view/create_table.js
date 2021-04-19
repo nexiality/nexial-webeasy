@@ -1,4 +1,4 @@
-let table, updatedObject = {}, cmd_param_length = 0;
+let table, updatedObject = {}, cmd_param_length = 0, editMode = false;
 
 function updateInspectList(i) {
 
@@ -135,6 +135,8 @@ function createEditButton(i) {
   button.setAttribute('id',('edit_' + i));
   button.innerHTML = '<i class="fa fa-edit"></i>';
   button.onclick = function(e) {
+    if (editMode) return;
+    editMode = true;
     updatedObject.command = inspectElementList[i].command;
     updatedObject.param = inspectElementList[i].param;
     cmd_param_length = getCommandParam(inspectElementList[i].command).length;
@@ -151,6 +153,7 @@ function createSaveButton(i) {
   button.setAttribute('style',('display: none'));
   button.innerHTML = '<i class="fa fa-check"></i>';
   button.onclick = function(e) {
+    editMode = false;
     saveRow(i)
   };
   return button;
@@ -163,6 +166,7 @@ function createCloseButton(i) {
   button.setAttribute('style',('display: none'));
   button.innerHTML = '<i class="fa fa-times"></i>';
   button.onclick = function(e) {
+    editMode = false;
     // Undo Command value and make it disable
     document.getElementById('command' + '_' + i).value = inspectElementList[i].command;
     toggleElement(document.getElementById('command' + '_' + i), false)
