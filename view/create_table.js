@@ -49,25 +49,13 @@ function getCommandParam(str) {
 }
 
 function updateParamRow(i) {
-  let parameterArr = getCommandParam(updatedObject.command)
-console.log(updatedObject.command, "+++++++++++++++++++++++++++++++++++======")
-  if(parameterArr.length < cmd_param_length) {                                 // Delete extra param row from sub table
-    for (let index = cmd_param_length; index > parameterArr.length; index--) {
-      deleteSubTableRow(i, index-1)
-    }
-  }
-  cmd_param_length = parameterArr.length;
+  let parameterArr = getCommandParam(updatedObject.command);
+  deleteSubTable(i);
   for (let index = 0; index < (parameterArr.length); index++) {
     const paramIndex = index + 1;
-    let el = document.getElementById('param'+ paramIndex + '_' + i)
-    if(el) {
-      el.removeAttribute("disabled");
-      el.parentElement.setAttribute("title", parameterArr[index]);
-    }
-    else {
-      createSubTableRow(document.getElementById('table_' + i), parameterArr[index], ('param'+ paramIndex), [], i, true);
-      el = document.getElementById('param'+ paramIndex + '_' + i)
-    }
+    var data = [];
+    if (parameterArr[index] === 'locator') data = inspectElementList[i].param['param1'];
+    createSubTableRow(document.getElementById('table_' + i), parameterArr[index], ('param'+ paramIndex), data, i, true);
   }
 }
 
