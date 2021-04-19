@@ -13,7 +13,7 @@ function info(text) {
 
 function clear() {
   let table = document.getElementById('inspect_table');
-  while(table.hasChildNodes()) { table.removeChild(table.firstChild); }
+  while(table && table.hasChildNodes()) { table.removeChild(table.firstChild); }
   inspectElementList = [];
   Messenger.sendInternalMessage({cmd: 'clear_inspection', value: ''});
   document.getElementById("inspectFeature").style.display="none";
@@ -49,10 +49,12 @@ function validURL(myURL) {
   return pattern.test(myURL);
 }
 
-function startInspect() {  
+function startInspect() {
   document.getElementById("stopOption").style.display="block";
   document.getElementById("startOption").style.display="none";
   document.getElementById("showStatus").style.display="block";
+  document.getElementById("inspectFeature").style.display="none";
+  if(inspectElementList.length) document.getElementById("showData").style.display="none";
 }
 
 function stopInspect() {
@@ -60,6 +62,7 @@ function stopInspect() {
   document.getElementById("startOption").style.display="flex";
   document.getElementById("inspectFeature").style.display="block";
   document.getElementById("showStatus").style.display="none";
+  if(inspectElementList.length) document.getElementById("showData").style.display="block";
 }
 
 let pauseInspect = document.getElementById("pauseInspect");
