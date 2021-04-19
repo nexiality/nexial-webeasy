@@ -26,7 +26,8 @@ function copyToNexial() {
   for (let i = 0; i < inspectElementList.length; i++) {
     script += 'web' + delim + inspectElementList[i].command + delim;
     for (let parameter in inspectElementList[i].param) {
-      script += inspectElementList[i].param[parameter][0] + delim
+      const paramValue = (inspectElementList[i].param[parameter][0] ? inspectElementList[i].param[parameter][0] : '<MISSING>')
+      script += paramValue + delim
     }
     script += '\n';
   }
