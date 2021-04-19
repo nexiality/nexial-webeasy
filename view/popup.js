@@ -5,8 +5,9 @@ var inspectElementList = [];
 //   console.log( 'Current URL ', tabArray[0].url);
 // });
 
-function info(text) {
-  console.log('*****************')
+function info(title, text) {
+  document.getElementById('exampleModalLabel').innerHTML = ''
+  document.getElementById('exampleModalLabel').innerHTML = title;
   document.getElementById('modelBody').innerHTML = ''
   document.getElementById('modelBody').innerHTML = text;
 }
@@ -119,16 +120,16 @@ pauseInspect.addEventListener("click", function () {
 });
 
 document.getElementById("startInspectInfo").addEventListener("click", function() {
-  info('startInspectInfo');
+  info('Start Inspect', 'startInspectInfo');
 }, false);
 document.getElementById("nowInspectInfo").addEventListener("click", function() {
-  info('nowInspectInfo');
+  info('Inspect Now', 'nowInspectInfo');
 }, false);
 document.getElementById("clearInfo").addEventListener("click", function() {
-  info('clearInfo');
+  info('Clear', 'clearInfo');
 }, false);
 document.getElementById("copyToNexialInfo").addEventListener("click", function() {
-  info('copyToNexialInfo');
+  info('Copy to nexial', 'copyToNexialInfo');
 }, false);
 
 document.getElementById("copyToNexial").addEventListener("click", copyToNexial);
