@@ -9,7 +9,13 @@ header {
     text-shadow: -1px -1px 5px black;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
 }
-
+.headerOption {
+    font-size: 16pt;
+    font-weight: normal !important;
+    color: #eee;
+    text-shadow: none;
+    box-shadow: none;
+}
 .nav a {
     color: #ffffff !important;
     padding-right: 10px;
