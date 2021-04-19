@@ -16,11 +16,12 @@ function deleteSubTable(tableIndex) {
 
 function deleteSubTableRow(tableIndex, rowIndex) { document.getElementById('table_' + tableIndex).deleteRow(rowIndex); }
 
-function createSubTableRow(param_table, key, data, i, editable) {
+function createSubTableRow(param_table, cmdParam, key, data, i, editable) {
   // console.log('KEY ______ ', key, '    VALUE _________ ', data)
   let tr = param_table.insertRow(-1);
-  let keyCell = tr.insertCell(-1), valueCell = tr.insertCell(-1);
-  keyCell.innerHTML = '<span class="param-idx">' + + key.replace("param", "") + '</span>';
+  let valueCell = tr.insertCell(-1);
+  valueCell.setAttribute("title", cmdParam);
+  // keyCell.innerHTML = '<span class="param-idx">' + + key.replace("param", "") + '</span>';
 
   let element = '';
   if (data.length <= 1) {                                 // param is other than locator
@@ -49,19 +50,23 @@ function getCommandParam(str) {
 
 function updateParamRow(i) {
   let parameterArr = getCommandParam(updatedObject.command)
-
+console.log(updatedObject.command, "+++++++++++++++++++++++++++++++++++======")
   if(parameterArr.length < cmd_param_length) {                                 // Delete extra param row from sub table
     for (let index = cmd_param_length; index > parameterArr.length; index--) {
       deleteSubTableRow(i, index-1)
     }
   }
   cmd_param_length = parameterArr.length;
-  for (let index = 1; index <= (parameterArr.length); index++) {
-    let el = document.getElementById('param'+ index + '_' + i)
-    if(el) { el.removeAttribute("disabled"); }
+  for (let index = 0; index < (parameterArr.length); index++) {
+    const paramIndex = index + 1;
+    let el = document.getElementById('param'+ paramIndex + '_' + i)
+    if(el) {
+      el.removeAttribute("disabled");
+      el.parentElement.setAttribute("title", parameterArr[index]);
+    }
     else {
-      createSubTableRow(document.getElementById('table_' + i), ('param'+ index), [], i, true);
-      el = document.getElementById('param'+ index + '_' + i)
+      createSubTableRow(document.getElementById('table_' + i), parameterArr[index], ('param'+ paramIndex), [], i, true);
+      el = document.getElementById('param'+ paramIndex + '_' + i)
     }
   }
 }
@@ -158,11 +163,18 @@ function createCloseButton(i) {
   button.setAttribute('style',('display: none'));
   button.innerHTML = '<i class="fa fa-times"></i>';
   button.onclick = function(e) {
+    // Undo Command value and make it disable
     document.getElementById('command' + '_' + i).value = inspectElementList[i].command;
     toggleElement(document.getElementById('command' + '_' + i), false)
-    deleteSubTable(i);
-    const data = inspectElementList[i].param;
-    for (let key in data) { createSubTableRow(document.getElementById('table_' + i), key, data[key], i, false); }
+
+    deleteSubTable(i);                           // clear param table
+
+    const data = inspectElementList[i].param, paramList = getCommandParam(inspectElementList[i].command);;
+    let index = 0;
+    for (let key in data) {
+      createSubTableRow(document.getElementById('table_' + i), paramList[index], key, data[key], i, false);
+      index++;
+    }
     toggleRow(i, true);
   };
   return button;
@@ -200,8 +212,12 @@ function createSubTable(data, i) {
   param_table.setAttribute('class', 'sub-table');
   param_table.setAttribute('id', 'table_' + i);
 
+  let index = 0;
+  const paramList = getCommandParam(inspectElementList[i].command);      // find command param list
+
   for (let key in data) {
-    createSubTableRow(param_table, key, data[key], i, false)
+    createSubTableRow(param_table, paramList[index], key, data[key], i, false);
+    index++;
   }
   return param_table;
 }
