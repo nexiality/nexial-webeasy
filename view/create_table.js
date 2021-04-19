@@ -240,6 +240,7 @@ function tableFromJson() {
   for (i = 0; i < col.length; i++) {
     let heading = col[i] === 'command' ? 'command (web)' :
                   col[i] === 'param' ? 'parameters' :
+                  col[i] === 'step' ? '#' :
                   col[i];
     let th = document.createElement("th");
     th.innerHTML = heading;
