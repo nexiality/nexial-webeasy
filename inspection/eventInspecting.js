@@ -33,7 +33,7 @@ function handleFocusout(e) {
 function handleClick(e) {
   // console.log(e, '---------------A BUTTON------------')
   if (e.target.href) {
-    Messenger.sendInternalMessage({action: 'url', value: e.target.href});
+    if (chrome && chrome.runtime) chrome.runtime.sendMessage({action: 'url', value: e.target.href});
   } else {
     sendInspectInfo(e);
   }
