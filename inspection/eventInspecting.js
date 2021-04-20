@@ -94,7 +94,7 @@ function getLocator(e, paths) {
   }
   if (e.name) {                                                   // element has name attribute
     locator.push("name='" + e.name + "'");
-  }  
+  }
   for (var i = (paths.length - 1); i >= 0; i--) {
     var parentNode = parentNode = paths[i].split('#'), identifiedBy = '#';
     if (paths[i].includes(".")) {
@@ -106,35 +106,37 @@ function getLocator(e, paths) {
       if (parentNode[0] === 'form') {      // parent element is form
         hasParent = true;
         createLocator(e, 'form', parentNode[1], tag, identifiedBy, xpath, css);
-      } else if (parentNode[0] === 'header' &&  !hasParent) {
+      } else if (parentNode[0] === 'header' && !hasParent) {
         createLocator(e, 'header', parentNode[1], tag, identifiedBy, xpath, css);
       }
     }
-  };
+  }
   return locator.concat(css, xpath);
 }
 
 function sendInspectInfo(e) {
   //Todo: Action
-  var webCmd;
+  let webCmd;
   // step = step + 1;
   if (e.type === 'submit') {
     webCmd = 'click(locator)'
-  } else if (e.type === 'focusout' && e.target.tagName == 'INPUT') {
+  } else if (e.type === 'focusout' && e.target.tagName === 'INPUT') {
     webCmd = 'type(locator,value)'
   } else if (e.type === 'change') {
     webCmd = 'select(locator,text)'
+  } else {
+    // todo: need to decide what to do here
+    webCmd = 'UNKNOWN';
   }
 
-  const paths = getDomPath(e.target)
   // ToDo: for payload create user define datatype
-  var payload = {
-    cmd:   'inspecting',
+  let payload = {
+    cmd  : 'inspecting',
     value: {
-      step:    (step++),
+      step   : (step++),
       command: webCmd,
-      param:   {
-        param1: getLocator(e.target, paths),
+      param  : {
+        param1: getLocator(e.target, getDomPath(e.target)),
         param2: [e.target.value]
       },
       actions: {
@@ -150,12 +152,15 @@ function sendInspectInfo(e) {
         // target: e.target
       }
     }
-  }
+  };
+
   // if(e.type === 'change') {
   //   payload['selectedText'] = e.target[e.target.selectedIndex].text
   // }
 
   console.log(payload);
+
+  if (!chrome || !chrome.runtime || !payload) return;
   chrome.runtime.sendMessage(payload);
 }
 
