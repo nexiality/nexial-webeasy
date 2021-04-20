@@ -25,7 +25,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting);
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
     // console.log('LOAD executeScript: eventRecorder')
-    chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
+    // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
     chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
   }
 })
