@@ -25,6 +25,10 @@ header {
 .nav i {
     font-size: 20px;
 }
+#startOption .badge {
+    right: 14px;
+
+}
 .badge {
     position: relative;
     top: -15px;
