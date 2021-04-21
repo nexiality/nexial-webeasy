@@ -203,7 +203,6 @@ document.getElementById("addNew").addEventListener("click", function () {
     param:   {},
     actions: {}
   }
-  console.log(payload)
   addRow(payload);
 }, false);
 

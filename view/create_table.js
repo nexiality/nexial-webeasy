@@ -1,4 +1,4 @@
-let table, updatedObject = {}, step = 0, editMode = false;
+let table, updatedObject = {}, currentStep = 0, editMode = false;
 
 function getInspectListObject(step) {
   return inspectElementList.find(obj => obj.step === step);
@@ -117,8 +117,19 @@ function toggleRow(/*Number*/i, /*Boolean*/enable) {
   document.getElementById("close_" + i).style.display = enable ? "none" : "inline-block";
 }
 
-function createDuplicateButton() {
-
+function createDuplicateButton(step) {
+  let button = document.createElement('button');
+  button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
+  button.setAttribute('id',('duplicate_' + step));
+  button.innerHTML = '<i class="fas fa-clone"></i>';
+  button.onclick = function (e) {
+    const payload = getInspectListObject(step);
+    console.log(step, 'step current of row', payload)
+    payload.step = '';
+    console.log(step, 'step after')
+    addRow(payload);
+  };
+  return button;
 }
 
 function createDeleteButton(step) {
@@ -238,28 +249,30 @@ function createSubTable(data, step) {
 function addRow(data) {
   let tr = table.insertRow(-1);
   if (!data['step']) {    
-    data['step'] = ++step;
+    data['step'] = currentStep + 1;
     inspectElementList.push(data)
   }
-  step = data['step'];
-  tr.setAttribute('id', ('step_' + step));
+  currentStep = data['step'];
+  console.log(currentStep, ' row step ')
+  tr.setAttribute('id', ('step_' + currentStep));
   for (let key in data) {
     let cell = tr.insertCell(-1);
     if (key === "actions") {
-      cell.appendChild(createEditButton(step));
-      cell.appendChild(createDeleteButton(step));
-      cell.appendChild(createSaveButton(step));
-      cell.appendChild(createCloseButton(step));
+      cell.appendChild(createEditButton(currentStep));
+      cell.appendChild(createDeleteButton(currentStep));
+      cell.appendChild(createSaveButton(currentStep));
+      cell.appendChild(createCloseButton(currentStep));
+      cell.appendChild(createDuplicateButton(currentStep));
     } else if(key === "param") {
-      const sub_table = createSubTable(data['param'], step);
+      const sub_table = createSubTable(data['param'], currentStep);
       cell.appendChild(sub_table);
     } else if (key === "command") {
       const cmdDropdown = createSelectElement(cmd, false)
-      cmdDropdown.setAttribute('id', (key + '_' + step))
+      cmdDropdown.setAttribute('id', (key + '_' + currentStep))
       cmdDropdown.value = data[key];
       cell.appendChild(cmdDropdown);
     } else {
-      cell.innerHTML = step;
+      cell.innerHTML = currentStep;
     }
   }
 }
