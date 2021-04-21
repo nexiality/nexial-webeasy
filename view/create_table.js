@@ -4,8 +4,10 @@ function getInspectListObject(step) {
   return inspectElementList.find(obj => obj.step === step);
 }
 
-function updateInspectList(i) {
-
+function updateInspectList(step) {
+  let oldObject = inspectElementList.find(obj => obj.step === step)
+  oldObject.command = updatedObject.command;
+  oldObject.param = updatedObject.param;
 }
 
 function toggleElement(element, enable) {                                         // Enable disable Element
@@ -29,11 +31,21 @@ function createSubTableRow(param_table, key, data, step, editable) {
   let valueCell = tr.insertCell(-1);
   valueCell.setAttribute("title", key);
 
+  if(editMode) {
+    updatedObject.param[key] = data;
+  }
+
   let element = '';
   if (data.length <= 1) {                                 // param is other than locator
     element = createInputBox(data, editable);
+    element.focusout = function(e) {
+      updatedObject.param[key] = [element.value];
+    };
   } else if (data.length > 1) {                           // param is locator
     element = createSelectElement(data, editable)
+    element.onchange = function (e) {
+      // updatedObject.param[key] = e.target.value;
+    }
   }
   element.setAttribute('id', (key + '_' + step))
   valueCell.appendChild(element);
@@ -61,6 +73,7 @@ function updateParamRow(step) {
   // console.log('inspecElementList row', inspectListObj)
   if (inspectListObj.command !== updatedObject.command) {
     isCommandChanged = true;
+    updatedObject.param = {};
     deleteSubTable(step);
   }
   
@@ -85,22 +98,19 @@ function editRow(step) {
   updateParamRow(step)
 }
 
-function saveRow(i) {
-  toggleRow(i, true);
-  const step = inspectElementList[i]['step'];
+function saveRow(step) {
+  toggleRow(step, true);
+
   let cmdElement = document.getElementById('command_' + step);
-  toggleElement(cmdElement, false)
-  inspectElementList[i].command = cmdElement.value                                // Update inspectElementList's command
+  cmdElement.setAttribute("disabled", "true");
 
   const paramList = getCommandParam(cmdElement.value);                            // Update inspectElementList's param
-
   (paramList).forEach(element => {
     const paramElement = document.getElementById(element + '_' + step);
-    if(element === 'locator') {
-      // ToDo
-    } else inspectElementList[i].param[element] = [paramElement.value];
     toggleElement(paramElement, false)
   });
+
+  updateInspectList(step);
 }
 
 function toggleRow(/*Number*/i, /*Boolean*/enable) {
@@ -146,15 +156,15 @@ function createEditButton(step) {
   return button;
 }
 
-function createSaveButton(i) {
+function createSaveButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
-  button.setAttribute('id', ('save_' + i));
+  button.setAttribute('id', ('save_' + step));
   button.setAttribute('style', ('display: none'));
   button.innerHTML = '<i class="fa fa-check"></i>';
   button.onclick = function (e) {
     editMode = false;
-    saveRow(i)
+    saveRow(step)
   };
   return button;
 }
@@ -220,9 +230,8 @@ function createInputBox(data, editable = true) {
   return input;
 }
 
-function createSubTable(data, i) {
+function createSubTable(data, step) {
 
-  const step = inspectElementList[i]['step'];
   const param_table = document.createElement("table");
   param_table.setAttribute('class', 'sub-table');
   param_table.setAttribute('id', 'table_' + step);
@@ -281,7 +290,7 @@ function tableFromJson() {
         tabCell.appendChild(createSaveButton(step));
         tabCell.appendChild(createCloseButton(step));
       } else if(col[j] === "param") {
-        const sub_table = createSubTable(inspectElementList[i]['param'], i);
+        const sub_table = createSubTable(inspectElementList[i]['param'], step);
         tabCell.appendChild(sub_table);
       } else if (col[j] === "command") {
         const cmdDropdown = createSelectElement(cmd, false)
