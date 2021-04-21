@@ -1,4 +1,4 @@
-let table, updatedObject = {}, cmd_param_length = 0, editMode = false;
+let table, updatedObject = {}, editMode = false;
 
 function updateInspectList(i) {
 
@@ -127,8 +127,6 @@ function createEditButton(i) {
     editMode = true;
     updatedObject.command = inspectElementList[i].command;
     updatedObject.param = inspectElementList[i].param;
-    cmd_param_length = getCommandParam(inspectElementList[i].command).length;
-    Logger.debug('assign cmd_param _length', cmd_param_length);
     editRow(i);
   };
   return button;
