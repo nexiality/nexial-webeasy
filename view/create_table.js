@@ -10,7 +10,7 @@ function updateInspectList(step) {
   oldObject.param = updatedObject.param;
 }
 
-function toggleElement(element, enable) {                                         // Enable disable Element
+function toggleElement(element, enable) {                            // Enable disable Element
   if (!enable) {
     element.setAttribute("disabled", "true");
   } else {
@@ -36,15 +36,15 @@ function createSubTableRow(param_table, key, data, step, editable) {
   }
 
   let element = '';
-  if (data.length <= 1) {                                 // param is other than locator
+  if (data.length <= 1) {                                            // param is other than locator
     element = createInputBox(data, editable);
     element.focusout = function(e) {
       updatedObject.param[key] = [element.value];
     };
-  } else if (data.length > 1) {                           // param is locator
+  } else if (data.length > 1) {                                      // param is locator
     element = createSelectElement(data, editable)
     element.onchange = function (e) {
-      // updatedObject.param[key] = e.target.value;
+      // ToDO: 
     }
   }
   element.setAttribute('id', (key + '_' + step))
@@ -68,9 +68,7 @@ function getCommandParam(str) {
 
 function updateParamRow(step) {
   let parameterArr = getCommandParam(updatedObject.command), isCommandChanged = false;
-  // console.log('parama array', parameterArr)
   const inspectListObj = getInspectListObject(step)
-  // console.log('inspecElementList row', inspectListObj)
   if (inspectListObj.command !== updatedObject.command) {
     isCommandChanged = true;
     updatedObject.param = {};
@@ -78,7 +76,6 @@ function updateParamRow(step) {
   }
   
   for (let index = 0; index < (parameterArr.length); index++) {
-    // console.log(parameterArr[index] + '_' + step)
     var data = [];
     if (parameterArr[index] === 'locator') data = inspectListObj.param['locator'];
     if (isCommandChanged) createSubTableRow(document.getElementById('table_' + step), parameterArr[index], data, step, true);
@@ -104,7 +101,7 @@ function saveRow(step) {
   let cmdElement = document.getElementById('command_' + step);
   cmdElement.setAttribute("disabled", "true");
 
-  const paramList = getCommandParam(cmdElement.value);                            // Update inspectElementList's param
+  const paramList = getCommandParam(cmdElement.value);               // Update inspectElementList's param
   (paramList).forEach(element => {
     const paramElement = document.getElementById(element + '_' + step);
     toggleElement(paramElement, false)
@@ -144,13 +141,10 @@ function createEditButton(step) {
   button.innerHTML = '<i class="fa fa-edit"></i>';
   button.onclick = function (e) {
     if (editMode) return;
-    // console.log(inspectElementList)
-    // console.log('step -- ', step)
     editMode = true;
     const obj = getInspectListObject(step)
     updatedObject.command = obj.command;
     updatedObject.param = obj.param;
-    // console.log('Update object - ', updatedObject)
     editRow(step);
   };
   return button;
@@ -182,7 +176,7 @@ function createCloseButton(i) {
     document.getElementById('command' + '_' + step).value = inspectElementList[i].command;
     toggleElement(document.getElementById('command' + '_' + step), false)
 
-    deleteSubTable(step);                           // clear param table
+    deleteSubTable(step);                                            // clear param table
 
     const data = inspectElementList[i].param, paramList = getCommandParam(inspectElementList[i].command);
     for (let key in data) {
@@ -198,7 +192,6 @@ function createSelectElement(items, editable = true) {
   let selectList = document.createElement("select");
   selectList.setAttribute('class', 'form-control')
   if (!editable) selectList.setAttribute('disabled', 'true')
-  // console.log(items)
 
   //Create and append the options
   let optgroup = '', optgroupLabel = '';
@@ -261,8 +254,8 @@ function tableFromJson() {
 
   // Create table header row using the extracted headers above.
   let head = table.createTHead();
-  let tr = head.insertRow(-1);                    // table row.
-  // tr.setAttribute('style','d-flex');
+  let tr = head.insertRow(-1);                                       // table row.
+
 
   // table header.
   for (i = 0; i < col.length; i++) {
