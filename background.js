@@ -30,7 +30,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 })
 
 function loadListener(url) {
-  inspectElementList.push({step: 1, command: 'open(url)', param: {param1: [url]}, actions: ''});
+  inspectElementList.push({step: 1, command: 'open(url)', param: {url: [url]}, actions: ''});
   // console.log('first entry : ', inspectElementList)
   // console.log('LOAD executeScript: eventRecorder')
   chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {

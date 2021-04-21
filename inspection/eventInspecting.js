@@ -117,26 +117,26 @@ function getLocator(e, paths) {
 function sendInspectInfo(e) {
   //Todo: Action
   var webCmd;
-  // step = step + 1;
+  const paths = getDomPath(e.target);
+  let param = {};
+  param['locator'] = getLocator(e.target, paths);
   if (e.type === 'submit') {
-    webCmd = 'click(locator)'
+    webCmd = 'click(locator)';
   } else if (e.type === 'focusout' && e.target.tagName == 'INPUT') {
-    webCmd = 'type(locator,value)'
+    webCmd = 'type(locator,value)';
+    param['value'] = [e.target.value];
   } else if (e.type === 'change') {
-    webCmd = 'select(locator,text)'
+    webCmd = 'select(locator,text)';
+    param['text'] = [e.target[e.target.selectedIndex].text];
   }
 
-  const paths = getDomPath(e.target)
   // ToDo: for payload create user define datatype
   var payload = {
     cmd:   'inspecting',
     value: {
       step:    (step++),
       command: webCmd,
-      param:   {
-        param1: getLocator(e.target, paths),
-        param2: [e.target.value]
-      },
+      param:   param,
       actions: {
         // tagName: e.target.tagName,
         // tagType: e.target.type,
