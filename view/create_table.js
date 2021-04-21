@@ -45,7 +45,7 @@ function getCommandParam(str) {
   let indexParamStart = str.lastIndexOf("(");
   if (indexParamStart === -1) return [];
 
-  let indexParamEnd = str.lastIndexOf(")", indexParamStart);
+  let indexParamEnd = str.lastIndexOf(")");
   if (indexParamEnd === -1) return [];
 
   let arr = str.substring(indexParamStart + 1, indexParamEnd).split(',');
@@ -56,14 +56,16 @@ function getCommandParam(str) {
 
 function updateParamRow(step) {
   let parameterArr = getCommandParam(updatedObject.command), isCommandChanged = false;
+  // console.log('parama array', parameterArr)
   const inspectListObj = getInspectListObject(step)
+  // console.log('inspecElementList row', inspectListObj)
   if (inspectListObj.command !== updatedObject.command) {
     isCommandChanged = true;
     deleteSubTable(step);
   }
   
   for (let index = 0; index < (parameterArr.length); index++) {
-    console.log(parameterArr[index] + '_' + step)
+    // console.log(parameterArr[index] + '_' + step)
     var data = [];
     if (parameterArr[index] === 'locator') data = inspectListObj.param['locator'];
     if (isCommandChanged) createSubTableRow(document.getElementById('table_' + step), parameterArr[index], data, step, true);
@@ -132,13 +134,13 @@ function createEditButton(step) {
   button.innerHTML = '<i class="fa fa-edit"></i>';
   button.onclick = function (e) {
     if (editMode) return;
-    console.log(inspectElementList)
-    console.log(step)
+    // console.log(inspectElementList)
+    // console.log('step -- ', step)
     editMode = true;
     const obj = getInspectListObject(step)
     updatedObject.command = obj.command;
     updatedObject.param = obj.param;
-    console.log(updatedObject, inspectElementList)
+    // console.log('Update object - ', updatedObject)
     editRow(step);
   };
   return button;
