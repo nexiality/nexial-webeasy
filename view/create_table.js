@@ -36,16 +36,16 @@ function createSubTableRow(param_table, key, data, step, editable) {
   }
 
   let element = '';
-  if (data.length <= 1) {                                            // param is other than locator
-    element = createInputBox(data, editable);
-    element.focusout = function(e) {
-      updatedObject.param[key] = [element.value];
-    };
-  } else if (data.length > 1) {                                      // param is locator
+  if (key === 'locator' && data) {                                      // param is locator
     element = createSelectElement(data, editable)
     element.onchange = function (e) {
       // ToDO: 
     }
+  } else {                                            // param is other than locator
+    element = createInputBox(data, editable);
+    element.focusout = function(e) {
+      updatedObject.param[key] = [element.value];
+    };
   }
   element.setAttribute('id', (key + '_' + step))
   valueCell.appendChild(element);
@@ -218,7 +218,7 @@ function createInputBox(data, editable = true) {
   let input = document.createElement("INPUT");
   input.setAttribute("type", "text");
   input.setAttribute("class", "form-control");
-  input.setAttribute("value", data[0] ? data[0]: '');
+  input.setAttribute("value", data ? data: '');
   if (!editable) input.setAttribute('disabled', 'true')
   return input;
 }
@@ -233,6 +233,35 @@ function createSubTable(data, step) {
     createSubTableRow(param_table, key, data[key], step, false);
   }
   return param_table;
+}
+
+function addRow(data) {
+  let tr = table.insertRow(-1);
+  if (!data['step']) {    
+    data['step'] = ++step;
+    inspectElementList.push(data)
+  }
+  step = data['step'];
+  tr.setAttribute('id', ('step_' + step));
+  for (let key in data) {
+    let cell = tr.insertCell(-1);
+    if (key === "actions") {
+      cell.appendChild(createEditButton(step));
+      cell.appendChild(createDeleteButton(step));
+      cell.appendChild(createSaveButton(step));
+      cell.appendChild(createCloseButton(step));
+    } else if(key === "param") {
+      const sub_table = createSubTable(data['param'], step);
+      cell.appendChild(sub_table);
+    } else if (key === "command") {
+      const cmdDropdown = createSelectElement(cmd, false)
+      cmdDropdown.setAttribute('id', (key + '_' + step))
+      cmdDropdown.value = data[key];
+      cell.appendChild(cmdDropdown);
+    } else {
+      cell.innerHTML = step;
+    }
+  }
 }
 
 function tableFromJson() {
@@ -254,7 +283,7 @@ function tableFromJson() {
 
   // Create table header row using the extracted headers above.
   let head = table.createTHead();
-  let tr = head.insertRow(-1);                                       // table row.
+  let tr = table.insertRow(-1);                                       // table row.
 
 
   // table header.
@@ -271,29 +300,7 @@ function tableFromJson() {
   let body = table.createTBody();
   // add json data to the table as rows.
   for (i = 0; i < inspectElementList.length; i++) {
-
-    tr = body.insertRow(-1);
-    step = inspectElementList[i]['step'];
-    tr.setAttribute('id', ('step_' + step));
-    for (let j = 0; j < col.length; j++) {
-      let tabCell = tr.insertCell(-1);
-      if (col[j] === "actions") {
-        tabCell.appendChild(createEditButton(step));
-        tabCell.appendChild(createDeleteButton(step));
-        tabCell.appendChild(createSaveButton(step));
-        tabCell.appendChild(createCloseButton(step));
-      } else if(col[j] === "param") {
-        const sub_table = createSubTable(inspectElementList[i]['param'], step);
-        tabCell.appendChild(sub_table);
-      } else if (col[j] === "command") {
-        const cmdDropdown = createSelectElement(cmd, false)
-        cmdDropdown.setAttribute('id', (col[j] + '_' + step))
-        cmdDropdown.value = inspectElementList[i][col[j]];
-        tabCell.appendChild(cmdDropdown);
-      } else {
-        tabCell.innerHTML = step;
-      }
-    }
+    addRow(inspectElementList[i]);
   }
 
   // Now, add the newly created table with json data, to a container.

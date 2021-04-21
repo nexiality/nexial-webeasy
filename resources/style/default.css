@@ -27,7 +27,7 @@ header {
     text-shadow: 1px 1px 2px rgb(0 0 0 / 50%);
 }
 #startOption .badge {
-    right: 14px;
+    /* right: 14px; */
 
 }
 .badge {
@@ -202,6 +202,15 @@ select {
     100% {
         transform: rotate(360deg);
     }
+}
+
+#addNew {
+    float: right;
+    position: relative;
+    top: -22px;
+    border-radius: 50%;
+    right: -8px;
+    display: none;
 }
 
 footer {

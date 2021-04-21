@@ -124,10 +124,10 @@ function sendInspectInfo(e) {
     webCmd = 'click(locator)';
   } else if (e.type === 'focusout' && e.target.tagName == 'INPUT') {
     webCmd = 'type(locator,value)';
-    param['value'] = [e.target.value];
+    param['value'] = e.target.value;
   } else if (e.type === 'change') {
     webCmd = 'select(locator,text)';
-    param['text'] = [e.target[e.target.selectedIndex].text];
+    param['text'] = e.target[e.target.selectedIndex].text;
   }
 
   // ToDo: for payload create user define datatype
