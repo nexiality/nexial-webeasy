@@ -9,13 +9,16 @@ function updateInspectList(i) {
 }
 
 function toggleElement(element, enable) {                                         // Enable disable Element
-  if(!enable) element.setAttribute("disabled", "true");
-  else element.removeAttribute("disabled");
+  if (!enable) {
+    element.setAttribute("disabled", "true");
+  } else {
+    element.removeAttribute("disabled");
+  }
 }
 
 function deleteSubTable(tableIndex) {
   let inspectTable = document.getElementById('table_' + tableIndex);
-  while(inspectTable.hasChildNodes()) { inspectTable.removeChild(inspectTable.firstChild); }
+  while (inspectTable.hasChildNodes()) { inspectTable.removeChild(inspectTable.firstChild); }
 }
 
 function deleteSubTableRow(tableIndex, rowIndex) { document.getElementById('table_' + tableIndex).deleteRow(rowIndex); }
@@ -37,13 +40,17 @@ function createSubTableRow(param_table, key, data, step, editable) {
 }
 
 function getCommandParam(str) {
-  // console.log('command === ', str)
-  // ToDo : (Case) Command is undefined and has no param
-  let arr = str.substring(
-    str.lastIndexOf("(") + 1,
-    str.lastIndexOf(")")
-  ).split(',');
-  if(arr[0] === '') return [];
+  if (!str || str === '') return [];
+
+  let indexParamStart = str.lastIndexOf("(");
+  if (indexParamStart === -1) return [];
+
+  let indexParamEnd = str.lastIndexOf(")", indexParamStart);
+  if (indexParamEnd === -1) return [];
+
+  let arr = str.substring(indexParamStart + 1, indexParamEnd).split(',');
+  if (!arr) return [];
+  if (arr[0] === '') return [];
   return arr;
 }
 
@@ -110,7 +117,7 @@ function createDeleteButton(step) {
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
   button.setAttribute('id',('delete_' + step));
   button.innerHTML = '<i class="fa fa-trash"></i>';
-  button.onclick = function(e) {
+  button.onclick = function (e) {
     // Todo Update background.js
     // TODO Update inspectElementList
     document.getElementById("step_" + step).remove()
@@ -123,7 +130,7 @@ function createEditButton(step) {
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id',('edit_' + step));
   button.innerHTML = '<i class="fa fa-edit"></i>';
-  button.onclick = function(e) {
+  button.onclick = function (e) {
     if (editMode) return;
     console.log(inspectElementList)
     console.log(step)
@@ -140,10 +147,10 @@ function createEditButton(step) {
 function createSaveButton(i) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
-  button.setAttribute('id',('save_' + i));
-  button.setAttribute('style',('display: none'));
+  button.setAttribute('id', ('save_' + i));
+  button.setAttribute('style', ('display: none'));
   button.innerHTML = '<i class="fa fa-check"></i>';
-  button.onclick = function(e) {
+  button.onclick = function (e) {
     editMode = false;
     saveRow(i)
   };
@@ -153,10 +160,10 @@ function createSaveButton(i) {
 function createCloseButton(i) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
-  button.setAttribute('id',('close_' + i));
-  button.setAttribute('style',('display: none'));
+  button.setAttribute('id', ('close_' + i));
+  button.setAttribute('style', ('display: none'));
   button.innerHTML = '<i class="fa fa-times"></i>';
-  button.onclick = function(e) {
+  button.onclick = function (e) {
     editMode = false;
     const step = inspectElementList[i]['step']
     // Undo Command value and make it disable
@@ -192,10 +199,12 @@ function createSelectElement(items, editable = true) {
     let option = document.createElement("option");
     option.value = items[index];
     option.text = items[index];
-    if(optgroup) {
+    if (optgroup) {
       optgroup.appendChild(option);
       selectList.appendChild(optgroup);
-    } else selectList.appendChild(option);
+    } else {
+      selectList.appendChild(option);
+    }
   }
   return selectList;
 }

@@ -25,6 +25,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting);
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
     // console.log('LOAD executeScript: eventRecorder')
+    // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
     chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
   }
 })
@@ -47,7 +48,8 @@ function createOpenURLEntry(url) {
     });
   } else {
     chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
-       currentTab = tabs[0].url;
+      if (!tabs || tabs.length < 1) return;
+      currentTab = tabs[0].url;
       loadListener(currentTab);
     });
   }

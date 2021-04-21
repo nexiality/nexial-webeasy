@@ -33,7 +33,7 @@ function handleFocusout(e) {
 function handleClick(e) {
   // console.log(e, '---------------A BUTTON------------')
   if (e.target.href) {
-    Messenger.sendInternalMessage({action: 'url', value: e.target.href});
+    if (chrome && chrome.runtime) chrome.runtime.sendMessage({action: 'url', value: e.target.href});
   } else {
     sendInspectInfo(e);
   }
@@ -94,7 +94,7 @@ function getLocator(e, paths) {
   }
   if (e.name) {                                                   // element has name attribute
     locator.push("name='" + e.name + "'");
-  }  
+  }
   for (var i = (paths.length - 1); i >= 0; i--) {
     var parentNode = parentNode = paths[i].split('#'), identifiedBy = '#';
     if (paths[i].includes(".")) {
@@ -106,11 +106,11 @@ function getLocator(e, paths) {
       if (parentNode[0] === 'form') {      // parent element is form
         hasParent = true;
         createLocator(e, 'form', parentNode[1], tag, identifiedBy, xpath, css);
-      } else if (parentNode[0] === 'header' &&  !hasParent) {
+      } else if (parentNode[0] === 'header' && !hasParent) {
         createLocator(e, 'header', parentNode[1], tag, identifiedBy, xpath, css);
       }
     }
-  };
+  }
   return locator.concat(css, xpath);
 }
 
@@ -131,10 +131,10 @@ function sendInspectInfo(e) {
   }
 
   // ToDo: for payload create user define datatype
-  var payload = {
-    cmd:   'inspecting',
+  let payload = {
+    cmd  : 'inspecting',
     value: {
-      step:    (step++),
+      step   : (step++),
       command: webCmd,
       param:   param,
       actions: {
@@ -150,12 +150,15 @@ function sendInspectInfo(e) {
         // target: e.target
       }
     }
-  }
+  };
+
   // if(e.type === 'change') {
   //   payload['selectedText'] = e.target[e.target.selectedIndex].text
   // }
 
   console.log(payload);
+
+  if (!chrome || !chrome.runtime || !payload) return;
   chrome.runtime.sendMessage(payload);
 }
 
