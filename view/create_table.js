@@ -174,22 +174,22 @@ function createSaveButton(step) {
   return button;
 }
 
-function createCloseButton(i) {
+function createCloseButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
-  button.setAttribute('id', ('close_' + i));
+  button.setAttribute('id', ('close_' + step));
   button.setAttribute('style', ('display: none'));
   button.innerHTML = '<i class="fa fa-times"></i>';
   button.onclick = function (e) {
     editMode = false;
-    const step = inspectElementList[i]['step']
     // Undo Command value and make it disable
-    document.getElementById('command' + '_' + step).value = inspectElementList[i].command;
+    const oldObject = getInspectListObject(step);
+    document.getElementById('command' + '_' + step).value = oldObject.command;
     toggleElement(document.getElementById('command' + '_' + step), false)
 
     deleteSubTable(step);                                            // clear param table
 
-    const data = inspectElementList[i].param, paramList = getCommandParam(inspectElementList[i].command);
+    const data = inspectElementList[i].param, paramList = getCommandParam(oldObject.command);
     for (let key in data) {
       createSubTableRow(document.getElementById('table_' + step), key, data[key], i, false);
     }
