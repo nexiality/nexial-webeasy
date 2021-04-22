@@ -26,16 +26,29 @@ header {
     color: #ffffff !important;
     text-shadow: 1px 1px 2px rgb(0 0 0 / 50%);
 }
-#startOption .badge {
-    /* right: 14px; */
 
+.badge#startInspectInfo {
+    right: -5px;
+    top: -8px;
 }
+
+.badge#nowInspectInfo {
+    top: -10px;
+    right: 0px;
+}
+
 .badge {
     position: relative;
     top: -8px;
-    margin-left: -25px;
+    margin-left: -30px;
     color: #d8d8d8;
     font-size: 20px;
+    text-shadow: -1px 1px 1px #333;
+}
+
+.badge:hover {
+    color: #fff;
+    text-shadow: 0px 0px 1px #000;
 }
 
 .container-fluid {
