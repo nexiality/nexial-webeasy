@@ -1,7 +1,7 @@
 // class EventRecorder {
 function start() {
   // step = 2;
-  // console.log('start Todo: checkbox radio password file')
+  // console.log('start Todo: checkbox radio div password file')
 
   const typeableElements = document.querySelectorAll('input:not([type=submit]), textarea')
   const clickableElements = document.querySelectorAll('a, button')

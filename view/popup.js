@@ -18,7 +18,6 @@ function clear() {
   inspectElementList = [];
   Messenger.sendInternalMessage({cmd: 'clear_inspection', value: ''});
   document.getElementById("inspectFeature").style.display = "none";
-  document.getElementById("addNew").style.display = "none";
 }
 
 function copyToNexial() {
@@ -57,7 +56,6 @@ function startInspect() {
   document.getElementById("startOption").style.display = "none";
   document.getElementById("showStatus").style.display = "block";
   document.getElementById("inspectFeature").style.display = "none";
-  document.getElementById("addNew").style.display = "none";
   if (inspectElementList.length) document.getElementById("showData").style.display = "none";
 }
 
@@ -65,7 +63,6 @@ function stopInspect() {
   document.getElementById("stopOption").style.display = "none";
   document.getElementById("startOption").style.display = "flex";
   document.getElementById("inspectFeature").style.display = "block";
-  document.getElementById("addNew").style.display = "block";
   document.getElementById("showStatus").style.display = "none";
   if (inspectElementList.length) document.getElementById("showData").style.display = "block";
 }
@@ -195,17 +192,6 @@ document.getElementById("clearInfo").addEventListener("click", function () {
 document.getElementById("copyToNexialInfo").addEventListener("click", function () {
   info('Copy to Nexial', 'copyToNexialInfo');
 }, false);
-
-document.getElementById("addNew").addEventListener("click", function () {
-  const payload = {
-    step   : '',
-    command: '',
-    param:   {},
-    actions: {}
-  }
-  addRow(payload);
-}, false);
-
 
 document.getElementById("copyToNexial").addEventListener("click", copyToNexial);
 

@@ -119,6 +119,24 @@ function toggleRow(/*Number*/i, /*Boolean*/enable) {
   document.getElementById("close_" + i).style.display = enable ? "none" : "inline-block";
 }
 
+function createAddNewButton(step) {
+  let button = document.createElement('button');
+  button.setAttribute('class', 'btn text-dark')
+  button.setAttribute('id',('addNew_' + step));
+  button.innerHTML = '<i class="fas fa-plus"></i>';
+  button.onclick = function (e) {
+    const addAt = document.getElementById('step_' + step).rowIndex;
+    const payload = {
+      step   : '',
+      command: '',
+      param:   {},
+      actions: {}
+    }
+    addRow(payload, addAt + 1);
+  };
+  return button;
+}
+
 function createDuplicateButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
@@ -268,9 +286,9 @@ function createSubTable(data, step) {
   return param_table;
 }
 
-function addRow(data) {
-  let tr = table.insertRow(-1);
-  if (data['step'] === '') {
+function addRow(data, belowRow = -1) {
+  let tr = table.insertRow(belowRow);
+  if (!data['step']) {
     data['step'] = currentStep + 1;
     inspectElementList.push(data)
   }
@@ -284,6 +302,7 @@ function addRow(data) {
       cell.appendChild(createSaveButton(currentStep));
       cell.appendChild(createCloseButton(currentStep));
       cell.appendChild(createDuplicateButton(currentStep));
+      cell.appendChild(createAddNewButton(currentStep));
     } else if(key === "param") {
       const sub_table = createSubTable(data['param'], currentStep);
       cell.appendChild(sub_table);
