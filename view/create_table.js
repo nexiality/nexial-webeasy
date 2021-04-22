@@ -121,8 +121,9 @@ function toggleRow(/*Number*/i, /*Boolean*/enable) {
 
 function createAddNewButton(step) {
   let button = document.createElement('button');
-  button.setAttribute('class', 'btn text-dark')
+  button.setAttribute('class', 'btn text-dark');
   button.setAttribute('id',('addNew_' + step));
+  button.setAttribute('title', 'Add below');
   button.innerHTML = '<i class="fas fa-plus"></i>';
   button.onclick = function (e) {
     const addAt = document.getElementById('step_' + step).rowIndex;
@@ -141,6 +142,7 @@ function createDuplicateButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
   button.setAttribute('id',('duplicate_' + step));
+  button.setAttribute('title', 'Duplicate');
   button.innerHTML = '<i class="fas fa-clone"></i>';
   button.onclick = function (e) {
     let payload = Object.assign({}, getInspectListObject(step));
@@ -154,6 +156,7 @@ function createDeleteButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
   button.setAttribute('id',('delete_' + step));
+  button.setAttribute('title', 'Delete');
   button.innerHTML = '<i class="fa fa-trash"></i>';
   button.onclick = function (e) {
     // Todo Update background.js
@@ -167,6 +170,7 @@ function createEditButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id',('edit_' + step));
+  button.setAttribute('title', 'Edit');
   button.innerHTML = '<i class="fa fa-edit"></i>';
   button.onclick = function (e) {
     if (editMode) return;
@@ -183,6 +187,7 @@ function createSaveButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id', ('save_' + step));
+  button.setAttribute('title', 'Save');
   button.setAttribute('style', ('display: none'));
   button.innerHTML = '<i class="fa fa-check"></i>';
   button.onclick = function (e) {
@@ -196,6 +201,7 @@ function createCloseButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id', ('close_' + step));
+  button.setAttribute('title', 'Close');
   button.setAttribute('style', ('display: none'));
   button.innerHTML = '<i class="fa fa-times"></i>';
   button.onclick = function (e) {
