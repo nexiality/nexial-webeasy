@@ -126,14 +126,14 @@ function createAddNewButton(step) {
   button.setAttribute('title', 'Add below');
   button.innerHTML = '<i class="fas fa-plus"></i>';
   button.onclick = function (e) {
-    const addAt = document.getElementById('step_' + step).rowIndex;
+    const indexAt = document.getElementById('step_' + step).rowIndex;
     const payload = {
       step   : '',
       command: '',
       param:   {},
       actions: {}
     }
-    addRow(payload, addAt + 1);
+    addRow(payload, indexAt + 1);
   };
   return button;
 }
@@ -292,8 +292,8 @@ function createSubTable(data, step) {
   return param_table;
 }
 
-function addRow(data, belowRow = -1) {
-  let tr = table.insertRow(belowRow);
+function addRow(data, indexAt = -1) {
+  let tr = table.insertRow(indexAt);
   if (!data['step']) {
     data['step'] = currentStep + 1;
     inspectElementList.push(data)
