@@ -125,10 +125,8 @@ function createDuplicateButton(step) {
   button.setAttribute('id',('duplicate_' + step));
   button.innerHTML = '<i class="fas fa-clone"></i>';
   button.onclick = function (e) {
-    const payload = getInspectListObject(step);
-    console.log(step, 'step current of row', payload)
+    let payload = Object.assign({}, getInspectListObject(step));
     payload.step = '';
-    console.log(step, 'step after')
     addRow(payload);
   };
   return button;
