@@ -1,4 +1,4 @@
-var cmd = [
+const cmd = [
   "assertAndClick(locator,label)",
   "assertAttribute(locator,attrName,value)",
   "assertAttributeContain(locator,attrName,contains)",
@@ -45,7 +45,6 @@ var cmd = [
   "assertValue(locator,value)",
   "assertValueOrder(locator,descending)",
   "assertVisible(locator)",
-  "checkAll(locator,removed)",
   "checkAll(locator,waitMs)",
   "clearLocalStorage()",
   "click(locator)",
@@ -119,7 +118,6 @@ var cmd = [
   "selectFrame(locator)",
   "selectMulti(locator,array)",
   "selectMultiByValue(locator,array)",
-  "selectMultiOptions(locator, removed)",
   "selectText(locator)",
   "selectWindow(winId)",
   "selectWindowAndWait(winId,waitMs)",
@@ -129,7 +127,6 @@ var cmd = [
   "toggleSelections(locator)",
   "type(locator,value)",
   "typeKeys(locator,value)",
-  "uncheckAll(locator, removed)",
   "uncheckAll(locator,waitMs)",
   "unselectAllText()",
   "updateAttribute(locator,attrName,value)",
@@ -137,7 +134,6 @@ var cmd = [
   "verifyContainText(locator,text)",
   "verifyText(locator,text)",
   "wait(waitMs)",
-  "waitForElementPresent(locator, removed)",
   "waitForElementPresent(locator,waitMs)",
   "waitForElementsPresent(locators)",
   "waitForPopUp(winId,waitMs)",
@@ -147,4 +143,4 @@ var cmd = [
   "waitUntilEnabled(locator,waitMs)",
   "waitUntilHidden(locator,waitMs)",
   "waitUntilVisible(locator,waitMs)"
-]
+];
