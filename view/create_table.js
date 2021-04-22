@@ -41,6 +41,8 @@ function createSubTableRow(param_table, key, data, step, editable) {
     element.onchange = function (e) {
       // ToDO: 
     }
+  } else if (key === 'locator' && !data) {
+    element = createInspectElement(key, step)
   } else {                                            // param is other than locator
     element = createInputBox(data, editable);
     element.focusout = function(e) {
@@ -198,6 +200,28 @@ function createCloseButton(step) {
   return button;
 }
 
+function createInspectElement(inspectFor, step) {
+
+  let inspectElement = document.createElement("div"),
+      subDiv = document.createElement("div"),
+      button = document.createElement('button');
+
+  inspectElement.setAttribute('class', 'input-group');
+  inspectElement.appendChild(createInputBox(''));
+
+  subDiv.setAttribute('class', 'input-group-append');
+
+  button.setAttribute('class', 'btn text-dark input-group-text')
+  button.setAttribute('id', ('inspectBtn_' + step));
+  button.innerHTML = '<i class="fas fa-search-plus"></i>';
+  button.onclick = function (e) {
+    console.log('INSPECT ELEMENT CLICK')
+  };
+  subDiv.appendChild(button);
+  inspectElement.appendChild(subDiv);
+  return inspectElement;
+}
+
 function createSelectElement(items, editable = true) {
   // Create and append select list
   let selectList = document.createElement("select");
@@ -248,12 +272,11 @@ function createSubTable(data, step) {
 
 function addRow(data) {
   let tr = table.insertRow(-1);
-  if (!data['step']) {    
+  if (data['step'] === '') {
     data['step'] = currentStep + 1;
     inspectElementList.push(data)
   }
   currentStep = data['step'];
-  console.log(currentStep, ' row step ')
   tr.setAttribute('id', ('step_' + currentStep));
   for (let key in data) {
     let cell = tr.insertCell(-1);

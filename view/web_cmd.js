@@ -45,7 +45,7 @@ var cmd = [
   "assertValue(locator,value)",
   "assertValueOrder(locator,descending)",
   "assertVisible(locator)",
-  "checkAll(locator, (removed)",
+  "checkAll(locator,removed)",
   "checkAll(locator,waitMs)",
   "clearLocalStorage()",
   "click(locator)",
