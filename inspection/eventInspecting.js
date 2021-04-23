@@ -2,7 +2,7 @@
 function start() {
   // step = 2;
   // console.log('start Todo: checkbox radio div password file')
-
+  // ToDo: fix this with bubbling
   const typeableElements = document.querySelectorAll('input:not([type=submit]), textarea')
   const clickableElements = document.querySelectorAll('a, button')
   const changeableElement = document.querySelectorAll('select')
@@ -76,7 +76,10 @@ function createLocator(e, parentTag, parentNode, tag, identifiedBy, xpath, css) 
 
   if (e.name) {                                               // element has name attribute
     xpath.push('xpath=//' + parentTag + "[@id='" + parentNode + "']//" + tag + "[@name='" + e.name + "']");
-    css.push('css=' + parentTag + identifiedBy + parentNode + ' > ' + tag + "[name='" + e.name + "']")
+    css.push('css=' + parentTag + identifiedBy + parentNode + ' > ' + tag + "[name='" + e.name + "']");
+  } else {
+    xpath.push('xpath=//' + parentTag + "[@id='" + parentNode + "']//" + tag);
+    css.push('css=' + parentTag + identifiedBy + parentNode + '>' + tag);
   }
   if (e.id) {                                                 // element has Id
     css.push('css=' + parentTag + identifiedBy + parentNode + ' > ' + tag + identifiedBy + e.id)
@@ -85,7 +88,6 @@ function createLocator(e, parentTag, parentNode, tag, identifiedBy, xpath, css) 
 }
 
 function getLocator(e, paths) {
-  // console.log(e)
   var locator = [], xpath = [], css = [], hasParent = false;
   const tag = (e.tagName).toLowerCase();
 
@@ -96,13 +98,15 @@ function getLocator(e, paths) {
     locator.push("name='" + e.name + "'");
   }
   for (var i = (paths.length - 1); i >= 0; i--) {
-    var parentNode = parentNode = paths[i].split('#'), identifiedBy = '#';
+    var parentNode = null, identifiedBy = '#';
     if (paths[i].includes(".")) {
       parentNode = paths[i].split('.');
       identifiedBy = '.';
+    } else if (paths[i].includes("#")) {
+      parentNode = paths[i].split('#')
     }
 
-    if (parentNode.length > 1) {
+    if (parentNode && parentNode.length > 1) {
       if (parentNode[0] === 'form') {      // parent element is form
         hasParent = true;
         createLocator(e, 'form', parentNode[1], tag, identifiedBy, xpath, css);
@@ -116,9 +120,8 @@ function getLocator(e, paths) {
 
 function sendInspectInfo(e) {
   //Todo: Action
-  var webCmd;
+  let param = {}, webCmd;
   const paths = getDomPath(e.target);
-  let param = {};
   param['locator'] = getLocator(e.target, paths);
   if (e.type === 'submit') {
     webCmd = 'click(locator)';

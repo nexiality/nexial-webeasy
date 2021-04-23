@@ -1,28 +1,17 @@
-// console.log('Im foreground page');
-// capture element of foreground page
-// document.querySelector('.rSk4se').classList.add('spinspinspin')
-
-// chrome.runtime.sendMessage({cmd: 'script_loaded', value: 'true'});
-// var port = chrome.runtime.connect({name: "browser.nexialautomation"});
-var clickedEl = null;
-
-function getLocator(e) {
-  return [
-    ('xpath=//' + (e.tagName).toLowerCase() + '#' + e.id),
-    ('xpath=//' + (e.tagName).toLowerCase() + '#' + e.id + '.' + e.classList[0]),
-    ('id=' + e.id),
-  ]
-}
+var clickedElement = null;
 
 document.addEventListener("contextmenu", function (event) {
-  clickedEl = event;
-  console.log('in side contentscript contextmenu', event)
+  clickedElement = event;
 }, true);
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log(request, ' ---------------- request')
-  if (request === "getClickedEl") {
-    console.log(clickedEl, ' ---------------- clickedEl')
-    sendResponse({command: "contextmenu", target: getLocator(clickedEl.target), input: ''});
+  if (request === "getContextMenuElement") {
+    const paths = getDomPath(clickedElement.target);
+    const param = {
+      locator: getLocator(clickedElement.target, paths),
+      text: clickedElement.target.text,
+      value: clickedElement.target.value
+    };
+    sendResponse({res: "contextmenu", step: step++, param: param});
   }
 });

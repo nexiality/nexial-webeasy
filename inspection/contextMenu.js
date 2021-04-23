@@ -1,95 +1,104 @@
-let contextMenus = chrome.contextMenus;
-var currentContextmenu = '';
+let contextMenus = chrome.contextMenus,
+    data = {
+      step   : '',
+      command: '',
+      param:   {},
+      actions: {}
+    };
 
-function getElement(info, tab) {
-  Logger.debug("Word " + info.selectionText + " was clicked.");
-  Logger.debug(info, tab);
-}
-
-contextMenus.removeAll(function () {
-  // cm.create({title: "assertAttribute", id: "attributePresent", contexts: ["selection"]});
+// contextMenus.removeAll(function () {
+chrome.runtime.onInstalled.addListener(function() {
   contextMenus.create({
-                        title   : "assertElementPresent",
+                        title   : "AssertElementPresent",
                         id      : "assertElementPresent",
-                        contexts: ["selection"]
+                        contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "assertTextPresent",
+                        title   : "AssertTextPresent",
                         id      : "assertTextPresent",
-                        contexts: ["selection"]
+                        contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "assertValue",
+                        title   : "AssertValue",
                         id      : "assertValue",
-                        contexts: ["selection"]
+                        contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "wait...",
+                        title   : "Wait...",
                         id      : "wait...",
-                        contexts: ["selection"]
+                        contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "waitForElementPresent",
+                        title   : "WaitForElementPresent",
                         id      : "waitForElementPresent",
                         parentId: "wait...",
-                        contexts: ["selection"]
+                        contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "waitForText",
+                        title   : "WaitForText",
                         id      : "waitForText",
                         parentId: "wait...",
-                        contexts: ["selection"]
+                        contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "waitUntilVisible",
+                        title   : "WaitUntilVisible",
                         id      : "waitUntilVisible",
                         parentId: "wait...",
-                        contexts: ["selection"],
-                        // onclick: theFirstFunction
+                        contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "waitUntilEnabled",
+                        title   : "WaitUntilEnabled",
                         id      : "waitUntilEnabled",
                         parentId: "wait...",
-                        contexts: ["selection"],
-                        // onclick: theSecondFunction
+                        contexts: ["all"]
                       });
 });
 
-function getLocator(e) {
-  Logger.debug(e, 'context menu get locator')
-  return []
-}
-
-let clickHandler = function (info, tab) {
-  currentContextmenu = info.menuItemId;
-  // var url = e.pageUrl;
-  Logger.debug(info.menuItemId, ' ==== info.menuItemId')
-
-  if (info.menuItemId === "assertElementPresent" && info.selectionText) {
-    callbackContextmenu(info, tab)
-    //push to json
-    // chrome.runtime.sendMessage({cmd:'contextmenu', value: {
-    //   step: 0,
-    //   command: 'assertElementPresent(locator)',
-    //   target: getLocator(e.target),
-    //   input: '',
-    //   Actions: ''
-    // }})
-  }
-}
-
 function callbackContextmenu(info, tab) {
-  chrome.tabs.sendMessage(tab.id, "getClickedEl", {frameId: info.frameId}, data => {
-    // elt.value = data.value;
-    if (currentContextmenu === 'nexialElementPresent') {
-      data.command = 'assertElementPresent(locator)';
-      data['Actions'] = '';
+  chrome.tabs.sendMessage(tab.id, "getContextMenuElement", {frameId: info.frameId}, response => {
+    if(response.res === 'contextmenu') {
+      data.step = response.step;
+      for (let key in response.param) {
+        if ((data.param).hasOwnProperty(key)) {
+          data.param[key] = response.param[key]
+        }
+      }
     }
-    Logger.debug(data, '--- callback ---', currentContextmenu)
     inspectElementList.push(data);
-    Logger.debug(inspectElementList);
   });
 }
 
-contextMenus.onClicked.addListener(clickHandler);
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
+  // Todo: text value presnet in Img
+  switch(info.menuItemId) {
+    case 'assertElementPresent':
+      data.command = 'assertElementPresent(locator)';
+      data.param['locator'] = '';
+      break;
+    case 'assertTextPresent':
+      data.command = 'assertTextPresent(text)';
+      data.param['text'] = '';
+      break;
+    case 'assertValue':
+      data.command = 'assertValue(locator,value)';
+      data.param['locator'] = '';         // Input, textare, selectbox, radio, checkbox, Img
+      data.param['value'] = '';
+      break;
+    case 'waitForElementPresent':
+      data.command = 'waitForElementPresent(locator,waitMs)';
+      data.param['locator'] = '';
+      data.param['waitMs'] = '';
+      break;
+    case 'waitForText':
+      data.command = 'waitForTextPresent(text)';
+      data.param['text'] = '';           // text in div, p, span, i
+      break;
+    case 'waitUntilVisible':
+      data.command = 'waitUntilVisible(locator,waitMs)';
+      data.param['locator'] = '';
+      data.param['waitMs'] = '';
+      break;
+  }
+  callbackContextmenu(info, tab);
+});
+
