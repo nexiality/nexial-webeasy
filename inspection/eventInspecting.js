@@ -3,17 +3,17 @@ function start() {
   // step = 2;
   // console.log('start Todo: checkbox radio div password file')
   // ToDo: fix this with bubbling
-  const typeableElements = document.querySelectorAll('input:not([type=submit]), textarea')
-  const clickableElements = document.querySelectorAll('a, button')
+  document.onclick = function(event) {
+    event.target.style.backgroundColor = 'yellow';
+    sendInspectInfo(event)
+  };
+  const typeableElements = document.querySelectorAll('input, textarea')
   const changeableElement = document.querySelectorAll('select')
   const submitableEvent = document.querySelectorAll('input[type=submit], form')
 
   for (let i = 0; i < typeableElements.length; i++) {
     typeableElements[i].addEventListener('focusout', this.handleFocusout)
-  }
-
-  for (let i = 0; i < clickableElements.length; i++) {
-    clickableElements[i].addEventListener('click', this.handleClick)
+    typeableElements[i].addEventListener('keypress', this.handleKeyPressEnter)
   }
 
   for (let i = 0; i < submitableEvent.length; i++) {
@@ -25,13 +25,19 @@ function start() {
   }
 }
 
+function handleKeyPressEnter(e) {
+  if(e.which === 13) {
+    sendInspectInfo(e)
+  }
+}
+
 function handleFocusout(e) {
   // console.log(e, '---------------INPUT TEXTAREA------------')
   sendInspectInfo(e)
 }
 
 function handleClick(e) {
-  // console.log(e, '---------------A BUTTON------------')
+  // console.log(e, '---------------handle Submit and form------------')
   if (e.target.href) {
     if (chrome && chrome.runtime) chrome.runtime.sendMessage({action: 'url', value: e.target.href});
   } else {
@@ -123,16 +129,15 @@ function sendInspectInfo(e) {
   let param = {}, webCmd;
   const paths = getDomPath(e.target);
   param['locator'] = getLocator(e.target, paths);
-  if (e.type === 'submit') {
+  if (e.type === 'submit'|| (e.type === 'click' && e.target.tagName !== 'INPUT') ) {
     webCmd = 'click(locator)';
-  } else if (e.type === 'focusout' && e.target.tagName == 'INPUT') {
+  } else if ((e.type === 'focusout' || e.type === 'keypress') && e.target.tagName == 'INPUT') {
     webCmd = 'type(locator,value)';
     param['value'] = e.target.value;
   } else if (e.type === 'change') {
     webCmd = 'select(locator,text)';
     param['text'] = e.target[e.target.selectedIndex].text;
   }
-
   // ToDo: for payload create user define datatype
   let payload = {
     cmd  : 'inspecting',
@@ -159,7 +164,9 @@ function sendInspectInfo(e) {
   //   payload['selectedText'] = e.target[e.target.selectedIndex].text
   // }
 
-  console.log(payload);
+  if(!webCmd) {
+    return;
+  }
 
   if (!chrome || !chrome.runtime || !payload) return;
   chrome.runtime.sendMessage(payload);

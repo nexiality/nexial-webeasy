@@ -64,6 +64,7 @@ function callbackContextmenu(info, tab) {
         }
       }
     }
+    // console.log('Final push for context menu ', data)
     inspectElementList.push(data);
   });
 }
@@ -99,6 +100,7 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
       data.param['waitMs'] = '';
       break;
   }
+  // console.log('context MENU', data)
   callbackContextmenu(info, tab);
 });
 
