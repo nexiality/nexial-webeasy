@@ -15,7 +15,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["contentScript.js"]
+      "js": ["inspection/contentScript.js"]
     }
   ],
   "background": {
@@ -23,17 +23,8 @@
     "persistent": false
   },
   "permissions": [
-    "tabs",
-    "storage",
     "contextMenus",
-    "notifications",
-    "idle",
-    "activeTab",
-    "http://*/*",
-    "https://*/*",
-    "*://*/*",
-    "webNavigation",
-    "<all_urls>"
+    "activeTab"
   ],
 
   "browser_action": {

@@ -12,6 +12,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       text: clickedElement.target.text,
       value: clickedElement.target.value
     };
+    console.log('context MEnu ', {res: "contextmenu", step: step++, param: param})
     sendResponse({res: "contextmenu", step: step++, param: param});
   }
 });
