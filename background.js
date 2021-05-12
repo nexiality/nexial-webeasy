@@ -4,10 +4,10 @@ var currentTab = '';
 
 function loadListener(url) {
   inspectElementList.push({step: 1, command: 'open(url)', param: {url: url}, actions: ''});
-  chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
+  // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
     // Process |result| here (or maybe do nothing at all).
     // console.log('execute script : ', result)
-  });
+  // });
 }
 
 function createOpenURLEntry(url) {
@@ -23,6 +23,14 @@ function createOpenURLEntry(url) {
       loadListener(currentTab);
     });
   }
+}
+
+function sendRunTimeMessage(message) {
+  chrome.tabs.query({ active: !0, currentWindow: !0 }, function (tabs) {
+    if (tabs[0]) {
+      chrome.tabs.sendMessage(tabs[0].id, message);
+    }
+  });
 }
 
 // chrome.tabs.onActivated.addListener(tab => {
@@ -50,7 +58,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     console.log('tabId = ', tabId);
     console.log('tab = ', tab);
     // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
-    chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
+    // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
   }
 })
 
@@ -61,11 +69,13 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
       is_inspecting = 'start';
       createOpenURLEntry(action.value);
       sendResponse({msg: 'start inspecting'});
+      sendRunTimeMessage({action: 'start'})
       break;
     }
     case 'stop_inspecting': {
       is_inspecting = 'stop';
       sendResponse({json: inspectElementList});
+      sendRunTimeMessage({action: 'stop'})
       break;
     }
     case 'inspecting': {
@@ -79,6 +89,7 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
     }
     case 'pause_inspecting': {
       is_inspecting = 'paused';
+      sendRunTimeMessage({action: 'paused'})
       break;
     }
     case 'clear_inspection': {

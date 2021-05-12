@@ -55,7 +55,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 function callbackContextmenu(info, tab) {
-  chrome.tabs.sendMessage(tab.id, "getContextMenuElement", {frameId: info.frameId}, response => {
+  chrome.tabs.sendMessage(tab.id, {action: "getContextMenuElement"}, {frameId: info.frameId}, response => {
     if(response.res === 'contextmenu') {
       data.step = response.step;
       for (let key in response.param) {
