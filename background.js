@@ -1,6 +1,8 @@
 var is_inspecting = 'stop';
 var inspectElementList = [];
 var currentTab = '';
+// Add a `manifest` property to the `chrome` object.
+chrome.manifest = chrome.app.getDetails();
 
 function loadListener(url) {
   inspectElementList.push({step: 1, command: 'open(url)', param: {url: url}, actions: ''});
@@ -32,6 +34,35 @@ function sendRunTimeMessage(message) {
     }
   });
 }
+
+var injectIntoTab = function (tab) {
+  // You could iterate through the content scripts here
+  var scripts = chrome.manifest.content_scripts[0].js;
+  var i = 0, s = scripts.length;
+  for( ; i < s; i++ ) {
+      chrome.tabs.executeScript(tab.id, {
+          file: scripts[i]
+      });
+  }
+}
+
+// Get all windows
+chrome.windows.getAll({
+  populate: true
+}, function (windows) {
+  var i = 0, w = windows.length, currentWindow;
+  for( ; i < w; i++ ) {
+      currentWindow = windows[i];
+      var j = 0, t = currentWindow.tabs.length, currentTab;
+      for( ; j < t; j++ ) {
+          currentTab = currentWindow.tabs[j];
+          // Skip chrome:// and https:// pages
+          if( ! currentTab.url.match(/(chrome|https):\/\//gi) ) {
+              injectIntoTab(currentTab);
+          }
+      }
+  }
+});
 
 // chrome.tabs.onActivated.addListener(tab => {
 //   // console.log(tab);
