@@ -19,7 +19,7 @@ function onClickElement(event) {
   const command = 'click(locator)';
   if(target.tagName === 'INPUT' && target.type === 'submit') {
     sendInspectInfo(command, event);
-  } else if(target.tagName === 'DIV' && target.innerText) {
+  } else if((target.tagName === 'DIV' && target.innerText) || target.tagName === 'BUTTON') {
     sendInspectInfo(command, event);
   }
 }
