@@ -8,7 +8,6 @@ function handleFocusout(event) {
   
   if(target.tagName === 'INPUT' && target.type !== 'submit') {
     const command = 'type(locator,value)';
-    console.log('INPUT NOT SUBMIT event = ', event)
     sendInspectInfo(command, event);
   }
 }
@@ -17,15 +16,8 @@ function onClickElement(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
 
-  // console.log('target TagName = ', target.tagName);
-  // console.log('target type = ', target.type)
-  // console.log('target id = ',target.id)
-  // console.log('target className = ', target.className)
-  // console.log('target innerText = ',target.innerText)
-
   if(target.tagName === 'INPUT' && target.type === 'submit') {
     const command = 'click(locator)';
-    console.log('INPUT SUBMIT event = ', event)
     sendInspectInfo(command, event);
   }
 }
@@ -36,7 +28,6 @@ function handleChange(event) {
 
   if(target.tagName === 'SELECT') {
     const command = 'select(locator,text)';
-    console.log('CHANGE event = ', event)
     sendInspectInfo(command, event);
   }
 }
