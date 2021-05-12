@@ -57,7 +57,7 @@ chrome.windows.getAll({
       for( ; j < t; j++ ) {
           currentTab = currentWindow.tabs[j];
           // Skip chrome:// and https:// pages
-          if( ! currentTab.url.match(/(chrome|https):\/\//gi) ) {
+          if( currentTab.url && ! currentTab.url.match(/(chrome|https):\/\//gi) ) {
               injectIntoTab(currentTab);
           }
       }
@@ -83,11 +83,7 @@ chrome.windows.getAll({
 // });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  console.log('changeInfo.status = ', changeInfo.status)
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
-    console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting);
-    console.log('tabId = ', tabId);
-    console.log('tab = ', tab);
     // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
     // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
   }
