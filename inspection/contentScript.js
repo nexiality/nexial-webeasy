@@ -16,8 +16,10 @@ function onClickElement(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
 
+  const command = 'click(locator)';
   if(target.tagName === 'INPUT' && target.type === 'submit') {
-    const command = 'click(locator)';
+    sendInspectInfo(command, event);
+  } else if(target.tagName === 'DIV' && target.innerText) {
     sendInspectInfo(command, event);
   }
 }
