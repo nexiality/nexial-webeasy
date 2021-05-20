@@ -4,6 +4,13 @@ var currentTab = '';
 // Add a `manifest` property to the `chrome` object.
 chrome.manifest = chrome.app.getDetails();
 
+function updateBadge() {
+  if (is_inspecting === 'start') {
+    chrome.browserAction.setBadgeText({ text: ' ' });
+    chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
+  } else   chrome.browserAction.setBadgeText({ text: '' });
+}
+
 function loadListener(url) {
   inspectElementList.push({step: 1, command: 'open(url)', param: {url: url}, actions: ''});
   // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
