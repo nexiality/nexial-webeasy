@@ -1,6 +1,7 @@
 var clickedElement = null;
 var currentElement;
 var step = 2;
+const hasAttributes = ['alt', 'id', 'class', 'aria-label', 'name', 'role', 'title', 'type', 'value', 'placeholder', 'innerHTML'];
 
 function handleFocusout(event) {
   if (event === undefined) event = window.event;
@@ -30,8 +31,95 @@ function handleChange(event) {
 
   if(target.tagName === 'SELECT') {
     const command = 'select(locator,text)';
+    console.log('CHANGE event ====================================== ', event)
     sendInspectInfo(command, event);
   }
+}
+
+function validClassAndID() {
+  // Not start with _ or contain  _ - . number(must)  
+}
+
+function isUniqueID(id) {
+  // document.getElementById
+  // const el = document.getElementById(id);
+  // if (el.length)
+}
+
+function isUniqueClass(className) {
+  // document.getElementsByClassName("a4bIc");
+}
+
+function getLocator(e, paths) {
+  var locator = [], xpath = [], css = [], hasParent = false ;
+  const tag = (e.tagName).toLowerCase();
+  const activeEl = paths[paths.length - 1];
+  
+  if (e.id) {                                                     // element has Id
+    locator.push("id='" + e.id + "'")
+  }
+  if (e.name) {                                                   // element has name attribute
+    locator.push("name='" + e.name + "'");
+  }
+  for (var i = (paths.length - 1); i >= 0; i--) {
+    const el = paths[i];
+    if(i === (paths.length - 1)) {                                  // Main Element with all attribute
+      // Xpath=//tagname[@attribute='value']
+      for (const attr in el.attribute) {
+        var value = el.attribute[attr];
+        if(attr === 'class') {
+          // Todo : class
+        } else {
+          xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
+        }
+      }
+      if (el.innerText && el.innerText.length >= 15) {
+        xpath.push('xpath=//' + el.node + `[normalize-space(text())='${el.innerText}']`);
+      }
+    } else {
+      // Relative XPath: //div[@class='something']//h4[1]//b[1]
+      for (const attr in el.attribute) {
+        var value = el.attribute[attr];
+        if(attr === 'class') {
+
+        } else {
+          for (const activeElAttr in activeEl.attribute) {
+            const activeElValue = activeEl.attribute[activeElAttr];
+            xpath.push('xpath=//' + el.node + `[@${attr}=${value}]//` + activeEl.node + `[@${activeElAttr}=${activeElValue}]`);
+
+          }
+        }
+      }
+    }
+    // css.push('css=' +);
+  }
+  return locator.concat(css, xpath);
+}
+
+function getDomPath(el) {
+  var stack = [];
+  while (el.parentNode != null) {
+    var sibCount = 0;
+    var sibIndex = 0;
+    var node = {};
+    node['node'] = el.nodeName.toLowerCase();
+    node['innerText'] = el.innerText;
+    node['attribute'] = {};
+
+    if (el.hasAttributes()) {
+      var attrs = el.attributes;
+      for(var i = attrs.length - 1; i >= 0; i--) {
+        if(hasAttributes.includes(attrs[i].name)) {
+          node['attribute'][attrs[i].name] = attrs[i].value;
+        }
+      }
+    }
+    if (sibCount > 1) { node['eq'] = ':eq(' + sibIndex + ')'; }
+    // removes the html & body element
+    if (!['html', 'body'].includes(node['node'])) { stack.unshift(node) }
+    el = el.parentNode;
+  }
+  return stack;
 }
 
 function getXPath(element) {
@@ -78,14 +166,20 @@ function getCssPath(el) {
 }
 
 function sendInspectInfo(command, event) {
+  const paths = getDomPath(event.target);
+  var locator = getLocator(event.target, paths);
+  // if (!locator.length) {
+  //   locator =  [
+  //     'css=' + getCssPath(event.target),
+  //     'xpath=' + getXPath(event.target)
+  //   ]
+  // }
+  console.log('LOCATOR ###################', locator)
   var data = {
     step   : step++,
     command: command,
     param:   {
-      locator: [
-        'css=' + getCssPath(event.target),
-        'xpath=' + getXPath(event.target)
-      ]
+      locator: locator
     },
     actions: {}
   };
