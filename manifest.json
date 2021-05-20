@@ -33,5 +33,7 @@
     },
     "default_popup": "NexialWebEZ.html",
     "default_title": "Nexial WebEZ - Kick Your Web Automation into High Gear!"
-  }
+  },
+
+  "web_accessible_resources": [ "resources/style/nexial.css" ]
 }

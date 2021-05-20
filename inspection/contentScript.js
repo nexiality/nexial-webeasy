@@ -3,6 +3,13 @@ var currentElement;
 var step = 2;
 const hasAttributes = ['alt', 'id', 'class', 'aria-label', 'name', 'role', 'title', 'type', 'value', 'placeholder', 'innerHTML'];
 
+// Append Style
+var style = document.createElement("link");
+style.rel = "stylesheet";
+style.type = "text/css";
+style.href = chrome.extension.getURL("resources/style/nexial.css");
+(document.head || document.documentElement).appendChild(style);
+
 function handleFocusout(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
@@ -34,6 +41,24 @@ function handleChange(event) {
     console.log('CHANGE event ====================================== ', event)
     sendInspectInfo(command, event);
   }
+}
+
+function onMouseHoverElement(event) {
+  if (event === undefined) event = window.event;
+  var target = "target" in event ? event.target : event.srcElement;
+  console.log('hi', target.tagName)
+  var tooltip = document.createElement("span");
+  tooltip.setAttribute("nexial-locator-data-tooltip", target.tagName);
+  target.appendChild(tooltip);
+  // target.style.backgroundColor = "red";
+  target.classList.add("nexial-hover");
+  target.addEventListener("mouseout", function () {
+    console.log('bbye')
+    if (tooltip.parentNode) {
+      target.removeChild(tooltip);
+      target.classList.remove("nexial-hover");
+    }
+  });
 }
 
 function validClassAndID() {
@@ -174,7 +199,7 @@ function sendInspectInfo(command, event) {
   //     'xpath=' + getXPath(event.target)
   //   ]
   // }
-  console.log('LOCATOR ###################', locator)
+  // console.log('LOCATOR ###################', locator)
   var data = {
     step   : step++,
     command: command,
@@ -224,7 +249,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     document.addEventListener("focusout", handleFocusout);
     document.addEventListener("mousedown", onClickElement);
     document.addEventListener("change", handleChange);
+    document.addEventListener("mouseover", onMouseHoverElement);
   } else if (request.action === 'stop' || request.action === 'paused') {
+    document.removeEventListener("mouseover", onMouseHoverElement);
     document.removeEventListener("focusout", handleFocusout);
     document.removeEventListener("mousedown", onClickElement);
     document.removeEventListener("change", handleChange);
