@@ -61,8 +61,16 @@ function onMouseHoverElement(event) {
   });
 }
 
-function validClassAndID() {
-  // Not start with _ or contain  _ - . number(must)  
+function hasNumbers(str) {
+  var regex = /\d/g;
+  return regex.test(str);
+}
+
+function validClassAndID(str) {
+  // Not start with _ or contain  _ - . number(must)
+  let result = ['_', '-'].some(isClassStartWith => isClassStartWith.startsWith(isClassStartWith));
+  if (result) return result;
+  return hasNumbers(str)
 }
 
 function isUniqueID(id) {
