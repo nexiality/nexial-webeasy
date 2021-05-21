@@ -13,6 +13,7 @@ function updateBadge() {
 
 function loadListener(url) {
   inspectElementList.push({step: 1, command: 'open(url)', param: {url: url}, actions: ''});
+  updateBadge();
   // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
     // Process |result| here (or maybe do nothing at all).
     // console.log('execute script : ', result)
