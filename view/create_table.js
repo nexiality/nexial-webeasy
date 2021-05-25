@@ -115,6 +115,8 @@ function saveRow(step) {
 function toggleRow(/*Number*/i, /*Boolean*/enable) {
   document.getElementById("delete_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("edit_" + i).style.display = enable ? "inline-block" : "none";
+  document.getElementById("up_" + i).style.display = enable ? "inline-block" : "none";
+  document.getElementById("down_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("save_" + i).style.display = enable ? "none" : "inline-block";
   document.getElementById("close_" + i).style.display = enable ? "none" : "inline-block";
 }
@@ -222,6 +224,31 @@ function createCloseButton(step) {
   return button;
 }
 
+function createUpDownButton(step, direction) {
+  let button = document.createElement('button');
+  button.setAttribute('class', 'btn text-dark')
+  if(direction === 1) {
+    // create Down button
+    button.innerHTML = '<i class="fas fa-arrow-down"></i>';
+    button.setAttribute('title', 'Down');
+    button.setAttribute('id', ('down_' + step));
+  } else {
+    button.innerHTML = '<i class="fas fa-arrow-up"></i>'
+    button.setAttribute('title', 'Up');
+    button.setAttribute('id', ('up_' + step));
+  }
+  button.onclick = function (e) {
+    var row = $(this).closest('tr');
+    const indexAt = document.getElementById('step_' + step).rowIndex;
+    const totalRowCount = (table.rows.length - 1);
+
+    if(direction === 1 && indexAt !== totalRowCount) row.next().after(row);
+    else if(direction !== 1 && indexAt !== 1) row.prev().before(row);
+    else console.log("return")
+  };
+  return button;
+}
+
 function createInspectElement(inspectFor, step) {
 
   let inspectElement = document.createElement("div"),
@@ -309,6 +336,8 @@ function addRow(data, indexAt = -1) {
       cell.appendChild(createCloseButton(currentStep));
       cell.appendChild(createDuplicateButton(currentStep));
       cell.appendChild(createAddNewButton(currentStep));
+      cell.appendChild(createUpDownButton(currentStep, 1)); //down
+      cell.appendChild(createUpDownButton(currentStep, -1)); // up
     } else if(key === "param") {
       const sub_table = createSubTable(data['param'], currentStep);
       cell.appendChild(sub_table);
