@@ -1,7 +1,7 @@
 var clickedElement = null;
 var currentElement;
 var step = 2;
-const hasAttributes = ['alt', 'id', 'class', 'aria-label', 'name', 'role', 'title', 'type', 'value', 'placeholder', 'innerHTML'];
+const hasAttributes = ['alt', 'id', 'class', 'aria-label', 'name', 'title', 'type', 'placeholder'];
 
 // Append Style
 var style = document.createElement("link");
@@ -63,14 +63,14 @@ function onMouseHoverElement(event) {
 
 function hasNumbers(str) {
   var regex = /\d/g;
-  return regex.test(str);
+  return !(regex.test(str));
 }
 
 function validClassAndID(str) {
   // Not start with _ or contain  _ - . number(must)
   let result = ['_', '-'].some(isClassStartWith => isClassStartWith.startsWith(isClassStartWith));
   if (result) return result;
-  return hasNumbers(str)
+  return !hasNumbers(str)
 }
 
 function isUniqueID(id) {
