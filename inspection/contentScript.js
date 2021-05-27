@@ -1,5 +1,5 @@
 var clickedElement = null;
-var currentElement;
+var currentElement = null, focusedInput = null;
 var step = 2;
 const hasAttributes = ['alt', 'id', 'class', 'aria-label', 'name', 'title', 'type', 'placeholder'];
 
@@ -10,14 +10,22 @@ style.type = "text/css";
 style.href = chrome.extension.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
-function handleFocusout(event) {
+function handleFocus(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
+
+  if(target.tagName === 'INPUT' && target.type !== 'submit') focusedInput = event;
+}
+
+function handleFocusout(event) {
+  // if (event === undefined) event = window.event;
+  // var target = "target" in event ? event.target : event.srcElement;
   
-  if(target.tagName === 'INPUT' && target.type !== 'submit') {
-    const command = 'type(locator,value)';
-    sendInspectInfo(command, event);
-  }
+  // if(target.tagName === 'INPUT' && target.type !== 'submit') {
+  //   const command = 'type(locator,value)';
+  //   console.log('INPUT NOT SUBMIT EVENT ====================================== ', event)
+  //   sendInspectInfo(command, event);
+  // }
 }
 
 function onClickElement(event) {
@@ -25,6 +33,12 @@ function onClickElement(event) {
   var target = "target" in event ? event.target : event.srcElement;
 
   const command = 'click(locator)';
+
+  if(focusedInput && target.value) {
+    sendInspectInfo('type(locator,value)', focusedInput);
+    focusedInput = null;
+  }
+
   if(target.tagName === 'INPUT' && target.type === 'submit') {
     sendInspectInfo(command, event);
   } else if((target.tagName === 'DIV' && target.innerText) || target.tagName === 'BUTTON') {
@@ -53,7 +67,7 @@ function onMouseHoverElement(event) {
   // target.style.backgroundColor = "red";
   target.classList.add("nexial-hover");
   target.addEventListener("mouseout", function () {
-    console.log('bbye')
+    // console.log('bbye')
     if (tooltip.parentNode) {
       target.removeChild(tooltip);
       target.classList.remove("nexial-hover");
