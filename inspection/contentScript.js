@@ -1,5 +1,5 @@
 var clickedElement = null;
-var currentElement = null, focusedInput = null;
+var focusedInput = null;
 var step = 2;
 const hasAttributes = ['alt', 'id', 'class', 'aria-label', 'name', 'title', 'type', 'placeholder'];
 
@@ -60,14 +60,12 @@ function handleChange(event) {
 function onMouseHoverElement(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
-  console.log('hi', target.tagName)
+
   var tooltip = document.createElement("span");
   tooltip.setAttribute("nexial-locator-data-tooltip", target.tagName);
   target.appendChild(tooltip);
-  // target.style.backgroundColor = "red";
   target.classList.add("nexial-hover");
   target.addEventListener("mouseout", function () {
-    // console.log('bbye')
     if (tooltip.parentNode) {
       target.removeChild(tooltip);
       target.classList.remove("nexial-hover");
@@ -102,12 +100,9 @@ function getLocator(e, paths) {
   const tag = (e.tagName).toLowerCase();
   const activeEl = paths[paths.length - 1];
   
-  if (e.id) {                                                     // element has Id
-    locator.push("id='" + e.id + "'")
-  }
-  if (e.name) {                                                   // element has name attribute
-    locator.push("name='" + e.name + "'");
-  }
+  if (e.id) locator.push("id='" + e.id + "'");
+  if (e.name) locator.push("name='" + e.name + "'");
+
   for (var i = (paths.length - 1); i >= 0; i--) {
     const el = paths[i];
     if(i === (paths.length - 1)) {                                  // Main Element with all attribute
@@ -268,13 +263,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     console.log('context MEnu ', {res: "contextmenu", step: step++, param: param})
     sendResponse({res: "contextmenu", step: step++, param: param});
   } else if (request.action === 'start') {
-    document.addEventListener("focusout", handleFocusout);
+    document.addEventListener("focus", handleFocus, true);
+    // document.addEventListener("focusout", handleFocusout);
     document.addEventListener("mousedown", onClickElement);
     document.addEventListener("change", handleChange);
     document.addEventListener("mouseover", onMouseHoverElement);
   } else if (request.action === 'stop' || request.action === 'paused') {
+    document.removeEventListener("focus", handleFocus, true);
     document.removeEventListener("mouseover", onMouseHoverElement);
-    document.removeEventListener("focusout", handleFocusout);
+    // document.removeEventListener("focusout", handleFocusout);
     document.removeEventListener("mousedown", onClickElement);
     document.removeEventListener("change", handleChange);
   }
