@@ -91,8 +91,31 @@ function isUniqueID(id) {
   // if (el.length)
 }
 
-function isUniqueClass(className) {
+function isXpathWorking(className) {
   // document.getElementsByClassName("a4bIc");
+  // xpath 
+}
+
+function getElementByXpath(path) {
+  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+}
+
+function createXpath(el, baseNode) {
+  var xpath = [];
+  for (const attr in el.attribute) {
+    var value = el.attribute[attr];
+    if(attr === 'class') {
+      const classList = el.attribute['class'];
+      for (var j = 0; j <= (classList.length - 1); j++) {
+        if (validClassAndID(classList[j])) {
+          xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
+        }
+      }
+    } else {
+      xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
+    }
+  }
+  return xpath
 }
 
 function getLocator(e, paths) {
@@ -105,16 +128,23 @@ function getLocator(e, paths) {
 
   for (var i = (paths.length - 1); i >= 0; i--) {
     const el = paths[i];
+    if(el.attribute['class']) el.attribute['class'] = el.attribute['class'].split(" ");
     if(i === (paths.length - 1)) {                                  // Main Element with all attribute
+      xpath = createXpath(el, null)
       // Xpath=//tagname[@attribute='value']
-      for (const attr in el.attribute) {
-        var value = el.attribute[attr];
-        if(attr === 'class') {
-          // Todo : class
-        } else {
-          xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
-        }
-      }
+      // for (const attr in el.attribute) {
+      //   var value = el.attribute[attr];
+      //   if(attr === 'class') {
+      //     const classList = el.attribute['class'];
+      //     for (var j = 0; j <= (classList.length - 1); j++) {
+      //       if (validClassAndID(classList[j])) {
+      //         xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
+      //       }
+      //     }
+      //   } else {
+      //     xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
+      //   }
+      // }
       if (el.innerText && el.innerText.length >= 15) {
         xpath.push('xpath=//' + el.node + `[normalize-space(text())='${el.innerText}']`);
       }
