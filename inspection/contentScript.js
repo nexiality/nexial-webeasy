@@ -64,11 +64,11 @@ function onMouseHoverElement(event) {
   var tooltip = document.createElement("span");
   tooltip.setAttribute("nexial-locator-data-tooltip", target.tagName);
   target.appendChild(tooltip);
-  target.classList.add("nexial-hover");
+  target.classList.add("_nexial-hover");
   target.addEventListener("mouseout", function () {
     if (tooltip.parentNode) {
       target.removeChild(tooltip);
-      target.classList.remove("nexial-hover");
+      target.classList.remove("_nexial-hover");
     }
   });
 }
