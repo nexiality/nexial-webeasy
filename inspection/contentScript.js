@@ -48,17 +48,15 @@ function onClickElement(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
 
-  const command = 'click(locator)';
-
   if(focusedInput && target.value) {
     sendInspectInfo('type(locator,value)', focusedInput);
     focusedInput = null;
   }
 
   if(target.tagName === 'INPUT' && target.type === 'submit') {
-    sendInspectInfo(command, event);
+    sendInspectInfo('click(locator)', event);
   } else if((target.tagName === 'DIV' && target.innerText) || target.tagName === 'BUTTON') {
-    sendInspectInfo(command, event);
+    sendInspectInfo('click(locator)', event);
   }
 }
 
