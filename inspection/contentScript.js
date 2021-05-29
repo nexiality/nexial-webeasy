@@ -10,6 +10,22 @@ style.type = "text/css";
 style.href = chrome.extension.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
+function start() {
+  document.addEventListener("focus", handleFocus, true);
+  // document.addEventListener("focusout", handleFocusout);
+  document.addEventListener("mousedown", onClickElement);
+  document.addEventListener("change", handleChange);
+  document.addEventListener("mouseover", onMouseHoverElement);
+}
+
+function stop() {
+  document.removeEventListener("focus", handleFocus, true);
+  // document.removeEventListener("focusout", handleFocusout);
+  document.removeEventListener("mousedown", onClickElement);
+  document.removeEventListener("change", handleChange);
+  document.removeEventListener("mouseover", onMouseHoverElement);
+}
+
 function handleFocus(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
@@ -290,19 +306,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       text: clickedElement.target.text,
       value: clickedElement.target.value
     };
-    console.log('context MEnu ', {res: "contextmenu", step: step++, param: param})
     sendResponse({res: "contextmenu", step: step++, param: param});
-  } else if (request.action === 'start') {
-    document.addEventListener("focus", handleFocus, true);
-    // document.addEventListener("focusout", handleFocusout);
-    document.addEventListener("mousedown", onClickElement);
-    document.addEventListener("change", handleChange);
-    document.addEventListener("mouseover", onMouseHoverElement);
-  } else if (request.action === 'stop' || request.action === 'paused') {
-    document.removeEventListener("focus", handleFocus, true);
-    document.removeEventListener("mouseover", onMouseHoverElement);
-    // document.removeEventListener("focusout", handleFocusout);
-    document.removeEventListener("mousedown", onClickElement);
-    document.removeEventListener("change", handleChange);
   }
+  else if (request.action === 'start') start();
+  else if (request.action === 'stop' || request.action === 'paused') stop();
 });
