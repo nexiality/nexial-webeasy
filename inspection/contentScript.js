@@ -2,6 +2,7 @@ var clickedElement = null;
 var focusedInput = null;
 var step = 2;
 const hasAttributes = ['alt', 'id', 'class', 'aria-label', 'name', 'title', 'type', 'placeholder'];
+const findClickedElementParent = ['path', 'svg', 'i', 'span', 'div']
 
 // Append Style
 var style = document.createElement("link");
@@ -11,6 +12,7 @@ style.href = chrome.extension.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
 function start() {
+  focusedInput = null;
   document.addEventListener("focus", handleFocus, true);
   // document.addEventListener("focusout", handleFocusout);
   document.addEventListener("mousedown", onClickElement);
