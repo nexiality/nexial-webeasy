@@ -126,11 +126,11 @@ function createXpath(el, baseNode) {
       const classList = el.attribute['class'];
       for (var j = 0; j <= (classList.length - 1); j++) {
         if (validClassAndID(classList[j])) {
-          xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
+          xpath.push('xpath=//' + el.node + `[@${attr}='${classList[j]}]'`);
         }
       }
     } else {
-      xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
+      xpath.push('xpath=//' + el.node + `[@${attr}='${value}]'`);
     }
   }
   return xpath
