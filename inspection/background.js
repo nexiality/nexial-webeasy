@@ -100,7 +100,8 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   console.log('changeInfo.status = ', changeInfo.status)
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
     // console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting);
-      sendRunTimeMessage({action: 'start'})
+      sendRunTimeMessage({action: 'start'});
+      updateBadge();
     console.log('tabId = ', tabId);
     console.log('onUpdated currentTab == ', currentTab, ' changeInfo = ', changeInfo, ' tab = ', tab)
     // console.log('tab = ', tab);
