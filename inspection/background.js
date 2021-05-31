@@ -10,7 +10,7 @@ function updateBadge() {
     console.log(inspectingTab, "%%%%%%%%%%%%%%%%%%%%%%%")
     chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
     chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
-  } else   chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: '' });
+  } else  chrome.browserAction.setBadgeText({ tabId: (inspectingTab? inspectingTab.tabId : null), text: '' });
 }
 
 function loadListener(url) {
