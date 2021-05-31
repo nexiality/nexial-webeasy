@@ -31,9 +31,7 @@ function createSubTableRow(param_table, key, data, step, editable) {
   let valueCell = tr.insertCell(-1);
   valueCell.setAttribute("title", key);
 
-  if(editMode) {
-    updatedObject.param[key] = data;
-  }
+  if(editMode) updatedObject.param[key] = data;
 
   let element = '';
   if (key === 'locator' && data) {                                      // param is locator
@@ -210,16 +208,17 @@ function createCloseButton(step) {
     editMode = false;
     // Undo Command value and make it disable
     const oldObject = getInspectListObject(step);
+    console.log(oldObject, '+++++++++++++++++++++++++++++++===')
     document.getElementById('command' + '_' + step).value = oldObject.command;
     toggleElement(document.getElementById('command' + '_' + step), false)
 
     deleteSubTable(step);                                            // clear param table
 
-    const data = inspectElementList[i].param, paramList = getCommandParam(oldObject.command);
+    const data = oldObject.param, paramList = getCommandParam(oldObject.command);
     for (let key in data) {
-      createSubTableRow(document.getElementById('table_' + step), key, data[key], i, false);
+      createSubTableRow(document.getElementById('table_' + step), key, data[key], step, false);
     }
-    toggleRow(i, true);
+    toggleRow(step, true);
   };
   return button;
 }

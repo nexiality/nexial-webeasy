@@ -49,8 +49,10 @@ function handleFocusout(event) {
 function onClickElement(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
+  console.log('-----------------------onClickElement-----------------------------',target.tagName)
 
-  if(focusedInput && target.value) {
+  if(focusedInput && focusedInput.target.value) {
+    console.log('-----------------------FOUND PREVIOUS INPUT-----------------------------',focusedInput)
     sendInspectInfo('type(locator,value)', focusedInput);
     focusedInput = null;
   }
@@ -135,7 +137,7 @@ function createXpath(el, baseNode) {
 }
 
 function getLocator(e, paths) {
-  var locator = [], xpath = [], css = [], hasParent = false ;
+  var locator = [], xpath = [], css = [];
   const tag = (e.tagName).toLowerCase();
   const activeEl = paths[paths.length - 1];
   
@@ -145,39 +147,17 @@ function getLocator(e, paths) {
   for (var i = (paths.length - 1); i >= 0; i--) {
     const el = paths[i];
     if(el.attribute['class']) el.attribute['class'] = el.attribute['class'].split(" ");
-    if(i === (paths.length - 1)) {                                  // Main Element with all attribute
-      xpath = createXpath(el, null)
+    if(i === (paths.length - 1)) {
+      // Main Element with all attribute
       // Xpath=//tagname[@attribute='value']
-      // for (const attr in el.attribute) {
-      //   var value = el.attribute[attr];
-      //   if(attr === 'class') {
-      //     const classList = el.attribute['class'];
-      //     for (var j = 0; j <= (classList.length - 1); j++) {
-      //       if (validClassAndID(classList[j])) {
-      //         xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
-      //       }
-      //     }
-      //   } else {
-      //     xpath.push('xpath=//' + el.node + `[@${attr}=${value}]`);
-      //   }
-      // }
+      xpath = createXpath(el, null)
       if (el.innerText && el.innerText.length >= 15) {
         xpath.push('xpath=//' + el.node + `[normalize-space(text())='${el.innerText}']`);
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
-      for (const attr in el.attribute) {
-        var value = el.attribute[attr];
-        if(attr === 'class') {
-
-        } else {
-          for (const activeElAttr in activeEl.attribute) {
-            const activeElValue = activeEl.attribute[activeElAttr];
-            xpath.push('xpath=//' + el.node + `[@${attr}=${value}]//` + activeEl.node + `[@${activeElAttr}=${activeElValue}]`);
-
-          }
-        }
-      }
+      // locator.concat(css, xpath);
+      xpath.concat(createXpath(el, activeEl))
     }
     // css.push('css=' +);
   }
