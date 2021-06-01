@@ -1,7 +1,7 @@
 var clickedElement = null;
 var focusedInput = null;
 var step = 2;
-const hasAttributes = ['alt', 'id', 'class', 'aria-label', 'name', 'title', 'type', 'placeholder'];
+const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'class', 'alt'];
 const findClickedElementParent = ['path', 'svg', 'i', 'span', 'div']
 
 // Append Style
@@ -120,17 +120,18 @@ function getElementByXpath(path) {
 
 function createXpath(el, baseNode) {
   var xpath = [];
+  if (baseNode) baseNode = baseNode.replace("xpath=", "");
   for (const attr in el.attribute) {
     var value = el.attribute[attr];
     if(attr === 'class') {
       const classList = el.attribute['class'];
       for (var j = 0; j <= (classList.length - 1); j++) {
         if (validClassAndID(classList[j])) {
-          xpath.push('xpath=//' + el.node + `[@${attr}='${classList[j]}]'`);
+          xpath.push('xpath=//' + el.node + `[@${attr}='${classList[j]}']` + baseNode);
         }
       }
     } else {
-      xpath.push('xpath=//' + el.node + `[@${attr}='${value}]'`);
+      xpath.push('xpath=//' + el.node + `[@${attr}='${value}']` + baseNode);
     }
   }
   return xpath
@@ -150,14 +151,14 @@ function getLocator(e, paths) {
     if(i === (paths.length - 1)) {
       // Main Element with all attribute
       // Xpath=//tagname[@attribute='value']
-      xpath = createXpath(el, null)
+      xpath = createXpath(el, '')
       if (el.innerText && el.innerText.length >= 15) {
         xpath.push('xpath=//' + el.node + `[normalize-space(text())='${el.innerText}']`);
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
-      // locator.concat(css, xpath);
-      xpath.concat(createXpath(el, activeEl))
+      const relativeXpath = createXpath(el, xpath[0]);
+      xpath = xpath.concat(relativeXpath);
     }
     // css.push('css=' +);
   }
@@ -172,14 +173,19 @@ function getDomPath(el) {
     var node = {};
     node['node'] = el.nodeName.toLowerCase();
     node['innerText'] = el.innerText;
-    node['attribute'] = {};
+    node['attribute'] = [];
 
+console.log(el.attributes)
     if (el.hasAttributes()) {
-      var attrs = el.attributes;
-      for(var i = attrs.length - 1; i >= 0; i--) {
-        if(hasAttributes.includes(attrs[i].name)) {
-          node['attribute'][attrs[i].name] = attrs[i].value;
-        }
+      // var attrs = el.attributes;
+      // for(var i = attrs.length - 1; i >= 0; i--) {
+      //   if(hasAttributes.includes(attrs[i].name)) {
+      //     node['attribute'][attrs[i].name] = attrs[i].value;
+      //   }
+      // }
+      for(var i = 0; i <= (hasAttributes.length - 1); i++) {
+        const attrs = el.attributes[`${hasAttributes[i]}`];
+        if(attrs) node['attribute'][attrs.name] = attrs.value;
       }
     }
     if (sibCount > 1) { node['eq'] = ':eq(' + sibIndex + ')'; }
