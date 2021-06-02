@@ -1,7 +1,7 @@
 var clickedElement = null;
 var focusedInput = null;
 var step = 2;
-const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'class', 'alt'];
+const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'class', 'alt'];  //Order priority wise
 const findClickedElementParent = ['path', 'svg', 'i', 'span', 'div']
 
 // Append Style
@@ -151,14 +151,16 @@ function getLocator(e, paths) {
     if(i === (paths.length - 1)) {
       // Main Element with all attribute
       // Xpath=//tagname[@attribute='value']
-      xpath = createXpath(el, '')
-      if (el.innerText && el.innerText.length >= 15) {
+      xpath = createXpath(el, '');
+      css = createCSS(el, '');
+      if (el.innerText && el.innerText.length <= 15) {
         xpath.push('xpath=//' + el.node + `[normalize-space(text())='${el.innerText}']`);
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
       const relativeXpath = createXpath(el, xpath[0]);
       xpath = xpath.concat(relativeXpath);
+      css = css.concat(createCSS(el, css[0]))
     }
     // css.push('css=' +);
   }
