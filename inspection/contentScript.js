@@ -49,10 +49,8 @@ function handleFocusout(event) {
 function onClickElement(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
-  console.log('-----------------------onClickElement-----------------------------',target.tagName)
 
   if(focusedInput && focusedInput.target.value) {
-    console.log('-----------------------FOUND PREVIOUS INPUT-----------------------------',focusedInput)
     sendInspectInfo('type(locator,value)', focusedInput);
     focusedInput = null;
   }
@@ -70,7 +68,6 @@ function handleChange(event) {
 
   if(target.tagName === 'SELECT') {
     const command = 'select(locator,text)';
-    console.log('CHANGE event ====================================== ', event)
     sendInspectInfo(command, event);
   }
 }
@@ -189,7 +186,6 @@ function getDomPath(el) {
     node['innerText'] = el.innerText;
     node['attribute'] = [];
 
-console.log(el.attributes)
     if (el.hasAttributes()) {
       // var attrs = el.attributes;
       // for(var i = attrs.length - 1; i >= 0; i--) {
