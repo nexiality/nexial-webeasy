@@ -137,6 +137,27 @@ function createXpath(el, baseNode) {
   return xpath
 }
 
+function createCSS(el, baseNode) {
+  var css = [];
+  if (baseNode) baseNode = baseNode.replace("css=", ">");
+  for (const attr in el.attribute) {
+    var value = el.attribute[attr];
+    if(attr === 'class') {
+      const classList = el.attribute['class'];
+      for (var j = 0; j <= (classList.length - 1); j++) {
+        if (validClassAndID(classList[j])) {
+          css.push('css=' + el.node + `.${classList[j]}` + baseNode);
+        }
+      }
+    } else if(attr === 'id') {
+      css.push('css=' + el.node + `#${value}` + baseNode);
+    } else {
+      css.push('css=' + el.node + `[${attr}='${value}']` + baseNode);
+    }
+  }
+  return css
+}
+
 function getLocator(e, paths) {
   var locator = [], xpath = [], css = [];
   const tag = (e.tagName).toLowerCase();
