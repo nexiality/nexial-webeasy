@@ -116,7 +116,10 @@ function getElementByXpath(path) {
 }
 
 function createPaths(el, baseXpathNode, baseCssPath) {
-  var xpath = [], css = [], res = [];
+  var res = {
+    'xpath': [],
+    'css': []
+  };
   if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
   if (baseCssPath) baseCssPath = baseCssPath.replace("css=", ">");
   for (const attr in el.attribute) {
@@ -125,20 +128,18 @@ function createPaths(el, baseXpathNode, baseCssPath) {
       const classList = el.attribute['class'];
       for (var j = 0; j <= (classList.length - 1); j++) {
         if (validClassAndID(classList[j])) {
-          xpath.push('xpath=//' + el.node + `[@${attr}='${classList[j]}']` + baseXpathNode);
-          css.push('css=' + el.node + `.${classList[j]}` + baseCssPath);
+          res['xpath'].push('xpath=//' + el.node + `[@${attr}='${classList[j]}']` + baseXpathNode);
+          res['css'].push('css=' + el.node + `.${classList[j]}` + baseCssPath);
         }
       }
     } else if(attr === 'id') {
-      xpath.push('xpath=//' + el.node + `[@${attr}='${value}']` + baseXpathNode);
-      css.push('css=' + el.node + `#${value}` + baseCssPath);
+      res['xpath'].push('xpath=//' + el.node + `[@${attr}='${value}']` + baseXpathNode);
+      res['css'].push('css=' + el.node + `#${value}` + baseCssPath);
     } else {
-      xpath.push('xpath=//' + el.node + `[@${attr}='${value}']` + baseXpathNode);
-      css.push('css=' + el.node + `[${attr}='${value}']` + baseCssPath);
+      res['xpath'].push('xpath=//' + el.node + `[@${attr}='${value}']` + baseXpathNode);
+      res['css'].push('css=' + el.node + `[${attr}='${value}']` + baseCssPath);
     }
   }
-  res[0] = xpath;
-  res[1] = css;
   return res
 }
 
@@ -158,8 +159,8 @@ function getLocator(e, paths) {
       // Xpath=//tagname[@attribute='value']
       const path = createPaths(el, '', '');
       if (path) {
-        xpath = path[0];
-        css = path[1]
+        xpath = path.xpath;
+        css = path.css;
       }
       if (el.innerText && el.innerText.length <= 15) {
         xpath.push('xpath=//' + el.node + `[normalize-space(text())='${el.innerText}']`);
@@ -168,8 +169,8 @@ function getLocator(e, paths) {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
       const relativePaths = createPaths(el, xpath[0], css[0]);
       if (relativePaths) {
-        xpath = xpath.concat(relativePaths[0]);
-        css = css.concat(relativePaths[1]);
+        xpath = xpath.concat(relativePaths.xpath);
+        css = css.concat(relativePaths.css);
       }
     }
   }
