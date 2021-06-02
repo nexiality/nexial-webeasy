@@ -93,11 +93,10 @@ function hasNumbers(str) {
   return (regex.test(str));
 }
 
-function validClassAndID(str) {
-  // Not start with or contain  _ - . number(must)
-  let result = ['_', '-', '.', '$', '%'].some(isClassStartWith => isClassStartWith.startsWith(isClassStartWith));
-  if (result) return result;
-  return hasNumbers(str)
+function hasOnlyAlphabet(str) {
+  // No special character and number i.e only alphabet
+  var regex = /^[A-Za-z]+$/;
+  return (regex.test(str));
 }
 
 function isUniqueID(id) {
@@ -127,7 +126,7 @@ function createPaths(el, baseXpathNode, baseCssPath) {
     if(attr === 'class') {
       const classList = el.attribute['class'];
       for (var j = 0; j <= (classList.length - 1); j++) {
-        if (validClassAndID(classList[j])) {
+        if (hasOnlyAlphabet(classList[j])) {
           res['xpath'].push('xpath=//' + el.node + `[@${attr}='${classList[j]}']` + baseXpathNode);
           res['css'].push('css=' + el.node + `.${classList[j]}` + baseCssPath);
         }
