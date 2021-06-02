@@ -118,44 +118,31 @@ function getElementByXpath(path) {
   return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 }
 
-function createXpath(el, baseNode) {
-  var xpath = [];
-  if (baseNode) baseNode = baseNode.replace("xpath=", "");
+function createPaths(el, baseXpathNode, baseCssPath) {
+  var xpath = [], css = [], res = [];
+  if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
+  if (baseCssPath) baseCssPath = baseCssPath.replace("css=", ">");
   for (const attr in el.attribute) {
     var value = el.attribute[attr];
     if(attr === 'class') {
       const classList = el.attribute['class'];
       for (var j = 0; j <= (classList.length - 1); j++) {
         if (validClassAndID(classList[j])) {
-          xpath.push('xpath=//' + el.node + `[@${attr}='${classList[j]}']` + baseNode);
-        }
-      }
-    } else {
-      xpath.push('xpath=//' + el.node + `[@${attr}='${value}']` + baseNode);
-    }
-  }
-  return xpath
-}
-
-function createCSS(el, baseNode) {
-  var css = [];
-  if (baseNode) baseNode = baseNode.replace("css=", ">");
-  for (const attr in el.attribute) {
-    var value = el.attribute[attr];
-    if(attr === 'class') {
-      const classList = el.attribute['class'];
-      for (var j = 0; j <= (classList.length - 1); j++) {
-        if (validClassAndID(classList[j])) {
-          css.push('css=' + el.node + `.${classList[j]}` + baseNode);
+          xpath.push('xpath=//' + el.node + `[@${attr}='${classList[j]}']` + baseXpathNode);
+          css.push('css=' + el.node + `.${classList[j]}` + baseCssPath);
         }
       }
     } else if(attr === 'id') {
-      css.push('css=' + el.node + `#${value}` + baseNode);
+      xpath.push('xpath=//' + el.node + `[@${attr}='${value}']` + baseXpathNode);
+      css.push('css=' + el.node + `#${value}` + baseCssPath);
     } else {
-      css.push('css=' + el.node + `[${attr}='${value}']` + baseNode);
+      xpath.push('xpath=//' + el.node + `[@${attr}='${value}']` + baseXpathNode);
+      css.push('css=' + el.node + `[${attr}='${value}']` + baseCssPath);
     }
   }
-  return css
+  res[0] = xpath;
+  res[1] = css;
+  return res
 }
 
 function getLocator(e, paths) {
@@ -172,18 +159,22 @@ function getLocator(e, paths) {
     if(i === (paths.length - 1)) {
       // Main Element with all attribute
       // Xpath=//tagname[@attribute='value']
-      xpath = createXpath(el, '');
-      css = createCSS(el, '');
+      const path = createPaths(el, '', '');
+      if (path) {
+        xpath = path[0];
+        css = path[1]
+      }
       if (el.innerText && el.innerText.length <= 15) {
         xpath.push('xpath=//' + el.node + `[normalize-space(text())='${el.innerText}']`);
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
-      const relativeXpath = createXpath(el, xpath[0]);
-      xpath = xpath.concat(relativeXpath);
-      css = css.concat(createCSS(el, css[0]))
+      const relativePaths = createPaths(el, xpath[0], css[0]);
+      if (relativePaths) {
+        xpath = xpath.concat(relativePaths[0]);
+        css = css.concat(relativePaths[1]);
+      }
     }
-    // css.push('css=' +);
   }
   return locator.concat(css, xpath);
 }
