@@ -99,6 +99,10 @@ function hasOnlyAlphabet(str) {
   return (regex.test(str));
 }
 
+function getElementByXpath(path) {
+  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+}
+
 function isUniqueID(id) {
   // document.getElementById
   // const el = document.getElementById(id);
