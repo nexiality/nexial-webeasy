@@ -1,10 +1,4 @@
-let contextMenus = chrome.contextMenus,
-    data = {
-      step   : '',
-      command: '',
-      param:   {},
-      actions: {}
-    };
+let contextMenus = chrome.contextMenus;
 
 // contextMenus.removeAll(function () {
 chrome.runtime.onInstalled.addListener(function() {
@@ -54,22 +48,29 @@ chrome.runtime.onInstalled.addListener(function() {
                       });
 });
 
-function callbackContextmenu(info, tab) {
-  chrome.tabs.sendMessage(tab.id, {action: "getContextMenuElement"}, {frameId: info.frameId}, response => {
+function callbackContextmenu(info, tab, data) {
+  chrome.tabs.sendMessage(tab.id, {action: "getContextMenuElement", payload: data}, {frameId: info.frameId}, response => {
     if(response.res === 'contextmenu') {
-      data.step = response.step;
-      for (let key in response.param) {
-        if ((data.param).hasOwnProperty(key)) {
-          data.param[key] = response.param[key]
-        }
-      }
+      console.log('--------------------------------Final push for context menu ', response.data)
+      inspectElementList.push(response.data);
+      console.log('inspectElementList ----- ', inspectElementList)
+      // data.step = response.step;
+      // for (let key in response.param) {
+      //   if ((data.param).hasOwnProperty(key)) {
+      //     data.param[key] = response.param[key]
+      //   }
+      // }
     }
-    // console.log('Final push for context menu ', data)
-    inspectElementList.push(data);
   });
 }
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
+  let data = {
+      step   : '',
+      command: '',
+      param:   {},
+      actions: {}
+    };
   // Todo: text value presnet in Img
   switch(info.menuItemId) {
     case 'assertElementPresent':
@@ -100,7 +101,6 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
       data.param['waitMs'] = '';
       break;
   }
-  // console.log('context MENU', data)
-  callbackContextmenu(info, tab);
+  callbackContextmenu(info, tab, data);
 });
 

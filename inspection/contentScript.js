@@ -299,14 +299,15 @@ document.addEventListener("contextmenu", function (event) {
 }, true);
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  console.log('--------------------------', request.action, '---------------------------')
   if (request.action === "getContextMenuElement") {
     const paths = getDomPath(clickedElement.target);
-    const param = {
-      locator: getLocator(clickedElement.target, paths),
-      text: clickedElement.target.text,
-      value: clickedElement.target.value
-    };
-    sendResponse({res: "contextmenu", step: step++, param: param});
+    var payload = request.payload;
+    if((payload.param).hasOwnProperty('text')) payload.param.text =  clickedElement.target.text;
+    if((payload.param).hasOwnProperty('locator')) payload.param.locator = getLocator(clickedElement.target, paths)
+    if((payload.param).hasOwnProperty('value')) payload.param.value =  clickedElement.target.value;
+
+    sendResponse({res: "contextmenu", data: payload});
   }
   else if (request.action === 'start') start();
   else if (request.action === 'stop' || request.action === 'paused') stop();
