@@ -252,12 +252,12 @@ function getCssPath(el) {
 function sendInspectInfo(command, event) {
   const paths = getDomPath(event.target);
   var locator = getLocator(event.target, paths);
-  // if (!locator.length) {
-  //   locator =  [
-  //     'css=' + getCssPath(event.target),
-  //     'xpath=' + getXPath(event.target)
-  //   ]
-  // }
+  if (!locator.length) {
+    locator =  [
+      'css=' + getCssPath(event.target),
+      'xpath=' + getXPath(event.target)
+    ]
+  }
   // console.log('LOCATOR ###################', locator)
   var data = {
     step   : step++,
