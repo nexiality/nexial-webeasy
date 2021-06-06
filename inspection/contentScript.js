@@ -54,6 +54,7 @@ function onClickElement(event) {
     sendInspectInfo('type(locator,value)', focusedInput);
     focusedInput = null;
   }
+  if(event.button === 1) return;
 
   if(target.tagName === 'INPUT' && target.type === 'submit') {
     sendInspectInfo('click(locator)', event);
