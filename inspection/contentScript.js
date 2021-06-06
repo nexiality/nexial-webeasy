@@ -304,6 +304,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "getContextMenuElement") {
     const paths = getDomPath(clickedElement.target);
     var payload = request.payload;
+    payload.step = step++;
     if((payload.param).hasOwnProperty('text')) payload.param.text =  clickedElement.target.text;
     if((payload.param).hasOwnProperty('locator')) payload.param.locator = getLocator(clickedElement.target, paths)
     if((payload.param).hasOwnProperty('value')) payload.param.value =  clickedElement.target.value;
