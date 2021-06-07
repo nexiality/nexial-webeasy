@@ -22,7 +22,7 @@ function start(stepValue) {
 }
 
 function stop() {
-  step = 2;
+  step = null;
   document.removeEventListener("focus", handleFocus, true);
   // document.removeEventListener("focusout", handleFocusout);
   document.removeEventListener("mousedown", onClickElement);
