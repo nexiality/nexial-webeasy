@@ -113,6 +113,8 @@ function saveRow(step) {
 function toggleRow(/*Number*/i, /*Boolean*/enable) {
   document.getElementById("delete_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("edit_" + i).style.display = enable ? "inline-block" : "none";
+  document.getElementById("addNew_" + i).style.display = enable ? "inline-block" : "none";
+  document.getElementById("duplicate_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("up_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("down_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("save_" + i).style.display = enable ? "none" : "inline-block";
