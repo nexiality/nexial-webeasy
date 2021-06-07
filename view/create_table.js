@@ -136,7 +136,7 @@ function createAddNewButton(step) {
       actions: {}
     }
     addRow(payload, indexAt + 1);
-    updateTableStep();
+    updateTableRow();
   };
   return button;
 }
@@ -151,7 +151,7 @@ function createDuplicateButton(step) {
     let payload = Object.assign({}, getInspectListObject(step));
     payload.step = '';
     addRow(payload);
-    updateTableStep();
+    updateTableRow();
   };
   return button;
 }
@@ -166,7 +166,7 @@ function createDeleteButton(step) {
     // Todo Update background.js
     // TODO Update inspectElementList
     document.getElementById("step_" + step).remove();
-    updateTableStep();
+    updateTableRow();
   };
   return button;
 }
@@ -250,7 +250,7 @@ function createUpDownButton(step, direction) {
     else if(direction !== 1 && indexAt !== 1) row.prev().before(row);
     else console.log("return")
 
-    updateTableStep();
+    updateTableRow();
   };
   return button;
 }
@@ -313,10 +313,18 @@ function createInputBox(data, editable = true) {
   return input;
 }
 
-function updateTableStep() {
+function updateTableRow() {
   const rows = table.tBodies[0].rows;
+
   for (i = 0; i < rows.length; i++) {
-    rows[i].cells[0].innerHTML = i + 1;
+    rows[i].cells[0].innerHTML = i + 1;    // Update step cell
+
+    // Make first row's up and last row's down disable
+    const step = rows[i].getAttribute("id").split('_')[1];
+    document.getElementById("up_" + step).disabled = false;
+    document.getElementById("down_" + step).disabled = false;
+    if(i === 0) document.getElementById("up_" + step).disabled = true;
+    else if(i === rows.length - 1) document.getElementById("down_" + step).disabled = true;
   }
 }
 
@@ -409,4 +417,5 @@ function tableFromJson() {
   let divShowData = document.getElementById('showData');
   divShowData.innerHTML = "";
   divShowData.appendChild(table);
+  updateTableRow();
 }
