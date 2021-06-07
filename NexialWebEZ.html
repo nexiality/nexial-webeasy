@@ -23,15 +23,23 @@
       <div class="col-12">
         <div class="mt-1">
           <form>
-            <div class="form-group row" id="startOption" style="flex-wrap: nowrap">
-              <div class="col-sm-9 row">
-                <label for="url" class="col-form-label ml-3 mr-2">Enter URL:</label>
-                <input type="text" class="col-sm-7 form-control" id="url" placeholder="URL">
-                <div class="valid-feedback">Please enter a valid URL (e.g. <code>https://www.google.com</code>)</div>
-                <input type="button" class="btn btn-primary mb-1" id="startInspect" value="Inspect">
-                <span class="badge" data-toggle="modal" data-target="#exampleModal" id="startInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+            <div class="form-row" id="startOption">
+              <div class="form-group col-9">
+                <div class="form-row">
+                  <div class="col">
+                    <label for="url" class="col-form-label ml-3 mr-2">Enter URL:</label>
+                  </div>
+                  <div class="col-7">
+                    <input type="text" class="col-sm-7 form-control" id="url" placeholder="URL">
+                    <div class="valid-feedback">Please enter a valid URL (e.g. <code>https://www.google.com</code>)</div>
+                  </div>
+                  <div class="col">
+                    <input type="button" class="btn btn-primary mb-1" id="startInspect" value="Inspect">
+                    <span class="badge" data-toggle="modal" data-target="#exampleModal" id="startInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+                  </div>
+                </div>
               </div>
-              <div class="ml-auto mr-3 float-right">
+              <div class="form-group col-3">
                 <input type="button" class="btn btn-primary mb-1" id="nowInspect" value="Inspect Current Page">
                 <span class="badge" data-toggle="modal" data-target="#exampleModal" id="nowInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
               </div>
