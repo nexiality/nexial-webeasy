@@ -102,19 +102,14 @@ function hasOnlyAlphabet(str) {
   return (regex.test(str));
 }
 
-function getElementByXpath(path) {
-  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-}
-
 function isUniqueID(id) {
   // document.getElementById
   // const el = document.getElementById(id);
   // if (el.length)
 }
 
-function isXpathWorking(className) {
-  // document.getElementsByClassName("a4bIc");
-  // xpath 
+function getElementByCss(cssPath) {
+  return document.querySelectorAll(cssPath).singleNodeValue;
 }
 
 function getElementByXpath(path) {
