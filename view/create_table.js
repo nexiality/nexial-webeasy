@@ -134,6 +134,7 @@ function createAddNewButton(step) {
       actions: {}
     }
     addRow(payload, indexAt + 1);
+    updateTableStep();
   };
   return button;
 }
@@ -148,6 +149,7 @@ function createDuplicateButton(step) {
     let payload = Object.assign({}, getInspectListObject(step));
     payload.step = '';
     addRow(payload);
+    updateTableStep();
   };
   return button;
 }
@@ -161,7 +163,8 @@ function createDeleteButton(step) {
   button.onclick = function (e) {
     // Todo Update background.js
     // TODO Update inspectElementList
-    document.getElementById("step_" + step).remove()
+    document.getElementById("step_" + step).remove();
+    updateTableStep();
   };
   return button;
 }
@@ -239,11 +242,13 @@ function createUpDownButton(step, direction) {
   button.onclick = function (e) {
     var row = $(this).closest('tr');
     const indexAt = document.getElementById('step_' + step).rowIndex;
-    const totalRowCount = (table.rows.length - 1);
+    const totalRowCount = table.tBodies[0].rows.length;
 
     if(direction === 1 && indexAt !== totalRowCount) row.next().after(row);
     else if(direction !== 1 && indexAt !== 1) row.prev().before(row);
     else console.log("return")
+
+    updateTableStep();
   };
   return button;
 }
@@ -306,6 +311,13 @@ function createInputBox(data, editable = true) {
   return input;
 }
 
+function updateTableStep() {
+  const rows = table.tBodies[0].rows;
+  for (i = 0; i < rows.length; i++) {
+    rows[i].cells[0].innerHTML = i + 1;
+  }
+}
+
 function createSubTable(data, step) {
 
   const param_table = document.createElement("table");
@@ -319,7 +331,7 @@ function createSubTable(data, step) {
 }
 
 function addRow(data, indexAt = -1) {
-  let tr = table.insertRow(indexAt);
+  let tr = table.tBodies[0].insertRow(indexAt);
   if (!data['step']) {
     data['step'] = currentStep + 1;
     inspectElementList.push(data)
@@ -347,6 +359,7 @@ function addRow(data, indexAt = -1) {
       cell.appendChild(cmdDropdown);
     } else {
       cell.innerHTML = currentStep;
+      // cell.innerHTML = (table.tBodies[0].rows.length);
     }
   }
 }
@@ -370,7 +383,7 @@ function tableFromJson() {
 
   // Create table header row using the extracted headers above.
   let head = table.createTHead();
-  let tr = table.insertRow(-1);                                       // table row.
+  let tr = head.insertRow(-1);                                       // table row.
 
 
   // table header.
@@ -384,7 +397,7 @@ function tableFromJson() {
     tr.appendChild(th);
   }
 
-  let body = table.createTBody();
+  const body = table.createTBody();
   // add json data to the table as rows.
   for (i = 0; i < inspectElementList.length; i++) {
     addRow(inspectElementList[i]);

@@ -21,6 +21,7 @@ function start() {
 }
 
 function stop() {
+  step = 2;
   document.removeEventListener("focus", handleFocus, true);
   // document.removeEventListener("focusout", handleFocusout);
   document.removeEventListener("mousedown", onClickElement);
