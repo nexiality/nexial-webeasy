@@ -109,10 +109,11 @@ function isUniqueID(id) {
 }
 
 function getElementByCss(cssPath) {
-  return document.querySelectorAll(cssPath).singleNodeValue;
+  return document.querySelectorAll(cssPath);
 }
 
 function getElementByXpath(path) {
+  // check id, name and xpath selector
   return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 }
 
