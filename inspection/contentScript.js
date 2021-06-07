@@ -1,6 +1,6 @@
 var clickedElement = null;
 var focusedInput = null;
-var step = 2;
+var step = null;
 const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'class', 'alt'];  //Order priority wise
 const findClickedElementParent = ['path', 'svg', 'i', 'span', 'div']
 
@@ -11,7 +11,8 @@ style.type = "text/css";
 style.href = chrome.extension.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
-function start() {
+function start(stepValue) {
+  step = stepValue + 1;
   focusedInput = null;
   document.addEventListener("focus", handleFocus, true);
   // document.addEventListener("focusout", handleFocusout);
@@ -312,6 +313,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     sendResponse({res: "contextmenu", data: payload});
   }
-  else if (request.action === 'start') start();
+  else if (request.action === 'start') start(request.startStep);
   else if (request.action === 'stop' || request.action === 'paused') stop();
 });

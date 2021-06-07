@@ -2,6 +2,7 @@ var is_inspecting = 'stop';
 var inspectElementList = [];
 var currentTab = null;
 var inspectingTab = null;
+var step = 1;
 // Add a `manifest` property to the `chrome` object.
 chrome.manifest = chrome.app.getDetails();
 
@@ -14,7 +15,7 @@ function updateBadge() {
 }
 
 function loadListener(url) {
-  inspectElementList.push({step: 1, command: 'open(url)', param: {url: url}, actions: ''});
+  inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
   // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
     // Process |result| here (or maybe do nothing at all).
     // console.log('execute script : ', result)
@@ -100,7 +101,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   console.log('changeInfo.status = ', changeInfo.status)
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
     // console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting);
-      sendRunTimeMessage({action: 'start'});
+      sendRunTimeMessage({action: 'start', startStep: step});
       updateBadge();
     console.log('tabId = ', tabId);
     console.log('onUpdated currentTab == ', currentTab, ' changeInfo = ', changeInfo, ' tab = ', tab)
@@ -119,17 +120,19 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
       inspectingTab = JSON.parse(JSON.stringify(currentTab));
       createOpenURLEntry(action.value);
       sendResponse({msg: 'start inspecting'});
-      sendRunTimeMessage({action: 'start'})
+      sendRunTimeMessage({action: 'start', startStep: step})
       break;
     }
     case 'stop_inspecting': {
       is_inspecting = 'stop';
+      step = 1;
       sendResponse({json: inspectElementList});
       sendRunTimeMessage({action: 'stop'})
       break;
     }
     case 'inspecting': {
-      console.log(action.value)
+      console.log(action.cmd, action.value)
+      step = action.value.step;
       inspectElementList.push(action.value);
       break;
     }
