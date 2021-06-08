@@ -185,13 +185,14 @@ function getLocator(e, paths) {
 function getDomPath(el, command) {
   var stack = [];
   while (el.parentNode != null) {
-    // var sibCount = 0;
-    // var sibIndex = 0;
     var node = {};
     node['node'] = el.nodeName.toLowerCase();
     node['innerText'] = el.innerText;
     node['attribute'] = [];
-    if (findClickedElementParent.includes(node['node']) && command === 'click(locator)') {
+
+    if ((findClickedElementParent.includes(node['node']) && command === 'click(locator)') ||
+       (['html', 'body'].includes(node['node']))
+    ) {
       el = el.parentNode;
       continue;
     }
@@ -207,9 +208,7 @@ function getDomPath(el, command) {
         if(attrs) node['attribute'][attrs.name] = attrs.value;
       }
     }
-    // if (sibCount > 1) { node['eq'] = ':eq(' + sibIndex + ')'; }
-    // removes the html & body element
-    if (!['html', 'body'].includes(node['node'])) { stack.unshift(node) }
+    stack.unshift(node);
     el = el.parentNode;
   }
   return stack;
