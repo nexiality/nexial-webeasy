@@ -151,8 +151,8 @@ function createPaths(el, baseXpathNode, baseCssPath) {
 
 function getLocator(e, paths) {
   var locator = [], xpath = [], css = [];
-  const tag = (e.tagName).toLowerCase();
-  const activeEl = paths[paths.length - 1];
+  // const tag = (e.tagName).toLowerCase();
+  // const activeEl = paths[paths.length - 1];
   
   if (e.id) locator.push("id=" + e.id);
   if (e.name) locator.push("name=" + e.name);
