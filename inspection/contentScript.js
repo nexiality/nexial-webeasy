@@ -49,6 +49,7 @@ function handleFocusout(event) {
 }
 
 function onClickElement(event) {
+  if(event.button === 1) return;
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
 
@@ -56,7 +57,6 @@ function onClickElement(event) {
     sendInspectInfo('type(locator,value)', focusedInput);
     focusedInput = null;
   }
-  if(event.button === 1) return;
 
   if(target.tagName === 'INPUT' && target.type === 'submit') {
     sendInspectInfo('click(locator)', event);
@@ -253,6 +253,12 @@ function getCssPath(el) {
 }
 
 function sendInspectInfo(command, event) {
+  var data = {
+    step   : step++,
+    command: command,
+    param:   {},
+    actions: {}
+  };
   const paths = getDomPath(event.target);
   var locator = getLocator(event.target, paths);
   if (!locator.length) {
@@ -261,25 +267,29 @@ function sendInspectInfo(command, event) {
       'xpath=' + getXPath(event.target)
     ]
   }
-  // console.log('LOCATOR ###################', locator)
-  var data = {
-    step   : step++,
-    command: command,
-    param:   {
-      locator: locator
-    },
-    actions: {}
-  };
 
   switch(command) {
     case 'click(locator)':
+    case 'assertElementPresent(locator)':
+      data.param['locator'] = locator;
       break;
     case 'type(locator,value)':
+    case 'assertValue(locator,value)':
+      data.param['locator'] = locator;
       data.param['value'] = event.target.value;
       break;
-
     case 'select(locator,text)':
+      data.param['locator'] = locator;
       data.param['text'] = event.target[event.target.selectedIndex].text;
+      break;
+    case 'assertTextPresent(text)':
+    case 'waitForTextPresent(text)':
+      data.param['text'] = event.target.innerText;
+      break;
+    case 'waitForElementPresent(locator,waitMs)':
+    case 'waitUntilVisible(locator,waitMs)':
+      data.param['locator'] = locator;
+      data.param['waitMs'] = '';
       break;
   }
 
@@ -298,16 +308,9 @@ document.addEventListener("contextmenu", function (event) {
 }, true);
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log('--------------------------', request.action, '---------------------------')
   if (request.action === "getContextMenuElement") {
-    const paths = getDomPath(clickedElement.target);
-    var payload = request.payload;
-    payload.step = step++;
-    if((payload.param).hasOwnProperty('text')) payload.param.text =  clickedElement.target.text;
-    if((payload.param).hasOwnProperty('locator')) payload.param.locator = getLocator(clickedElement.target, paths)
-    if((payload.param).hasOwnProperty('value')) payload.param.value =  clickedElement.target.value;
-
-    sendResponse({res: "contextmenu", data: payload});
+    sendInspectInfo(request.command, clickedElement)
+    // sendResponse({res: "contextmenu", data: payload});
   }
   else if (request.action === 'start') start(request.startStep);
   else if (request.action === 'stop' || request.action === 'paused') stop();

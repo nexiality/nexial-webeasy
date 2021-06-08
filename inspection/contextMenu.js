@@ -49,58 +49,35 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 function callbackContextmenu(info, tab, data) {
-  chrome.tabs.sendMessage(tab.id, {action: "getContextMenuElement", payload: data}, {frameId: info.frameId}, response => {
-    if(response.res === 'contextmenu') {
-      console.log('--------------------------------Final push for context menu ', response.data)
-      inspectElementList.push(response.data);
-      console.log('inspectElementList ----- ', inspectElementList)
-      // data.step = response.step;
-      // for (let key in response.param) {
-      //   if ((data.param).hasOwnProperty(key)) {
-      //     data.param[key] = response.param[key]
-      //   }
-      // }
-    }
+  chrome.tabs.sendMessage(tab.id, {action: "getContextMenuElement", command: data}, {frameId: info.frameId}, response => {
+    if(response.res === 'contextmenu') { }
   });
 }
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
-  let data = {
-      step   : '',
-      command: '',
-      param:   {},
-      actions: {}
-    };
+  var command = null;
+  console.log('command %%%%%%%%%%%   ', command)
   // Todo: text value presnet in Img
   switch(info.menuItemId) {
     case 'assertElementPresent':
-      data.command = 'assertElementPresent(locator)';
-      data.param['locator'] = '';
+      command = 'assertElementPresent(locator)';
       break;
     case 'assertTextPresent':
-      data.command = 'assertTextPresent(text)';
-      data.param['text'] = '';
+      command = 'assertTextPresent(text)';
       break;
     case 'assertValue':
-      data.command = 'assertValue(locator,value)';
-      data.param['locator'] = '';         // Input, textare, selectbox, radio, checkbox, Img
-      data.param['value'] = '';
+      command = 'assertValue(locator,value)';    // Input, textare, selectbox, radio, checkbox, Img
       break;
     case 'waitForElementPresent':
-      data.command = 'waitForElementPresent(locator,waitMs)';
-      data.param['locator'] = '';
-      data.param['waitMs'] = '';
+      command = 'waitForElementPresent(locator,waitMs)';
       break;
     case 'waitForText':
-      data.command = 'waitForTextPresent(text)';
-      data.param['text'] = '';           // text in div, p, span, i
+      command = 'waitForTextPresent(text)';     // text in div, p, span, i
       break;
     case 'waitUntilVisible':
-      data.command = 'waitUntilVisible(locator,waitMs)';
-      data.param['locator'] = '';
-      data.param['waitMs'] = '';
+      command = 'waitUntilVisible(locator,waitMs)';
       break;
   }
-  callbackContextmenu(info, tab, data);
+  callbackContextmenu(info, tab, command);
 });
 
