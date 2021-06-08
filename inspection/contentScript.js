@@ -2,6 +2,7 @@ var clickedElement = null;
 var focusedInput = null;
 var step = null;
 const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'alt', 'class'];  //Order priority wise
+const clickableElement = ['button', 'a', 'li', 'path', 'svg', 'i', 'span'];
 const findClickedElementParent = ['path', 'svg', 'i', 'span'];
 
 // Append Style
@@ -58,13 +59,12 @@ function onClickElement(event) {
     focusedInput = null;
   }
 
-  if(target.tagName === 'INPUT' && target.type === 'submit') {
-    sendInspectInfo('click(locator)', event);
-  } else if((target.tagName === 'DIV' && target.innerText) || target.tagName === 'BUTTON') {
-    sendInspectInfo('click(locator)', event);
-  } else if (findClickedElementParent.includes(target.tagName)) {
-    sendInspectInfo('click(locator)', event);
-  }
+  if (
+    (target.tagName === 'INPUT' && target.type === 'submit') ||
+    (target.tagName === 'DIV' && target.innerText) ||
+    clickableElement.includes(target.tagName.toLowerCase())
+  )
+  sendInspectInfo('click(locator)', event);
 }
 
 function handleChange(event) {
