@@ -4,6 +4,7 @@ var step = null;
 const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'alt', 'class'];  //Order priority wise
 const clickableElement = ['button', 'a', 'li', 'path', 'svg', 'i', 'span'];
 const findClickedElementParent = ['path', 'svg', 'i', 'span'];
+const innerTextLength = 15;
 
 // Append Style
 var style = document.createElement("link");
@@ -167,8 +168,8 @@ function getLocator(e, paths) {
         xpath = path.xpath;
         css = path.css;
       }
-      if (el.innerText && el.innerText.length <= 15) {
-        xpath.push('xpath=//' + el.node + `[normalize-space(text())='${el.innerText}']`);
+      if (el.innerText && el.innerText.length <= innerTextLength) {
+        xpath.push('xpath=//' + el.node + `[normalize-space(string(.))=normalize-space('${el.innerText}')]`);
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
