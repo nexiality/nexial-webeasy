@@ -154,8 +154,8 @@ function getLocator(e, paths) {
   const tag = (e.tagName).toLowerCase();
   const activeEl = paths[paths.length - 1];
   
-  if (e.id) locator.push("id='" + e.id + "'");
-  if (e.name) locator.push("name='" + e.name + "'");
+  if (e.id) locator.push("id=" + e.id);
+  if (e.name) locator.push("name=" + e.name);
 
   for (var i = (paths.length - 1); i >= 0; i--) {
     const el = paths[i];
