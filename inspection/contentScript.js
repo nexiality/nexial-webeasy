@@ -211,6 +211,11 @@ function getDomPath(el, command) {
     stack.unshift(node);
     el = el.parentNode;
   }
+  const result = stack.filter(path => ['form', 'header', 'main', 'section', 'footer'].includes(path.node));
+  if(result.length) {
+    result.push(stack[stack.length -1])
+    return result;
+  }
   return stack;
 }
 
