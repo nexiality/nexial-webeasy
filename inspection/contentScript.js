@@ -2,7 +2,7 @@ var clickedElement = null;
 var focusedInput = null;
 var step = null;
 const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'class', 'alt'];  //Order priority wise
-const findClickedElementParent = ['path', 'svg', 'i', 'span', 'div']
+const findClickedElementParent = ['path', 'svg', 'i', 'span'];
 
 // Append Style
 var style = document.createElement("link");
@@ -61,6 +61,8 @@ function onClickElement(event) {
   if(target.tagName === 'INPUT' && target.type === 'submit') {
     sendInspectInfo('click(locator)', event);
   } else if((target.tagName === 'DIV' && target.innerText) || target.tagName === 'BUTTON') {
+    sendInspectInfo('click(locator)', event);
+  } else if (findClickedElementParent.includes(target.tagName)) {
     sendInspectInfo('click(locator)', event);
   }
 }
@@ -179,16 +181,19 @@ function getLocator(e, paths) {
   return locator.concat(css, xpath);
 }
 
-function getDomPath(el) {
+function getDomPath(el, command) {
   var stack = [];
   while (el.parentNode != null) {
-    var sibCount = 0;
-    var sibIndex = 0;
+    // var sibCount = 0;
+    // var sibIndex = 0;
     var node = {};
     node['node'] = el.nodeName.toLowerCase();
     node['innerText'] = el.innerText;
     node['attribute'] = [];
-
+    if (findClickedElementParent.includes(node['node']) && command === 'click(locator)') {
+      el = el.parentNode;
+      continue;
+    }
     if (el.hasAttributes()) {
       // var attrs = el.attributes;
       // for(var i = attrs.length - 1; i >= 0; i--) {
@@ -201,7 +206,7 @@ function getDomPath(el) {
         if(attrs) node['attribute'][attrs.name] = attrs.value;
       }
     }
-    if (sibCount > 1) { node['eq'] = ':eq(' + sibIndex + ')'; }
+    // if (sibCount > 1) { node['eq'] = ':eq(' + sibIndex + ')'; }
     // removes the html & body element
     if (!['html', 'body'].includes(node['node'])) { stack.unshift(node) }
     el = el.parentNode;
@@ -259,7 +264,7 @@ function sendInspectInfo(command, event) {
     param:   {},
     actions: {}
   };
-  const paths = getDomPath(event.target);
+  const paths = getDomPath(event.target, command);
   var locator = getLocator(event.target, paths);
   if (!locator.length) {
     locator =  [
