@@ -1,7 +1,7 @@
 var clickedElement = null;
 var focusedInput = null;
 var step = null;
-const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'class', 'alt'];  //Order priority wise
+const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'alt', 'class'];  //Order priority wise
 const findClickedElementParent = ['path', 'svg', 'i', 'span'];
 
 // Append Style
@@ -129,6 +129,7 @@ function createPaths(el, baseXpathNode, baseCssPath) {
   for (const attr in el.attribute) {
     var value = el.attribute[attr];
     if(attr === 'class') {
+      if (res['xpath'].length) return res;
       const classList = el.attribute['class'];
       for (var j = 0; j <= (classList.length - 1); j++) {
         if (hasOnlyAlphabet(classList[j])) {
