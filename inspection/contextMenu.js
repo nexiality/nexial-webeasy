@@ -40,7 +40,7 @@ chrome.runtime.onInstalled.addListener(function() {
                         title   : "The selected text is found",
                         id      : "waitForText",
                         parentId: "wait...",
-                        contexts: ["all"]
+                        contexts: ["selection"]
                       });
   contextMenus.create({
                         title   : "This element is visible",
