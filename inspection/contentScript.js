@@ -152,7 +152,7 @@ function createPaths(el, baseXpathNode, baseCssPath) {
 function getLocator(e, paths) {
   var locator = [], xpath = [], css = [];
   // const tag = (e.tagName).toLowerCase();
-  // const activeEl = paths[paths.length - 1];
+  const activeElnode = paths[paths.length - 1].node;
   
   if (e.id) locator.push("id=" + e.id);
   if (e.name) locator.push("name=" + e.name);
@@ -173,7 +173,10 @@ function getLocator(e, paths) {
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
-      const relativePaths = createPaths(el, xpath[0], css[0]);
+      var activeElxpath =  xpath[0] ? xpath[0] : 'xpath=//' + activeElnode,
+          activeElcss = css[0] ? css[0] : 'css=' + activeElnode;
+
+      const relativePaths = createPaths(el, activeElxpath, activeElcss);
       if (relativePaths) {
         xpath = xpath.concat(relativePaths.xpath);
         css = css.concat(relativePaths.css);
