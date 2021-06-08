@@ -3,45 +3,53 @@ let contextMenus = chrome.contextMenus;
 // contextMenus.removeAll(function () {
 chrome.runtime.onInstalled.addListener(function() {
   contextMenus.create({
-                        title   : "AssertElementPresent",
+    title   : "Assert that...",
+    id      : "assert...",
+    contexts: ["all"]
+  });
+  contextMenus.create({
+                        title   : "This element is present",
                         id      : "assertElementPresent",
+                        parentId: "assert...",
                         contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "AssertTextPresent",
+                        title   : "This element has the text shown",
                         id      : "assertTextPresent",
+                        parentId: "assert...",
                         contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "AssertValue",
+                        title   : "This input element has the current value",
                         id      : "assertValue",
+                        parentId: "assert...",
                         contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "Wait...",
+                        title   : "Wait until...",
                         id      : "wait...",
                         contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "WaitForElementPresent",
+                        title   : "This element is available",
                         id      : "waitForElementPresent",
                         parentId: "wait...",
                         contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "WaitForText",
+                        title   : "The selected text is found",
                         id      : "waitForText",
                         parentId: "wait...",
                         contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "WaitUntilVisible",
+                        title   : "This element is visible",
                         id      : "waitUntilVisible",
                         parentId: "wait...",
                         contexts: ["all"]
                       });
   contextMenus.create({
-                        title   : "WaitUntilEnabled",
+                        title   : "This element is enabled",
                         id      : "waitUntilEnabled",
                         parentId: "wait...",
                         contexts: ["all"]
