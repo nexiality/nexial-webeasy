@@ -314,7 +314,8 @@ document.addEventListener("contextmenu", function (event) {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "getContextMenuElement") {
-    sendInspectInfo(request.command, clickedElement)
+    sendInspectInfo(request.command, clickedElement);
+    clickedElement = null;
     // sendResponse({res: "contextmenu", data: payload});
   }
   else if (request.action === 'start') start(request.startStep);
