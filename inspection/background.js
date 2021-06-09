@@ -1,13 +1,12 @@
 var is_inspecting = 'stop';
 var inspectElementList = [];
-var currentTab = null;
 var inspectingTab = null;
 var step = 1;
 // Add a `manifest` property to the `chrome` object.
 chrome.manifest = chrome.app.getDetails();
 
 function updateBadge() {
-  if (is_inspecting === 'start') {
+  if (is_inspecting === 'start' && inspectingTab) {
     console.log(inspectingTab, "%%%%%%%%%%%%%%%%%%%%%%%")
     chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
     chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
@@ -28,16 +27,16 @@ function createOpenURLEntry(url) {
   if (url) {
     chrome.tabs.create({"url": url}, function (tab) {
       // console.log('given url is open', url)
-      inspectingTab['url'] = url;
-      loadListener(url)
+      inspectingTab = JSON.parse(JSON.stringify(tab));
+      updateBadge();
+      loadListener(url);
     });
   } else {
     chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
       if (!tabs || tabs.length < 1) return;
-      //Todo check on new tab open
-      if (!inspectingTab) { inspectingTab = {}; }
-      inspectingTab['url'] = tabs[0].url;
-      loadListener(tabs[0].url);
+      inspectingTab = JSON.parse(JSON.stringify(tabs[0]));
+      loadListener(inspectingTab.url);
+      updateBadge();
     });
   }
 }
@@ -81,25 +80,6 @@ chrome.windows.getAll({
   }
 });
 
-chrome.tabs.onActivated.addListener(tab => {
-  console.log('onActivated currentTab == ', tab);
-  currentTab = tab;
-  // chrome.tabs.get(tab.tabId, current_tab_info => {
-  //   console.log('current_tab_info ---------- ', current_tab_info.url);
-  //   currentTab = current_tab_info.url;
-  //   //match the url with nexial url
-  //   if (/^https:\/\/www\.google/.test(current_tab_info.url)) {
-  //     //toDo
-  //     //add context menu if its nexial to downlad json
-  //     //add button to copy or download json
-  //     //clipbord* (tab) ... save in cookie-, file*(tab space) txt csv
-  //     // console.log('Its google page')
-  //     // inject css
-  //     // chrome.tabs.insertCSS(null, {file: 'mystyles.css'});
-  //   }
-  // });
-});
-
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   console.log('changeInfo.status = ', changeInfo.status)
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
@@ -107,7 +87,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     sendRunTimeMessage({action: 'start', startStep: step});
     updateBadge();
     console.log('tabId = ', tabId);
-    console.log('onUpdated currentTab == ', currentTab, ' changeInfo = ', changeInfo, ' tab = ', tab)
+    console.log(' changeInfo = ', changeInfo, ' tab = ', tab)
     // console.log('tab = ', tab);
     // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
     // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
@@ -115,20 +95,19 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 })
 
 chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
-  console.log('current tab == ', currentTab)
+
   switch (action.cmd) {
     case 'start_inspecting': {
       inspectElementList = [];
       is_inspecting = 'start';
-      inspectingTab = JSON.parse(JSON.stringify(currentTab));
       createOpenURLEntry(action.value);
-      sendResponse({msg: 'start inspecting'});
       sendRunTimeMessage({action: 'start', startStep: step})
       break;
     }
     case 'stop_inspecting': {
       is_inspecting = 'stop';
       step = 1;
+      inspectingTab = null;
       sendResponse({json: inspectElementList});
       sendRunTimeMessage({action: 'stop'})
       break;
