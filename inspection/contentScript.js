@@ -2,7 +2,7 @@ var clickedElement = null;
 var focusedInput = null;
 var step = null;
 const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'alt', 'class'];  //Order priority wise
-const clickableElement = ['button', 'a', 'li', 'path', 'svg', 'i', 'span'];
+const clickableElement = ['button', 'a', 'li', 'path', 'svg', 'i', 'span', 'h1', 'h2', 'h3', 'h4', 'h5'];
 const findClickedElementParent = ['path', 'svg', 'i', 'span'];
 const innerTextLength = 15;
 
@@ -282,7 +282,8 @@ function sendInspectInfo(command, event) {
     ]
   }
 
-  switch(command) {
+  // console.log('command = ' + command);
+  switch (command) {
     case 'click(locator)':
     case 'assertElementPresent(locator)':
       data.param['locator'] = locator;
@@ -291,6 +292,10 @@ function sendInspectInfo(command, event) {
     case 'assertValue(locator,value)':
       data.param['locator'] = locator;
       data.param['value'] = event.target.value;
+      break;
+    case 'assertText(locator,text)':
+      data.param['locator'] = locator;
+      data.param['text'] = event.target.value;
       break;
     case 'select(locator,text)':
       data.param['locator'] = locator;
@@ -302,6 +307,7 @@ function sendInspectInfo(command, event) {
       break;
     case 'waitForElementPresent(locator,waitMs)':
     case 'waitUntilVisible(locator,waitMs)':
+    case 'waitUntilEnabled(locator,waitMs)':
       data.param['locator'] = locator;
       data.param['waitMs'] = '';
       break;
@@ -326,7 +332,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     sendInspectInfo(request.command, clickedElement);
     clickedElement = null;
     // sendResponse({res: "contextmenu", data: payload});
+  } else if (request.action === 'start') {
+    start(request.startStep);
+  } else if (request.action === 'stop' || request.action === 'paused') {
+    stop();
   }
-  else if (request.action === 'start') start(request.startStep);
-  else if (request.action === 'stop' || request.action === 'paused') stop();
+
+  return true;
 });

@@ -11,7 +11,9 @@ function updateBadge() {
     console.log(inspectingTab, "%%%%%%%%%%%%%%%%%%%%%%%")
     chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
     chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
-  } else  chrome.browserAction.setBadgeText({ tabId: (inspectingTab? inspectingTab.tabId : null), text: '' });
+  } else {
+    chrome.browserAction.setBadgeText({ tabId: (inspectingTab? inspectingTab.tabId : null), text: '' });
+  }
 }
 
 function loadListener(url) {
@@ -32,7 +34,8 @@ function createOpenURLEntry(url) {
   } else {
     chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
       if (!tabs || tabs.length < 1) return;
-      //Todo check on new tab open 
+      //Todo check on new tab open
+      if (!inspectingTab) { inspectingTab = {}; }
       inspectingTab['url'] = tabs[0].url;
       loadListener(tabs[0].url);
     });
@@ -101,8 +104,8 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   console.log('changeInfo.status = ', changeInfo.status)
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
     // console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting);
-      sendRunTimeMessage({action: 'start', startStep: step});
-      updateBadge();
+    sendRunTimeMessage({action: 'start', startStep: step});
+    updateBadge();
     console.log('tabId = ', tabId);
     console.log('onUpdated currentTab == ', currentTab, ' changeInfo = ', changeInfo, ' tab = ', tab)
     // console.log('tab = ', tab);
@@ -112,7 +115,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 })
 
 chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
-  console.log('current TAb == ', currentTab)
+  console.log('current tab == ', currentTab)
   switch (action.cmd) {
     case 'start_inspecting': {
       inspectElementList = [];
@@ -151,4 +154,5 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
     }
   }
   updateBadge();
+  return true;
 });

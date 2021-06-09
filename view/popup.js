@@ -27,8 +27,8 @@ function copyToNexial() {
   for (let i = 0; i < inspectElementList.length; i++) {
     script += 'web' + delim + inspectElementList[i].command + delim;
     for (let parameter in inspectElementList[i].param) {
-      const paramValue = inspectElementList[i].param[parameter][0] ? inspectElementList[i].param[parameter][0] : '<MISSING>';
-      script += paramValue + delim
+      const el = document.getElementById(parameter + '_' + inspectElementList[i].step);
+      script += (el.value ? el.value : '<MISSING>') + delim
     }
     script += '\n';
   }
@@ -39,6 +39,7 @@ function copyToNexial() {
   dummy.select();
   document.execCommand("copy");
   document.body.removeChild(dummy);
+  return false;
 }
 
 function validURL(myURL) {

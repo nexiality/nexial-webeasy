@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "[WebEZ]: Add step",
+  "name": "Nexial WebEZ",
   "version": "1.0.0",
 
-  "description": "Kick Your Web Automation into High Gear - with Nexial WebEZ!",
+  "description": "Kick your web automation into high gear with Nexial WebEZ!",
 
   "icons": {
     "16": "resources/img/nexial-16.png",
