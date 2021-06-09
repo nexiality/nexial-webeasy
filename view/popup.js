@@ -114,54 +114,60 @@ document.getElementById("showHelp").addEventListener("click", function () {
   return false;
 }, false);
 
-document.getElementById("maximizePopup").addEventListener("click", function () {
-  if (!chrome || !chrome.windows || !chrome.i18n || !chrome.tabs || !chrome.storage) return;
+document.getElementById("maximizePopup").addEventListener("click", async () => {
+  let url = chrome.runtime.getURL("NexialWebEZ.html");
+  let tab = await chrome.tabs.create({ url });
+  console.log(`Created tab ${tab}`);
+})
 
-  let extensionUrl = "chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/NexialWebEZ.html";
+// document.getElementById("maximizePopup").addEventListener("click", function () {
+//   if (!chrome || !chrome.windows || !chrome.i18n || !chrome.tabs || !chrome.storage) return;
 
-  let targetTabId;
-  chrome.storage.local.get(['maximized_popup_tab_id'], function (result) {
-    targetTabId = !result ? null : result.key;
-  });
+//   let extensionUrl = "chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/NexialWebEZ.html";
 
-  if (!targetTabId) {
-    // first time, open new tab
-    console.log('new tab');
-    chrome.tabs.create({url: extensionUrl, active: true}, function (tab) {
-      chrome.storage.local.set({'maximized_popup_tab_id': tab.id, 'maximized_popup_window_id': tab.windowId});
-    });
+//   let targetTabId;
+//   chrome.storage.local.get(['maximized_popup_tab_id'], function (result) {
+//     targetTabId = !result ? null : result.key;
+//   });
 
-    return;
-  }
+//   if (!targetTabId) {
+//     // first time, open new tab
+//     console.log('new tab');
+//     chrome.tabs.create({url: extensionUrl, active: true}, function (tab) {
+//       chrome.storage.local.set({'maximized_popup_tab_id': tab.id, 'maximized_popup_window_id': tab.windowId});
+//     });
 
-  let currentWindowIncognito = false;
-  chrome.windows.getCurrent(function (currentWindow) {
-    currentWindowIncognito = currentWindow && currentWindow.incognito;
-  });
+//     return;
+//   }
 
-  if (currentWindowIncognito) {
-    let targetWinId;
-    chrome.storage.local.get(['maximized_popup_window_id'], function (result) {
-      targetWinId = !result ? null : result.key;
-    });
+//   let currentWindowIncognito = false;
+//   chrome.windows.getCurrent(function (currentWindow) {
+//     currentWindowIncognito = currentWindow && currentWindow.incognito;
+//   });
 
-    if (targetWinId) {
-      chrome.windows.get({windowId: targetWinId}, function (win) {
-        if (win && win.tabs) {
-          for (let i = 0; i < win.tabs.length; i++) {
-            let tab = win.tabs[i];
-            if (tab.id === targetTabId) {
-              chrome.tabs.update(targetTabId, {active: true});
-              return;
-            }
-          }
-        }
-      });
-    }
-  }
+//   if (currentWindowIncognito) {
+//     let targetWinId;
+//     chrome.storage.local.get(['maximized_popup_window_id'], function (result) {
+//       targetWinId = !result ? null : result.key;
+//     });
 
-  chrome.tabs.update(targetTabId, {active: true});
-}, false);
+//     if (targetWinId) {
+//       chrome.windows.get({windowId: targetWinId}, function (win) {
+//         if (win && win.tabs) {
+//           for (let i = 0; i < win.tabs.length; i++) {
+//             let tab = win.tabs[i];
+//             if (tab.id === targetTabId) {
+//               chrome.tabs.update(targetTabId, {active: true});
+//               return;
+//             }
+//           }
+//         }
+//       });
+//     }
+//   }
+
+//   chrome.tabs.update(targetTabId, {active: true});
+// }, false);
 
 document.getElementById("closePopup").addEventListener("click", function () {
   window.close();
