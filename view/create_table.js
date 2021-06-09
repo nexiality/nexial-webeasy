@@ -166,6 +166,9 @@ function createDeleteButton(step) {
     // Todo Update background.js
     // TODO Update inspectElementList
     document.getElementById("step_" + step).remove();
+    //Delete from inspectElementList
+    var index = inspectElementList.findIndex(stepIndex => stepIndex === step)
+    if (index !== -1) inspectElementList.splice(index, 1);
     updateTableRow();
   };
   return button;
