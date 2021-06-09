@@ -365,6 +365,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   } else if (request.action === 'stop' || request.action === 'paused') {
     stop();
   }
-
-  return true;
+   // return true;
 });

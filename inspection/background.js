@@ -15,6 +15,7 @@ function updateBadge() {
 }
 
 function loadListener(url) {
+  printLog('log', 'createOpenURLEntry');
   inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
   // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
     // Process |result| here (or maybe do nothing at all).
@@ -24,14 +25,18 @@ function loadListener(url) {
 function createOpenURLEntry(url) {
   if (url) {
     chrome.tabs.create({"url": url}, function (tab) {
+      console.log('OPEN NEW PAGE')
       inspectingTab = JSON.parse(JSON.stringify(tab));
+      printLog('log', inspectingTab)
       updateBadge();
       loadListener(url);
     });
   } else {
     chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
       if (!tabs || tabs.length < 1) return;
+      console.log('CURRENT PAGE')
       inspectingTab = JSON.parse(JSON.stringify(tabs[0]));
+      printLog('log', inspectingTab)
       loadListener(inspectingTab.url);
       updateBadge();
     });
@@ -39,7 +44,9 @@ function createOpenURLEntry(url) {
 }
 
 function sendRunTimeMessage(message) {
+  console.log(' SEND  MESSAGE - ', message )
   chrome.tabs.query({ active: !0, currentWindow: !0 }, function (tabs) {
+    console.log('tab ', tabs[0])
     if (tabs[0]) {
       chrome.tabs.sendMessage(tabs[0].id, message);
     }
@@ -126,5 +133,4 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
       break;
   }
   updateBadge();
-  return true;
 });
