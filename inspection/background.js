@@ -7,7 +7,6 @@ chrome.manifest = chrome.app.getDetails();
 
 function updateBadge() {
   if (is_inspecting === 'start' && inspectingTab) {
-    console.log(inspectingTab, "%%%%%%%%%%%%%%%%%%%%%%%")
     chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
     chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
   } else {
@@ -19,14 +18,12 @@ function loadListener(url) {
   inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
   // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
     // Process |result| here (or maybe do nothing at all).
-    // console.log('execute script : ', result)
   // });
 }
 
 function createOpenURLEntry(url) {
   if (url) {
     chrome.tabs.create({"url": url}, function (tab) {
-      // console.log('given url is open', url)
       inspectingTab = JSON.parse(JSON.stringify(tab));
       updateBadge();
       loadListener(url);
@@ -70,8 +67,6 @@ chrome.windows.getAll({
       var j = 0, t = currentWindow.tabs.length, currentWindowTab;
       for( ; j < t; j++ ) {
         currentWindowTab = currentWindow.tabs[j];
-          // console.log('CURRENT TAB ==== ', currentWindowTab)
-          // console.log('CURRENT TAB URL ==== ', currentWindowTab.url)
           // Skip chrome:// and https:// pages
           if( currentWindowTab.url && ! currentWindowTab.url.match(/(chrome|https):\/\//gi) ) {
               injectIntoTab(currentWindowTab);
@@ -81,14 +76,9 @@ chrome.windows.getAll({
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  console.log('changeInfo.status = ', changeInfo.status)
   if (is_inspecting === 'start' && changeInfo.status === 'complete') {
-    // console.log('chrome.tabs.onUpdated - is_inspecting  =  ', is_inspecting);
     sendRunTimeMessage({action: 'start', startStep: step});
     updateBadge();
-    console.log('tabId = ', tabId);
-    console.log(' changeInfo = ', changeInfo, ' tab = ', tab)
-    // console.log('tab = ', tab);
     // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
     // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
   }
@@ -98,6 +88,7 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
 
   switch (action.cmd) {
     case 'start_inspecting': {
+      printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
       inspectElementList = [];
       is_inspecting = 'start';
       createOpenURLEntry(action.value);
@@ -113,7 +104,6 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
       break;
     }
     case 'inspecting': {
-      console.log(action.cmd, action.value)
       step = action.value.step;
       inspectElementList.push(action.value);
       break;
@@ -131,6 +121,9 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
       inspectElementList = [];
       break;
     }
+    case 'console':
+      printLog(action.type, action.data);
+      break;
   }
   updateBadge();
   return true;

@@ -4,6 +4,7 @@ var step = null;
 const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'alt', 'class'];  //Order priority wise
 const clickableElement = ['button', 'a', 'li', 'path', 'svg', 'i', 'span', 'h1', 'h2', 'h3', 'h4', 'h5'];
 const findClickedElementParent = ['path', 'svg', 'i', 'span'];
+const findParents = ['form', 'header', 'main', 'section', 'footer'];
 const innerTextLength = 15;
 
 // Append Style
@@ -14,8 +15,10 @@ style.href = chrome.extension.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
 function start(stepValue) {
+  sendConsole('info', 'BROWSER RECEIVED: START INSPECTING');
   step = stepValue + 1;
   focusedInput = null;
+  clickedElement = null;
   document.addEventListener("focus", handleFocus, true);
   // document.addEventListener("focusout", handleFocusout);
   document.addEventListener("mousedown", onClickElement);
@@ -25,18 +28,24 @@ function start(stepValue) {
 
 function stop() {
   step = null;
+  focusedInput = null;
+  clickedElement = null;
   document.removeEventListener("focus", handleFocus, true);
   // document.removeEventListener("focusout", handleFocusout);
   document.removeEventListener("mousedown", onClickElement);
   document.removeEventListener("change", handleChange);
   document.removeEventListener("mouseover", onMouseHoverElement);
+  sendConsole('info', 'BROWSER : STOP INSPECTING');
 }
 
 function handleFocus(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
 
-  if(target.tagName === 'INPUT' && target.type !== 'submit') focusedInput = event;
+  if(target.tagName === 'INPUT' && target.type !== 'submit') {
+    focusedInput = event;
+    sendConsole('log', `INPUT FOCUS: ${event.target.value}`);
+  }
 }
 
 function handleFocusout(event) {
@@ -51,12 +60,16 @@ function handleFocusout(event) {
 }
 
 function onClickElement(event) {
-  if(event.button === 1) return;
+  if (event.button === 1) {
+    sendConsole('log', `RIGHT CLICK RETURN FROM onClickElement : ${event.button}`);
+    return;
+  }
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
 
   if(focusedInput && focusedInput.target.value) {
     sendInspectInfo('type(locator,value)', focusedInput);
+    sendConsole('log', `INPUT FOCUSOUT: ${focusedInput.target.value}`);
     focusedInput = null;
   }
 
@@ -64,8 +77,10 @@ function onClickElement(event) {
     (target.tagName === 'INPUT' && target.type === 'submit') ||
     (target.tagName === 'DIV' && target.innerText) ||
     clickableElement.includes(target.tagName.toLowerCase())
-  )
-  sendInspectInfo('click(locator)', event);
+  ) {
+    sendConsole('log', `CLICK: ${target.tagName}`);
+    sendInspectInfo('click(locator)', event);
+  }
 }
 
 function handleChange(event) {
@@ -73,8 +88,8 @@ function handleChange(event) {
   var target = "target" in event ? event.target : event.srcElement;
 
   if(target.tagName === 'SELECT') {
-    const command = 'select(locator,text)';
-    sendInspectInfo(command, event);
+    sendConsole('log', `SELECT: ${target.tagName}`);
+    sendInspectInfo('select(locator,text)', event);
   }
 }
 
@@ -187,6 +202,7 @@ function getLocator(e, paths) {
 }
 
 function getDomPath(el, command) {
+  sendConsole('group', `FUNCTION DOMPATH`);
   var stack = [];
   while (el.parentNode != null) {
     var node = {};
@@ -198,6 +214,7 @@ function getDomPath(el, command) {
        (['html', 'body'].includes(node['node']))
     ) {
       el = el.parentNode;
+      sendConsole('log', `SKIP NODE : ${node['node']}`);
       continue;
     }
     if (el.hasAttributes()) {
@@ -213,13 +230,21 @@ function getDomPath(el, command) {
       }
     }
     stack.unshift(node);
+    sendConsole('log', `ENTRY NODE : ${node['node']}`);
     el = el.parentNode;
   }
-  const result = stack.filter(path => ['form', 'header', 'main', 'section', 'footer'].includes(path.node));
+  sendConsole('groupEnd', '');
+  sendConsole('group', `PATH`);
+  const result = stack.filter(path => findParents.includes(path.node));
   if(result.length) {
+    sendConsole('info', `FIND THESE PARENTS : ${findParents}`);
     result.push(stack[stack.length -1])
+    sendConsole('log', `PATHS : ${result}`);
+    sendConsole('groupEnd', '');
     return result;
   }
+  sendConsole('log', `PATHS : ${stack}`);
+  sendConsole('groupEnd', '');
   return stack;
 }
 
@@ -267,6 +292,7 @@ function getCssPath(el) {
 }
 
 function sendInspectInfo(command, event) {
+  sendConsole('log', `COMMAND : ${command}`);
   var data = {
     step   : step++,
     command: command,
@@ -275,6 +301,7 @@ function sendInspectInfo(command, event) {
   };
   const paths = getDomPath(event.target, command);
   var locator = getLocator(event.target, paths);
+  sendConsole('log', `LOCATOR`);
   if (!locator.length) {
     locator =  [
       'css=' + getCssPath(event.target),
@@ -320,6 +347,7 @@ function sendInspectInfo(command, event) {
   };
 
   if (!chrome || !chrome.runtime || !payload) return;
+  sendConsole('log', `SEND PAYLOAD : ${payload}`);
   chrome.runtime.sendMessage(payload);
 }
 

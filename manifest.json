@@ -15,11 +15,11 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["inspection/contentScript.js"]
+      "js": ["resources/scripts/console.js", "inspection/contentScript.js"]
     }
   ],
   "background": {
-    "scripts": ["inspection/background.js", "inspection/contextMenu.js"],
+    "scripts": ["resources/scripts/console.js", "inspection/background.js", "inspection/contextMenu.js"],
     "persistent": false
   },
   "permissions": [
