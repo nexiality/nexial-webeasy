@@ -35,13 +35,13 @@
                   </div>
                   <div class="col">
                     <input type="button" class="btn btn-primary mb-1" id="startInspect" value="Inspect">
-                    <span class="badge" data-toggle="modal" data-target="#exampleModal" id="startInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+                    <span class="badge" data-toggle="modal" data-target="#infoModal" id="startInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
                   </div>
                 </div>
               </div>
               <div class="form-group col-3">
                 <input type="button" class="btn btn-primary mb-1" id="nowInspect" value="Inspect Current Page">
-                <span class="badge" data-toggle="modal" data-target="#exampleModal" id="nowInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+                <span class="badge" data-toggle="modal" data-target="#infoModal" id="nowInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
               </div>
             </div>
           </form>
@@ -61,9 +61,9 @@
             </div>
             <div class="form-group float-right" id="inspectDataOption">
               <button class="btn btn-secondary" id="clear">Clear</button>
-              <span class="badge" data-toggle="modal" data-target="#exampleModal" id="clearInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+              <span class="badge" data-toggle="modal" data-target="#infoModal" id="clearInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
               <button class="btn btn-success" id="copyToNexial">Copy to Nexial script</button>
-              <span class="badge" data-toggle="modal" data-target="#exampleModal" id="copyToNexialInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+              <span class="badge" data-toggle="modal" data-target="#infoModal" id="copyToNexialInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
             </div>
           </form>
         </div>
@@ -72,16 +72,16 @@
     </div>
   </div>
   <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Help Desk</h5>
+        <h5 class="modal-title" id="infoModalLabel">Help Desk</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body" id="modelBody">
+      <div class="modal-body" id="infoModelBody">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

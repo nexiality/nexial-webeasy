@@ -6,10 +6,10 @@ var inspectElementList = [];
 // });
 
 function info(title, text) {
-  document.getElementById('exampleModalLabel').innerHTML = ''
-  document.getElementById('exampleModalLabel').innerHTML = title;
-  document.getElementById('modelBody').innerHTML = ''
-  document.getElementById('modelBody').innerHTML = text;
+  document.getElementById('infoModalLabel').innerHTML = ''
+  document.getElementById('infoModalLabel').innerHTML = title;
+  document.getElementById('infoModelBody').innerHTML = ''
+  document.getElementById('infoModelBody').innerHTML = text;
 }
 
 function clear() {
