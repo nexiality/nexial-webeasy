@@ -20,7 +20,7 @@ function clear() {
   chrome.runtime.getBackgroundPage((background) => {
     background.clear();
   });
-  document.getElementById("inspectTabel").style.display = "none";
+  document.getElementById("inspectDataOption").style.display = "none";
 }
 
 function copyToNexial() {
@@ -59,7 +59,7 @@ function start(url) {
   document.getElementById("stopOption").style.display = "block";
   document.getElementById("startOption").style.display = "none";
   document.getElementById("showStatus").style.display = "block";
-  document.getElementById("inspectTabel").style.display = "none";
+  document.getElementById("inspectDataOption").style.display = "none";
   if (inspectElementList.length) document.getElementById("showData").style.display = "none";
   chrome.runtime.getBackgroundPage((background) => {
     background.start(url);
@@ -69,7 +69,7 @@ function start(url) {
 function stop() {
   document.getElementById("stopOption").style.display = "none";
   document.getElementById("startOption").style.display = "flex";
-  document.getElementById("inspectTabel").style.display = "block";
+  document.getElementById("inspectDataOption").style.display = "block";
   document.getElementById("showStatus").style.display = "none";
   if (inspectElementList.length) document.getElementById("showData").style.display = "block";
   chrome.runtime.getBackgroundPage((background) => {
@@ -227,7 +227,7 @@ window.onload = function () {
       inspectElementList = background.inspectElementList;
       if (inspectElementList.length) {
         tableFromJson();
-        document.getElementById("inspectTabel").style.display = "block";
+        document.getElementById("inspectDataOption").style.display = "block";
       }
     }
   });
@@ -242,7 +242,7 @@ window.onload = function () {
 //     inspectElementList = response.json;
 //     if (inspectElementList.length) {
 //       tableFromJson();
-//       document.getElementById("inspectTabel").style.display = "block";
+//       document.getElementById("inspectDataOption").style.display = "block";
 //     }
 //   }
 // });
