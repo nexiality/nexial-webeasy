@@ -365,14 +365,12 @@ chrome.runtime.onMessage.addListener(function (request) {
       step = null;
       focusedInput = null;
       clickedElement = null;
-      sendConsole('info', 'BROWSER : STOP INSPECTING');
       break;
     case 'paused':
       stop();
-      sendConsole('info', 'BROWSER : PAUSED INSPECTING');
       break;
   }
-  console.log(request.action)
+  sendConsole('info', `BROWSER : ${request.action} INSPECTING`);
   // if (request.action === "getContextMenuElement") {
   //   sendInspectInfo(request.command, clickedElement);
   //   clickedElement = null;

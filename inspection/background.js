@@ -14,6 +14,7 @@ function start(url) {
 }
 
 function stop() {
+  printLog('groupend', `BACKGROUND RECEIVED STOP INSPECTING`);
   inspectstatus = 'stop';
   step = 1;
   inspectingTab = null;
@@ -23,6 +24,7 @@ function stop() {
 }
 
 function pause() {
+  printLog('log', `BACKGROUND RECEIVED PAUSE INSPECTING`);
   inspectstatus = 'paused';
   sendRunTimeMessage({action: 'paused'})
   updateBadge();
@@ -122,40 +124,40 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 chrome.runtime.onMessage.addListener(function (action) {
 
   switch (action.cmd) {
-    case 'start_inspecting': {
-      printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
-      inspectElementList = [];
-      inspectstatus = 'start';
-      createOpenURLEntry(action.value);
-      sendRunTimeMessage({action: 'start', startStep: step})
-      break;
-    }
-    case 'stop_inspecting': {
-      inspectstatus = 'stop';
-      step = 1;
-      inspectingTab = null;
-      // sendResponse({json: inspectElementList});
-      sendRunTimeMessage({action: 'stop'})
-      break;
-    }
+    // case 'start_inspecting': {
+    //   printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
+    //   inspectElementList = [];
+    //   inspectstatus = 'start';
+    //   createOpenURLEntry(action.value);
+    //   sendRunTimeMessage({action: 'start', startStep: step})
+    //   break;
+    // }
+    // case 'stop_inspecting': {
+    //   inspectstatus = 'stop';
+    //   step = 1;
+    //   inspectingTab = null;
+    //   // sendResponse({json: inspectElementList});
+    //   sendRunTimeMessage({action: 'stop'})
+    //   break;
+    // }
     case 'inspecting': {
       step = action.value.step;
       inspectElementList.push(action.value);
       break;
     }
-    case 'inspect_status': {
-      // sendResponse({res: inspectstatus, json: inspectElementList});
-      break;
-    }
-    case 'pause_inspecting': {
-      inspectstatus = 'paused';
-      sendRunTimeMessage({action: 'paused'})
-      break;
-    }
-    case 'clear_inspection': {
-      inspectElementList = [];
-      break;
-    }
+    // case 'inspect_status': {
+    //   // sendResponse({res: inspectstatus, json: inspectElementList});
+    //   break;
+    // }
+    // case 'pause_inspecting': {
+    //   inspectstatus = 'paused';
+    //   sendRunTimeMessage({action: 'paused'})
+    //   break;
+    // }
+    // case 'clear_inspection': {
+    //   inspectElementList = [];
+    //   break;
+    // }
     case 'console':
       printLog(action.type, action.data);
       break;

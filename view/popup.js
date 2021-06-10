@@ -55,7 +55,7 @@ function validURL(myURL) {
   return pattern.test(myURL);
 }
 
-function startInspect(url) {
+function start(url) {
   document.getElementById("stopOption").style.display = "block";
   document.getElementById("startOption").style.display = "none";
   document.getElementById("showStatus").style.display = "block";
@@ -66,7 +66,7 @@ function startInspect(url) {
   });
 }
 
-function stopInspect() {
+function stop() {
   document.getElementById("stopOption").style.display = "none";
   document.getElementById("startOption").style.display = "flex";
   document.getElementById("inspectFeature").style.display = "block";
@@ -100,33 +100,29 @@ pauseInspect.addEventListener("click", function () {
     });
   } else {
     pauseInspect.value = 'Pause';
-    startInspect('');
+    start('');
   }
 }, false);
 
 document.getElementById("startInspect").addEventListener("click", function () {
-  var commandValue = document.getElementById("url").value;
-  var res = validURL(commandValue);
-  // console.log("url inspect for ", commandValue, res)
-
-  if (!res) {
+  var url = document.getElementById("url").value;
+  if (!validURL(url)) {
     let validFeedback = document.getElementsByClassName('valid-feedback')[0];
-    Logger.debug(validFeedback)
     validFeedback.classList.add("d-block");
     document.getElementById("url").value = '';
     return;
   }
-  startInspect(commandValue);
+  start(url);
   // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: commandValue});
 });
 
 document.getElementById("nowInspect").addEventListener("click", function () {
-  startInspect('');
+  start('');
   // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: ''});
 }, false);
 
 document.getElementById("stopInspect").addEventListener("click", function () {
-  stopInspect();
+  stop();
   // Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function (response) {
   //   Logger.debug(response);
   //   if (response.hasOwnProperty('json')) {
@@ -225,7 +221,7 @@ window.onload = function () {
   console.log("popup loaded");
   chrome.runtime.getBackgroundPage((background) => {
     const inspectStatus = background.inspectstatus;
-    if (inspectStatus === 'start') startInspect('');
+    if (inspectStatus === 'start') start('');
     else if (inspectStatus === 'paused') pausedInspect();
     else if (inspectStatus === 'stop') {
       inspectElementList = background.inspectElementList;
@@ -240,7 +236,7 @@ window.onload = function () {
 // Messenger.sendInternalMessage({cmd: 'inspect_status', value: ''}, function (response) {
 //   Logger.debug('inspect_status  =  ', response)
 //   if (response.res !== 'stop') {
-//     startInspect();
+//     start();
 //     if (response.res === 'paused') pausedInspect();
 //   } else if (response.hasOwnProperty('json')) {
 //     inspectElementList = response.json;
