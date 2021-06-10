@@ -1,11 +1,12 @@
 function sendConsole(level, logging) {
+  printLog(level, logging);
   const payload = {
     cmd  : 'console',
     data: logging,
     type: level
   };
-
-  if (!chrome || !chrome.runtime || !payload) return;
+  // if (!chrome || !chrome.runtime || !payload) return;
+  // chrome.runtime.reload();  // Fall back to contentscript-only behavior
   chrome.runtime.sendMessage(payload);
 }
 

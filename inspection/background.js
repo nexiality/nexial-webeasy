@@ -1,12 +1,40 @@
-var is_inspecting = 'stop';
+var inspectstatus = 'stop';
 var inspectElementList = [];
 var inspectingTab = null;
 var step = 1;
 // Add a `manifest` property to the `chrome` object.
 chrome.manifest = chrome.app.getDetails();
 
+function start(url) {
+  printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
+  inspectElementList = [];
+  inspectstatus = 'start';
+  createOpenURLEntry(url);
+  sendRunTimeMessage({action: 'start', startStep: step})
+}
+
+function stop() {
+  inspectstatus = 'stop';
+  step = 1;
+  inspectingTab = null;
+  // sendResponse({json: inspectElementList});
+  sendRunTimeMessage({action: 'stop'})
+  updateBadge();
+}
+
+function pause() {
+  inspectstatus = 'paused';
+  sendRunTimeMessage({action: 'paused'})
+  updateBadge();
+}
+
+function clear() {
+  inspectElementList = [];
+  updateBadge();
+}
+
 function updateBadge() {
-  if (is_inspecting === 'start' && inspectingTab) {
+  if (inspectstatus === 'start' && inspectingTab) {
     chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
     chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
   } else {
@@ -83,7 +111,7 @@ chrome.windows.getAll({
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (is_inspecting === 'start' && changeInfo.status === 'complete') {
+  if (inspectstatus === 'start' && changeInfo.status === 'complete') {
     sendRunTimeMessage({action: 'start', startStep: step});
     updateBadge();
     // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
@@ -91,22 +119,22 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   }
 })
 
-chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (action) {
 
   switch (action.cmd) {
     case 'start_inspecting': {
       printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
       inspectElementList = [];
-      is_inspecting = 'start';
+      inspectstatus = 'start';
       createOpenURLEntry(action.value);
       sendRunTimeMessage({action: 'start', startStep: step})
       break;
     }
     case 'stop_inspecting': {
-      is_inspecting = 'stop';
+      inspectstatus = 'stop';
       step = 1;
       inspectingTab = null;
-      sendResponse({json: inspectElementList});
+      // sendResponse({json: inspectElementList});
       sendRunTimeMessage({action: 'stop'})
       break;
     }
@@ -116,11 +144,11 @@ chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
       break;
     }
     case 'inspect_status': {
-      sendResponse({res: is_inspecting, json: inspectElementList});
+      // sendResponse({res: inspectstatus, json: inspectElementList});
       break;
     }
     case 'pause_inspecting': {
-      is_inspecting = 'paused';
+      inspectstatus = 'paused';
       sendRunTimeMessage({action: 'paused'})
       break;
     }

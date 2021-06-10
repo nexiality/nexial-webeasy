@@ -27,15 +27,11 @@ function start(stepValue) {
 }
 
 function stop() {
-  step = null;
-  focusedInput = null;
-  clickedElement = null;
   document.removeEventListener("focus", handleFocus, true);
   // document.removeEventListener("focusout", handleFocusout);
   document.removeEventListener("mousedown", onClickElement);
   document.removeEventListener("change", handleChange);
   document.removeEventListener("mouseover", onMouseHoverElement);
-  sendConsole('info', 'BROWSER : STOP INSPECTING');
 }
 
 function handleFocus(event) {
@@ -355,15 +351,41 @@ document.addEventListener("contextmenu", function (event) {
   clickedElement = event;
 }, true);
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "getContextMenuElement") {
-    sendInspectInfo(request.command, clickedElement);
-    clickedElement = null;
-    // sendResponse({res: "contextmenu", data: payload});
-  } else if (request.action === 'start') {
-    start(request.startStep);
-  } else if (request.action === 'stop' || request.action === 'paused') {
-    stop();
+chrome.runtime.onMessage.addListener(function (request) {
+  switch (request.action) {
+    case 'getContextMenuElement':
+      clickedElement = null;
+      sendInspectInfo(request.command, clickedElement);
+      break;
+    case 'start':
+      start(request.startStep);
+      break;
+    case 'stop':
+      stop();
+      step = null;
+      focusedInput = null;
+      clickedElement = null;
+      sendConsole('info', 'BROWSER : STOP INSPECTING');
+      break;
+    case 'paused':
+      stop();
+      sendConsole('info', 'BROWSER : PAUSED INSPECTING');
+      break;
   }
+  console.log(request.action)
+  // if (request.action === "getContextMenuElement") {
+  //   sendInspectInfo(request.command, clickedElement);
+  //   clickedElement = null;
+  //   // sendResponse({res: "contextmenu", data: payload});
+  // }  else if (request.action === 'stop' ) {
+    // stop();
+    // step = null;
+    // focusedInput = null;
+    // clickedElement = null;
+    // sendConsole('info', 'BROWSER : STOP INSPECTING');
+  // } else if(request.action === 'paused') {
+  //   stop();
+  //   sendConsole('info', 'BROWSER : PAUSED INSPECTING');
+  // } else if (request.action === 'start') start(request.startStep);
    // return true;
 });

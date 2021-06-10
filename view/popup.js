@@ -16,7 +16,10 @@ function clear() {
   let table = document.getElementById('inspect_table');
   while (table && table.hasChildNodes()) { table.removeChild(table.firstChild); }
   inspectElementList = [];
-  Messenger.sendInternalMessage({cmd: 'clear_inspection', value: ''});
+  // Messenger.sendInternalMessage({cmd: 'clear_inspection', value: ''});
+  chrome.runtime.getBackgroundPage((background) => {
+    background.clear();
+  });
   document.getElementById("inspectFeature").style.display = "none";
 }
 
@@ -52,12 +55,15 @@ function validURL(myURL) {
   return pattern.test(myURL);
 }
 
-function startInspect() {
+function startInspect(url) {
   document.getElementById("stopOption").style.display = "block";
   document.getElementById("startOption").style.display = "none";
   document.getElementById("showStatus").style.display = "block";
   document.getElementById("inspectFeature").style.display = "none";
   if (inspectElementList.length) document.getElementById("showData").style.display = "none";
+  chrome.runtime.getBackgroundPage((background) => {
+    background.start(url);
+  });
 }
 
 function stopInspect() {
@@ -66,6 +72,13 @@ function stopInspect() {
   document.getElementById("inspectFeature").style.display = "block";
   document.getElementById("showStatus").style.display = "none";
   if (inspectElementList.length) document.getElementById("showData").style.display = "block";
+  chrome.runtime.getBackgroundPage((background) => {
+    background.stop();
+    // if (background.inspectElementList.length) {
+      inspectElementList = background.inspectElementList;
+      tableFromJson();
+    // }
+  });
 }
 
 let pauseInspect = document.getElementById("pauseInspect");
@@ -75,6 +88,21 @@ function pausedInspect() {
   pauseInspect.classList.toggle("btn-primary");
   pauseInspect.value = 'Resume';
 }
+
+pauseInspect.addEventListener("click", function () {
+  pauseInspect.classList.toggle("btn-default");
+  pauseInspect.classList.toggle("btn-primary");
+  if (pauseInspect.value === 'Pause') {
+    pauseInspect.value = 'Resume';
+    // Messenger.sendInternalMessage({cmd: 'pause_inspecting', value: true});
+    chrome.runtime.getBackgroundPage((background) => {
+      background.pause();
+    });
+  } else {
+    pauseInspect.value = 'Pause';
+    startInspect('');
+  }
+}, false);
 
 document.getElementById("startInspect").addEventListener("click", function () {
   var commandValue = document.getElementById("url").value;
@@ -88,24 +116,24 @@ document.getElementById("startInspect").addEventListener("click", function () {
     document.getElementById("url").value = '';
     return;
   }
-  startInspect();
-  Messenger.sendInternalMessage({cmd: 'start_inspecting', value: commandValue});
+  startInspect(commandValue);
+  // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: commandValue});
 });
 
 document.getElementById("nowInspect").addEventListener("click", function () {
-  startInspect();
-  Messenger.sendInternalMessage({cmd: 'start_inspecting', value: ''});
+  startInspect('');
+  // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: ''});
 }, false);
 
 document.getElementById("stopInspect").addEventListener("click", function () {
   stopInspect();
-  Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function (response) {
-    Logger.debug(response);
-    if (response.hasOwnProperty('json')) {
-      inspectElementList = response.json;
-      tableFromJson();
-    }
-  });
+  // Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function (response) {
+  //   Logger.debug(response);
+  //   if (response.hasOwnProperty('json')) {
+  //     inspectElementList = response.json;
+  //     tableFromJson();
+  //   }
+  // });
 });
 
 document.getElementById("showHelp").addEventListener("click", function () {
@@ -173,17 +201,6 @@ document.getElementById("closePopup").addEventListener("click", function () {
   window.close();
 }, false);
 
-pauseInspect.addEventListener("click", function () {
-  pauseInspect.classList.toggle("btn-default");
-  pauseInspect.classList.toggle("btn-primary");
-  if (pauseInspect.value === 'Pause') {
-    pauseInspect.value = 'Resume';
-    Messenger.sendInternalMessage({cmd: 'pause_inspecting', value: true});
-  } else {
-    pauseInspect.value = 'Pause';
-  }
-}, false);
-
 document.getElementById("startInspectInfo").addEventListener("click", function () {
   info('Start Inspect', 'startInspectInfo');
 }, false);
@@ -204,19 +221,35 @@ document.getElementById("copyToNexial").addEventListener("click", copyToNexial);
 
 document.getElementById("clear").addEventListener("click", clear);
 
-Messenger.sendInternalMessage({cmd: 'inspect_status', value: ''}, function (response) {
-  Logger.debug('inspect_status  =  ', response)
-  if (response.res !== 'stop') {
-    startInspect();
-    if (response.res === 'paused') pausedInspect();
-  } else if (response.hasOwnProperty('json')) {
-    inspectElementList = response.json;
-    if (inspectElementList.length) {
-      tableFromJson();
-      document.getElementById("inspectFeature").style.display = "block";
+window.onload = function () {
+  console.log("popup loaded");
+  chrome.runtime.getBackgroundPage((background) => {
+    const inspectStatus = background.inspectstatus;
+    if (inspectStatus === 'start') startInspect('');
+    else if (inspectStatus === 'paused') pausedInspect();
+    else if (inspectStatus === 'stop') {
+      inspectElementList = background.inspectElementList;
+      if (inspectElementList.length) {
+        tableFromJson();
+        document.getElementById("inspectFeature").style.display = "block";
+      }
     }
-  }
-});
+  });
+}
+
+// Messenger.sendInternalMessage({cmd: 'inspect_status', value: ''}, function (response) {
+//   Logger.debug('inspect_status  =  ', response)
+//   if (response.res !== 'stop') {
+//     startInspect();
+//     if (response.res === 'paused') pausedInspect();
+//   } else if (response.hasOwnProperty('json')) {
+//     inspectElementList = response.json;
+//     if (inspectElementList.length) {
+//       tableFromJson();
+//       document.getElementById("inspectFeature").style.display = "block";
+//     }
+//   }
+// });
 
 // chrome.runtime.onMessage.addListener(function(msg) {
 //   console.log("message recieved in popup js - " + msg);
