@@ -55,37 +55,34 @@ function validURL(myURL) {
   return pattern.test(myURL);
 }
 
-function start(url) {
+function start() {
   document.getElementById("stopOption").style.display = "block";
-  document.getElementById("startOption").style.display = "none";
   document.getElementById("showStatus").style.display = "block";
+  document.getElementById("startOption").style.display = "none";
+  document.getElementById("showData").style.display = "none";
   document.getElementById("inspectDataOption").style.display = "none";
-  if (inspectElementList.length) document.getElementById("showData").style.display = "none";
-  chrome.runtime.getBackgroundPage((background) => {
-    background.start(url);
-  });
 }
 
 function stop() {
-  document.getElementById("stopOption").style.display = "none";
   document.getElementById("startOption").style.display = "flex";
-  document.getElementById("inspectDataOption").style.display = "block";
+  document.getElementById("showData").style.display = "none";
+  document.getElementById("inspectDataOption").style.display = "none";
+  document.getElementById("stopOption").style.display = "none";
   document.getElementById("showStatus").style.display = "none";
-  if (inspectElementList.length) document.getElementById("showData").style.display = "block";
   chrome.runtime.getBackgroundPage((background) => {
-    background.stop();
-    // if (background.inspectElementList.length) {
-      inspectElementList = background.inspectElementList;
+    inspectElementList = background.inspectElementList;
+    if (inspectElementList.length) {
+      document.getElementById("showData").style.display = "block";
+      document.getElementById("inspectDataOption").style.display = "block";
       tableFromJson();
-    // }
+    }
   });
 }
 
 let pauseInspect = document.getElementById("pauseInspect");
 
-function pausedInspect() {
-  pauseInspect.classList.toggle("btn-default");
-  pauseInspect.classList.toggle("btn-primary");
+function pause() {
+  start();
   pauseInspect.value = 'Resume';
 }
 
@@ -100,7 +97,10 @@ pauseInspect.addEventListener("click", function () {
     });
   } else {
     pauseInspect.value = 'Pause';
-    start('');
+    start();
+    chrome.runtime.getBackgroundPage((background) => {
+      background.start();
+    });
   }
 }, false);
 
@@ -112,17 +112,26 @@ document.getElementById("startInspect").addEventListener("click", function () {
     document.getElementById("url").value = '';
     return;
   }
-  start(url);
+  start();
+  chrome.runtime.getBackgroundPage((background) => {
+    background.start(url);
+  });
   // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: commandValue});
 });
 
 document.getElementById("nowInspect").addEventListener("click", function () {
-  start('');
+  start();
+  chrome.runtime.getBackgroundPage((background) => {
+    background.start('');
+  });
   // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: ''});
 }, false);
 
 document.getElementById("stopInspect").addEventListener("click", function () {
   stop();
+  chrome.runtime.getBackgroundPage((background) => {
+    background.stop();
+  });
   // Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function (response) {
   //   Logger.debug(response);
   //   if (response.hasOwnProperty('json')) {
@@ -221,15 +230,9 @@ window.onload = function () {
   console.log("popup loaded");
   chrome.runtime.getBackgroundPage((background) => {
     const inspectStatus = background.inspectstatus;
-    if (inspectStatus === 'start') start('');
-    else if (inspectStatus === 'paused') pausedInspect();
-    else if (inspectStatus === 'stop') {
-      inspectElementList = background.inspectElementList;
-      if (inspectElementList.length) {
-        tableFromJson();
-        document.getElementById("inspectDataOption").style.display = "block";
-      }
-    }
+    if (inspectStatus === 'start') start();
+    else if (inspectStatus === 'paused') pause();
+    else if (inspectStatus === 'stop') stop();
   });
 }
 
@@ -237,7 +240,7 @@ window.onload = function () {
 //   Logger.debug('inspect_status  =  ', response)
 //   if (response.res !== 'stop') {
 //     start();
-//     if (response.res === 'paused') pausedInspect();
+//     if (response.res === 'paused') pause();
 //   } else if (response.hasOwnProperty('json')) {
 //     inspectElementList = response.json;
 //     if (inspectElementList.length) {
