@@ -315,11 +315,11 @@ function sendInspectInfo(command, event) {
     case 'type(locator,value)':
     case 'assertValue(locator,value)':
       data.param['locator'] = locator;
-      data.param['value'] = event.target.value;
+      data.param['value'] = event.target.value || '(empty)';
       break;
     case 'assertText(locator,text)':
       data.param['locator'] = locator;
-      data.param['text'] = event.target.text;
+      data.param['text'] = event.target.textContent || event.target.innerText || '<MISSING>';
       break;
     case 'select(locator,text)':
       data.param['locator'] = locator;
@@ -327,13 +327,13 @@ function sendInspectInfo(command, event) {
       break;
     case 'assertTextPresent(text)':
     case 'waitForTextPresent(text)':
-      data.param['text'] = event.target.innerText;
+      data.param['text'] = event.target.textContent || event.target.innerText || '<MISSING>';
       break;
     case 'waitForElementPresent(locator,waitMs)':
     case 'waitUntilVisible(locator,waitMs)':
     case 'waitUntilEnabled(locator,waitMs)':
       data.param['locator'] = locator;
-      data.param['waitMs'] = '';
+      data.param['waitMs'] = '<MISSING>';
       break;
   }
 
@@ -345,6 +345,7 @@ function sendInspectInfo(command, event) {
 
   if (!chrome || !chrome.runtime || !payload) return;
   sendConsole('log', `SEND PAYLOAD : ${payload}`);
+  // console.info(payload);
   chrome.runtime.sendMessage(payload);
 }
 
