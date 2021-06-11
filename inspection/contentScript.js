@@ -56,7 +56,8 @@ function handleFocusout(event) {
 }
 
 function onClickElement(event) {
-  if (event.button === 1) {
+  sendConsole('log', `MOUSE CLICK : ${event.button}`);
+  if (event.button === 2) {
     sendConsole('log', `RIGHT CLICK RETURN FROM onClickElement : ${event.button}`);
     return;
   }
@@ -318,7 +319,7 @@ function sendInspectInfo(command, event) {
       break;
     case 'assertText(locator,text)':
       data.param['locator'] = locator;
-      data.param['text'] = event.target.value;
+      data.param['text'] = event.target.text;
       break;
     case 'select(locator,text)':
       data.param['locator'] = locator;
@@ -354,8 +355,8 @@ document.addEventListener("contextmenu", function (event) {
 chrome.runtime.onMessage.addListener(function (request) {
   switch (request.action) {
     case 'getContextMenuElement':
-      clickedElement = null;
       sendInspectInfo(request.command, clickedElement);
+      clickedElement = null;
       break;
     case 'start':
       start(request.startStep);
