@@ -7,12 +7,12 @@ const findClickedElementParent = ['path', 'svg', 'i', 'span'];
 const findParents = ['form', 'header', 'main', 'section', 'footer'];
 const innerTextLength = 15;
 
-// Append Style
-var style = document.createElement("link");
-style.rel = "stylesheet";
-style.type = "text/css";
-style.href = chrome.extension.getURL("resources/style/nexial.css");
-(document.head || document.documentElement).appendChild(style);
+// Append Style on hover get element
+// var style = document.createElement("link");
+// style.rel = "stylesheet";
+// style.type = "text/css";
+// style.href = chrome.extension.getURL("resources/style/nexial.css");
+// (document.head || document.documentElement).appendChild(style);
 
 function start(stepValue) {
   sendConsole('info', 'BROWSER RECEIVED: START INSPECTING');
