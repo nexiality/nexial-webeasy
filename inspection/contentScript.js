@@ -138,7 +138,7 @@ function createPaths(el, baseXpathNode, baseCssPath) {
     'css': []
   };
   if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
-  if (baseCssPath) baseCssPath = baseCssPath.replace("css=", ">");
+  if (baseCssPath) baseCssPath = baseCssPath.replace("css=", " > ");
   for (const attr in el.attribute) {
     var value = el.attribute[attr];
     if(attr === 'class') {
