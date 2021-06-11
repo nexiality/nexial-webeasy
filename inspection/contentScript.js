@@ -23,7 +23,7 @@ function start(stepValue) {
   // document.addEventListener("focusout", handleFocusout);
   document.addEventListener("mousedown", onClickElement);
   document.addEventListener("change", handleChange);
-  document.addEventListener("mouseover", onMouseHoverElement);
+  // document.addEventListener("mouseover", onMouseHoverElement);
 }
 
 function stop() {
@@ -31,7 +31,7 @@ function stop() {
   // document.removeEventListener("focusout", handleFocusout);
   document.removeEventListener("mousedown", onClickElement);
   document.removeEventListener("change", handleChange);
-  document.removeEventListener("mouseover", onMouseHoverElement);
+  // document.removeEventListener("mouseover", onMouseHoverElement);
 }
 
 function handleFocus(event) {
@@ -91,19 +91,19 @@ function handleChange(event) {
 }
 
 function onMouseHoverElement(event) {
-  if (event === undefined) event = window.event;
-  var target = "target" in event ? event.target : event.srcElement;
+  // if (event === undefined) event = window.event;
+  // var target = "target" in event ? event.target : event.srcElement;
 
-  var tooltip = document.createElement("span");
-  tooltip.setAttribute("nexial-locator-data-tooltip", target.tagName);
-  target.appendChild(tooltip);
-  target.classList.add("_nexial-hover");
-  target.addEventListener("mouseout", function () {
-    if (tooltip.parentNode) {
-      target.removeChild(tooltip);
-      target.classList.remove("_nexial-hover");
-    }
-  });
+  // var tooltip = document.createElement("span");
+  // tooltip.setAttribute("nexial-locator-data-tooltip", target.tagName);
+  // target.appendChild(tooltip);
+  // target.classList.add("_nexial-hover");
+  // target.addEventListener("mouseout", function () {
+  //   if (tooltip.parentNode) {
+  //     target.removeChild(tooltip);
+  //     target.classList.remove("_nexial-hover");
+  //   }
+  // });
 }
 
 function hasNumbers(str) {
