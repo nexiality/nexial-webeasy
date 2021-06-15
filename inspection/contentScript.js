@@ -6,6 +6,7 @@ const clickableElement = ['button', 'a', 'li', 'path', 'svg', 'i', 'span', 'h1',
 const findClickedElementParent = ['path', 'svg', 'i', 'span'];
 const findParents = ['form', 'header', 'main', 'section', 'footer'];
 const innerTextLength = 15;
+const nodeList = ['a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 // Append Style on hover get element
 // var style = document.createElement("link");
@@ -174,7 +175,7 @@ function createPaths(el, baseXpathNode, baseCssPath) {
 }
 
 function getLocator(e, paths) {
-  var locator = [], xpath = [], css = [];
+  var locator = [], xpath = [], css = [], selectedLocator = null;
   // const tag = (e.tagName).toLowerCase();
   const activeElnode = paths[paths.length - 1].node;
   
@@ -194,6 +195,7 @@ function getLocator(e, paths) {
       }
       if (el.innerText && el.innerText.length <= innerTextLength) {
         xpath.push('xpath=//' + el.node + `[normalize-space(string(.))=normalize-space('${el.innerText}')]`);
+        if(nodeList.includes(el.node)) selectedLocator = 'xpath=//' + el.node + `[normalize-space(string(.))=normalize-space('${el.innerText}')]`;
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
@@ -207,7 +209,10 @@ function getLocator(e, paths) {
       }
     }
   }
-  return locator.concat(css, xpath);
+  return {
+    locator: locator.concat(css, xpath),
+    selectedLocator: selectedLocator
+  };
 }
 
 function getDomPath(el) {
@@ -319,23 +324,27 @@ function getCssPath(el) {
 }
 
 function sendInspectInfo(command, event) {
-  sendConsole( 'log', `COMMAND : ${command}`);
-  var data = {
-    step   : step++,
-    command: command,
-    param:   {},
-    actions: {}
-  };
   const domPaths = filterDomPath(event.target, command);
-  sendConsole('log', `DOM PATH FILTER LIST : `, domPaths);
-  var locator = getLocator(event.target, domPaths);
+  const locatorList = getLocator(event.target, domPaths);
+  let locator = locatorList.locator;
   if (!locator.length) {
     locator =  [
       'css=' + getCssPath(event.target),
       'xpath=' + getXPath(event.target)
     ]
   }
-  sendConsole( 'log', `LOCATOR : `, locator);
+  sendConsole('log', `COMMAND : ${command}`);
+  sendConsole('log', `DOM PATH FILTER LIST : `, domPaths);
+  sendConsole('log', `LOCATOR LIST : `, locatorList);
+
+  var data = {
+    step   : step++,
+    command: command,
+    param:   {},
+    actions: {
+      selectedLocator: locatorList.selectedLocator
+    }
+  };
   switch (command) {
     case 'click(locator)':
     case 'assertElementPresent(locator)':
