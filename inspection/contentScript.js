@@ -227,12 +227,6 @@ function getDomPath(el, command) {
       continue;
     }
     if (el.hasAttributes()) {
-      // var attrs = el.attributes;
-      // for(var i = attrs.length - 1; i >= 0; i--) {
-      //   if(hasAttributes.includes(attrs[i].name)) {
-      //     node['attribute'][attrs[i].name] = attrs[i].value;
-      //   }
-      // }
       for(var i = 0; i <= (hasAttributes.length - 1); i++) {
         const attrs = el.attributes[`${hasAttributes[i]}`];
         if(attrs) node['attribute'][attrs.name] = attrs.value;
@@ -319,8 +313,6 @@ function sendInspectInfo(command, event) {
     ]
   }
   sendConsole( 'log', `LOCATOR`, locator);
-
-  // console.log('command = ' + command);
   switch (command) {
     case 'click(locator)':
     case 'assertElementPresent(locator)':
@@ -360,7 +352,6 @@ function sendInspectInfo(command, event) {
 
   if (!chrome || !chrome.runtime || !payload) return;
   sendConsole('log',  `SEND PAYLOAD :`, payload);
-  // console.info(payload);
   chrome.runtime.sendMessage(payload);
 }
 
@@ -388,19 +379,4 @@ chrome.runtime.onMessage.addListener(function (request) {
       break;
   }
   sendConsole('info', `BROWSER : ${request.action} INSPECTING`);
-  // if (request.action === "getContextMenuElement") {
-  //   sendInspectInfo(request.command, clickedElement);
-  //   clickedElement = null;
-  //   // sendResponse({res: "contextmenu", data: payload});
-  // }  else if (request.action === 'stop' ) {
-    // stop();
-    // step = null;
-    // focusedInput = null;
-    // clickedElement = null;
-    // sendConsole('info', 'BROWSER : STOP INSPECTING');
-  // } else if(request.action === 'paused') {
-  //   stop();
-  //   sendConsole('info', 'BROWSER : PAUSED INSPECTING');
-  // } else if (request.action === 'start') start(request.startStep);
-   // return true;
 });
