@@ -1,4 +1,4 @@
-var clickedElement = null;
+var clickedElement = null, selectionText = null;
 var focusedInput = null;
 var step = null;
 const hasAttributes = ['name', 'id', 'aria-label', 'placeholder', 'title', 'alt', 'class'];  //Order priority wise
@@ -334,7 +334,7 @@ function sendInspectInfo(command, event) {
       break;
     case 'assertTextPresent(text)':
     case 'waitForTextPresent(text)':
-      data.param['text'] = event.target.textContent || event.target.innerText || '<MISSING>';
+      data.param['text'] = selectionText || event.target.innerText || '<MISSING>';
       break;
     case 'waitForElementPresent(locator,waitMs)':
     case 'waitUntilVisible(locator,waitMs)':
@@ -362,6 +362,7 @@ document.addEventListener("contextmenu", function (event) {
 chrome.runtime.onMessage.addListener(function (request) {
   switch (request.action) {
     case 'getContextMenuElement':
+      selectionText = request.selectionText;
       sendInspectInfo(request.command, clickedElement);
       clickedElement = null;
       break;

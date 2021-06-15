@@ -64,11 +64,7 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 function callbackContextmenu(info, tab, data) {
-  // chrome.tabs.sendMessage(tab.id,
-  //                         {action: "getContextMenuElement", command: data},
-  //                         {frameId: info.frameId},
-  //                         response => { if (response && response.res && response.res === 'contextmenu') { } });
-                          sendRunTimeMessage({action: "getContextMenuElement", command: data})
+  sendRunTimeMessage({action: "getContextMenuElement", command: data, selectionText: info.selectionText})
 }
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
