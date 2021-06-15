@@ -210,8 +210,8 @@ function getLocator(e, paths) {
   return locator.concat(css, xpath);
 }
 
-function getDomPath(el, command) {
-  sendConsole('group', `FUNCTION DOMPATH`);
+function getDomPath(el) {
+  sendConsole('group', `DOM PATH LIST`);
   var stack = [];
   while (el.parentNode != null) {
     var node = {};
@@ -219,11 +219,9 @@ function getDomPath(el, command) {
     node['innerText'] = el.innerText;
     node['attribute'] = [];
 
-    if ((findClickedElementParent.includes(node['node']) && command === 'click(locator)') ||
-       (['html', 'body'].includes(node['node']))
+    if (['html', 'body'].includes(node['node'])
     ) {
       el = el.parentNode;
-      sendConsole('log', `SKIP NODE :`, node['node']);
       continue;
     }
     if (el.hasAttributes()) {
@@ -237,18 +235,42 @@ function getDomPath(el, command) {
     el = el.parentNode;
   }
   sendConsole('groupEnd', '');
-  sendConsole('group', `PATH`);
-  const result = stack.filter(path => findParents.includes(path.node));
-  if(result.length) {
-    sendConsole('info', `FIND THESE PARENTS : ${findParents}`);
-    result.push(stack[stack.length -1])
-    sendConsole('log',  `PATHS :`, result);
-    sendConsole('log', 'groupEnd', '');
-    return result;
-  }
-  sendConsole('log',  `PATHS :`, stack);
-  sendConsole('log', 'groupEnd', '');
+  // sendConsole('group', `PATH`);
+  // (findClickedElementParent.includes(node['node']) && command === 'click(locator)') 
+  // const result = stack.filter(path => findParents.includes(path.node));
+  // if(result.length) {
+  //   sendConsole('info', `FIND THESE PARENTS : ${findParents}`);
+  //   result.push(stack[stack.length -1])
+  //   sendConsole('log',  `PATHS :`, result);
+  //   sendConsole('log', 'groupEnd', '');
+  //   return result;
+  // }
+  // sendConsole('log',  `PATHS :`, stack);
+  // sendConsole('log', 'groupEnd', '');
+  // sendConsole('log', `DOM PATH LIST : `, domPathList);
+
   return stack;
+}
+
+function filterDomPath(el, command) {
+  [1, 2, 3].forEach(element => {
+    console.log(element)
+  });
+  var domPathList = getDomPath(el);
+  var index = domPathList.findIndex(x => x.node === 'button');
+  var domFilterList = [];
+  if(command === 'click(locator)' && index !== -1) {
+    domPathList.length = index + 1;
+  }
+  sendConsole('log', `DOM PATH FILTER BUTTON : `, domPathList);
+  for (let index = 0; index < domPathList.length; index++) {
+    const node = domPathList[index];
+    if(findParents.includes(node['node']) || (index === domPathList.length - 1)) {
+      domFilterList.push(node)
+    }
+  }
+  if(domFilterList.length > 1) return domFilterList;
+  return domPathList;
 }
 
 function getXPath(element) {
@@ -304,15 +326,16 @@ function sendInspectInfo(command, event) {
     param:   {},
     actions: {}
   };
-  const paths = getDomPath(event.target, command);
-  var locator = getLocator(event.target, paths);
+  const domPaths = filterDomPath(event.target, command);
+  sendConsole('log', `DOM PATH FILTER LIST : `, domPaths);
+  var locator = getLocator(event.target, domPaths);
   if (!locator.length) {
     locator =  [
       'css=' + getCssPath(event.target),
       'xpath=' + getXPath(event.target)
     ]
   }
-  sendConsole( 'log', `LOCATOR`, locator);
+  sendConsole( 'log', `LOCATOR : `, locator);
   switch (command) {
     case 'click(locator)':
     case 'assertElementPresent(locator)':
