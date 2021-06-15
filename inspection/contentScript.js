@@ -2,10 +2,10 @@ var clickedElement = null, selectionText = null;
 var focusedInput = null;
 var step = null;
 const hasAttributes = ["name", "id", "aria-label", "placeholder", "title", "alt", "class"]; //Order priority wise
-const clickableElement = [ "button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5"];
+const clickableElement = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5"];
 const findClickedElementParent = ["path", "svg", "i", "span"];
 const findParents = ["form", "header", "main", "section", "footer"];
-const innerTextLength = 15;
+const innerTextLength = 100;
 const nodeList = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
 
 // Append Style on hover get element
@@ -38,7 +38,7 @@ function stop() {
 function handleFocus(event) {
   if (event === undefined) event = window.event;
   var target = "target" in event ? event.target : event.srcElement;
-
+  //Todo:  Input TYpe Image, submit, button, reset
   if (target.tagName === "INPUT" && target.type !== "submit") {
     focusedInput = event;
     sendConsole("log", "INPUT FOCUS :", event.target.value);
@@ -251,14 +251,14 @@ function getDomPath(el) {
 }
 
 function filterDomPath(el, command) {
-  [1, 2, 3].forEach((element) => {
-    console.log(element);
-  });
+  // [1, 2, 3].forEach((element) => {
+  //   console.log(element);
+  // });
   var domPathList = getDomPath(el);
-  var index = domPathList.findIndex((x) => x.node === "button");
   var domFilterList = [];
-  if (command === "click(locator)" && index !== -1) {
-    domPathList.length = index + 1;
+  if (command === "click(locator)") {
+    const index = domPathList.findIndex((x) => x.node === "button");
+    if(index !== -1) domPathList.length = index + 1;
   }
   sendConsole("log", "DOM PATH FILTER BUTTON : ", domPathList);
   for (let index = 0; index < domPathList.length; index++) {
