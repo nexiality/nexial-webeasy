@@ -23,7 +23,7 @@ function clear() {
   document.getElementById("inspectDataOption").style.display = "none";
 }
 
-function copyToNexial() {
+function copyScript() {
   let delim = '\t';
   let script = '';
 
@@ -35,14 +35,7 @@ function copyToNexial() {
     }
     script += '\n';
   }
-
-  let dummy = document.createElement("textarea");
-  dummy.value = script;
-  document.body.appendChild(dummy);
-  dummy.select();
-  document.execCommand("copy");
-  document.body.removeChild(dummy);
-  return false;
+  return script;
 }
 
 function validURL(myURL) {
@@ -71,6 +64,7 @@ function stop() {
   document.getElementById("showStatus").style.display = "none";
   chrome.runtime.getBackgroundPage((background) => {
     inspectElementList = background.inspectElementList;
+    console.log('STOP STATUS : ', inspectElementList)
     if (inspectElementList.length) {
       document.getElementById("showData").style.display = "block";
       document.getElementById("inspectDataOption").style.display = "block";
@@ -222,7 +216,16 @@ document.getElementById("copyToNexialInfo").addEventListener("click", function (
   info('Copy to Nexial', 'copyToNexialInfo');
 }, false);
 
-document.getElementById("copyToNexial").addEventListener("click", copyToNexial);
+document.getElementById("copyToNexial").addEventListener("click", function () {
+  let dummy = document.body.appendChild(document.createElement("textarea"));
+  dummy.value = copyScript();
+  document.body.appendChild(dummy);
+  dummy.focus();
+  dummy.select();
+  document.execCommand('copy');
+  document.body.removeChild(dummy);
+}, false);
+// document.getElementById("copyToNexial").addEventListener("click", copyToNexial);
 
 document.getElementById("clear").addEventListener("click", clear);
 

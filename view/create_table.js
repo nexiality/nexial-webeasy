@@ -1,20 +1,38 @@
-let table, updatedObject = {}, currentStep = 0, editMode = false;
+let table = null,  currentStep = 0,  editMode = false;
+
+function updateBackground() {
+  chrome.runtime.getBackgroundPage((background) => {
+    background.inspectElementList = inspectElementList;
+  });
+}
+
+function getCurrentInspectObject(step) {
+  let inspectObj = {
+    step   : step,
+    command: "",
+    param:   {},
+    actions: {}
+  };
+  inspectObj.command = document.getElementById("command_" + step).value;
+  const paramArr = getCommandParam(inspectObj.command);
+  for (let index = 0; index < paramArr.length; index++) {
+    if(paramArr[index] === 'locator') {
+      inspectObj.param[paramArr[index]] = getInspectListObject(step).param.locator;
+      inspectObj.actions['selectedLocator'] = document.getElementById(paramArr[index] + "_" + step).value;
+    } else inspectObj.param[paramArr[index]] = document.getElementById(paramArr[index] + "_" + step).value
+  }
+  return inspectObj;
+}
 
 function getInspectListObject(step) {
-  return inspectElementList.find(obj => obj.step === step);
+  return inspectElementList.find((obj) => obj.step === step);
 }
 
-function updateInspectList(step) {
-  let oldObject = inspectElementList.find(obj => obj.step === step)
-  oldObject.command = updatedObject.command;
-  oldObject.param = updatedObject.param;
-}
-
-function toggleElement(element, enable) {                            // Enable disable Element
-  if (!enable) {
-    element.setAttribute("disabled", "true");
-  } else {
+function toggleElement(element, enable) {
+  if (enable) {
     element.removeAttribute("disabled");
+  } else {
+    element.setAttribute("disabled", "true");
   }
 }
 
@@ -25,30 +43,27 @@ function deleteSubTable(tableIndex) {
 
 function deleteSubTableRow(tableIndex, rowIndex) { document.getElementById('table_' + tableIndex).deleteRow(rowIndex); }
 
+function deleteParentTableRow(rowIndex) { table.deleteRow(rowIndex); }
+
 function createSubTableRow(param_table, key, data, step, editable) {
-
   let tr = param_table.insertRow(-1);
-  let valueCell = tr.insertCell(-1);
-  valueCell.setAttribute("title", key);
+  let td = tr.insertCell(-1);
+  let element = "";
+  td.setAttribute("title", key);
 
-  if(editMode) updatedObject.param[key] = data;
-
-  let element = '';
-  if (key === 'locator' && data) {                                      // param is locator
-    element = createSelectElement(data, editable)
+  if (key === "locator" && data) {
+    element = createSelectElement(data, editable);
+    const inspectListObject = getInspectListObject(step);
+    if(inspectListObject.actions['selectedLocator'])
+      element.value = inspectListObject.actions['selectedLocator'];
     element.onchange = function (e) {
-      // ToDO: 
-    }
-  } else if (key === 'locator' && !data) {
-    element = createInspectElement(key, step)
-  } else {                                            // param is other than locator
-    element = createInputBox(data, editable);
-    element.focusout = function(e) {
-      updatedObject.param[key] = [element.value];
+      // ToDO:
     };
-  }
-  element.setAttribute('id', (key + '_' + step))
-  valueCell.appendChild(element);
+  } else if (key === "locator" && !data) element = createInspectElement(key, step);
+  else element = createInputBox(data, editable); // param is other than locator
+
+  element.setAttribute("id", key + "_" + step);
+  td.appendChild(element);
 }
 
 function getCommandParam(str) {
@@ -67,50 +82,45 @@ function getCommandParam(str) {
 }
 
 function updateParamRow(step) {
-  let parameterArr = getCommandParam(updatedObject.command), isCommandChanged = false;
-  const inspectListObj = getInspectListObject(step)
-  if (inspectListObj.command !== updatedObject.command) {
-    isCommandChanged = true;
-    updatedObject.param = {};
-    deleteSubTable(step);
-  }
-  
-  for (let index = 0; index < (parameterArr.length); index++) {
-    var data = [];
-    if (parameterArr[index] === 'locator') data = inspectListObj.param['locator'];
-    if (isCommandChanged) createSubTableRow(document.getElementById('table_' + step), parameterArr[index], data, step, true);
-    else toggleElement(document.getElementById(parameterArr[index] + '_' + step), true)
+  const paramArr = getCommandParam(document.getElementById("command_" + step).value);
+  const inspectListObj = getInspectListObject(step).param;
+  for (let index = 0; index < paramArr.length; index++) {
+    createSubTableRow(
+      document.getElementById("table_" + step),
+      paramArr[index],
+      paramArr[index] === "locator" ? inspectListObj["locator"] : [],
+      step,
+      true
+    );
   }
 }
 
 function editRow(step) {
-  toggleRow(step, false);
-  let cmd_el = document.getElementById('command_' + step);
-  cmd_el.removeAttribute("disabled");
-  cmd_el.onchange = function (e) {
-    updatedObject.command = e.target.value;
-    cmd_el.value = e.target.value;
+  toggleEditable(step, true);
+  document.getElementById("command_" + step).onchange = function (e) {
+    deleteSubTable(step);
     updateParamRow(step);
-  }
-  updateParamRow(step)
+  };
 }
 
 function saveRow(step) {
-  toggleRow(step, true);
-
-  let cmdElement = document.getElementById('command_' + step);
-  cmdElement.setAttribute("disabled", "true");
-
-  const paramList = getCommandParam(cmdElement.value);               // Update inspectElementList's param
-  (paramList).forEach(element => {
-    const paramElement = document.getElementById(element + '_' + step);
-    toggleElement(paramElement, false)
-  });
-
-  updateInspectList(step);
+  toggleEditable(step, false);
+  let objIndex = inspectElementList.findIndex((obj) => obj.step === step);
+  inspectElementList[objIndex] = getCurrentInspectObject(step);
+  updateBackground();
+  console.log("AFTER SAVE : ", inspectElementList);
 }
 
-function toggleRow(/*Number*/i, /*Boolean*/enable) {
+function toggleEditable(step, enable) {
+  const paramArr = getCommandParam(document.getElementById("command_" + step).value);
+  toggleElement(document.getElementById("command_" + step), enable);
+  toggleActions(step, !enable);
+  for (let index = 0; index < paramArr.length; index++) {
+    toggleElement(document.getElementById(paramArr[index] + "_" + step), enable);
+  }
+}
+
+function toggleActions(/*Number*/ i, /*Boolean*/ enable) {
   document.getElementById("delete_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("edit_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("addNew_" + i).style.display = enable ? "inline-block" : "none";
@@ -152,6 +162,7 @@ function createDuplicateButton(step) {
     payload.step = '';
     addRow(payload);
     updateTableRow();
+    updateBackground();
   };
   return button;
 }
@@ -163,13 +174,11 @@ function createDeleteButton(step) {
   button.setAttribute('title', 'Delete');
   button.innerHTML = '<i class="fa fa-trash"></i>';
   button.onclick = function (e) {
-    // Todo Update background.js
-    // TODO Update inspectElementList
     document.getElementById("step_" + step).remove();
-    //Delete from inspectElementList
     var index = inspectElementList.findIndex(stepIndex => stepIndex === step)
     if (index !== -1) inspectElementList.splice(index, 1);
     updateTableRow();
+    updateBackground();
   };
   return button;
 }
@@ -183,9 +192,6 @@ function createEditButton(step) {
   button.onclick = function (e) {
     if (editMode) return;
     editMode = true;
-    const obj = getInspectListObject(step)
-    updatedObject.command = obj.command;
-    updatedObject.param = obj.param;
     editRow(step);
   };
   return button;
@@ -200,7 +206,7 @@ function createSaveButton(step) {
   button.innerHTML = '<i class="fa fa-check"></i>';
   button.onclick = function (e) {
     editMode = false;
-    saveRow(step)
+    saveRow(step);
   };
   return button;
 }
@@ -214,19 +220,10 @@ function createCloseButton(step) {
   button.innerHTML = '<i class="fa fa-times"></i>';
   button.onclick = function (e) {
     editMode = false;
-    // Undo Command value and make it disable
-    const oldObject = getInspectListObject(step);
-    console.log(oldObject, '+++++++++++++++++++++++++++++++===')
-    document.getElementById('command' + '_' + step).value = oldObject.command;
-    toggleElement(document.getElementById('command' + '_' + step), false)
-
-    deleteSubTable(step);                                            // clear param table
-
-    const data = oldObject.param, paramList = getCommandParam(oldObject.command);
-    for (let key in data) {
-      createSubTableRow(document.getElementById('table_' + step), key, data[key], step, false);
-    }
-    toggleRow(step, true);
+    const rowIndex = document.getElementById('step_' + step).rowIndex;
+    deleteParentTableRow(rowIndex);
+    addRow(getInspectListObject(step), rowIndex - 1);
+    updateTableRow();
   };
   return button;
 }
@@ -259,7 +256,6 @@ function createUpDownButton(step, direction) {
 }
 
 function createInspectElement(inspectFor, step) {
-
   let inspectElement = document.createElement("div"),
       subDiv = document.createElement("div"),
       button = document.createElement('button');
@@ -332,7 +328,6 @@ function updateTableRow() {
 }
 
 function createSubTable(data, step) {
-
   const param_table = document.createElement("table");
   param_table.setAttribute('class', 'sub-table');
   param_table.setAttribute('id', 'table_' + step);
@@ -393,6 +388,9 @@ function tableFromJson() {
   table.setAttribute('class', 'table table-hover');
   table.setAttribute('id', 'inspect_table');
   table.setAttribute('cellspacing', '0');
+  const showDataDiv = document.getElementById('showData');
+  $(showDataDiv).hide();
+  showDataDiv.appendChild(table);
 
   // Create table header row using the extracted headers above.
   let head = table.createTHead();
@@ -417,8 +415,11 @@ function tableFromJson() {
   }
 
   // Now, add the newly created table with json data, to a container.
-  let divShowData = document.getElementById('showData');
-  divShowData.innerHTML = "";
-  divShowData.appendChild(table);
+  // let divShowData = document.getElementById('showData');
+  // divShowData.setAttribute('style', ('visibility: hidden'));
+  // divShowData.innerHTML = "";
+  // divShowData.appendChild(table);
   updateTableRow();
+  // divShowData.setAttribute('style', ('visibility: visible'));
+  $(showDataDiv).show();
 }
