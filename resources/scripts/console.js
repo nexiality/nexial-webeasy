@@ -1,8 +1,9 @@
-function sendConsole(level, logging) {
-  printLog(level, logging);
+function sendConsole(level, logging, data = null) {
+  printLog(level, logging, data);
   const payload = {
-    cmd  : 'console',
-    data: logging,
+    cmd : 'console',
+    msg : logging,
+    data: data,
     type: level
   };
   // if (!chrome || !chrome.runtime || !payload) return;
@@ -10,7 +11,7 @@ function sendConsole(level, logging) {
   chrome.runtime.sendMessage(payload);
 }
 
-function printLog(level, logging) {
+function printLog(level, logging, data = null) {
   switch (level) {
     case 'group':
       console.group(logging)
@@ -25,7 +26,7 @@ function printLog(level, logging) {
       console.timeEnd(logging)
       break;
     case 'log':
-      console.log(logging)
+      console.log(logging, data)
       break;
     case 'info':
       console.info(logging)

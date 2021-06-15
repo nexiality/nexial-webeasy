@@ -24,7 +24,7 @@ function stop() {
 }
 
 function pause() {
-  printLog('log', `BACKGROUND RECEIVED PAUSE INSPECTING`);
+  printLog( `BACKGROUND RECEIVED PAUSE INSPECTING`);
   inspectstatus = 'paused';
   sendRunTimeMessage({action: 'paused'})
   updateBadge();
@@ -45,7 +45,7 @@ function updateBadge() {
 }
 
 function loadListener(url) {
-  printLog('log', 'createOpenURLEntry');
+  printLog( 'CREATE OPEN URL ENTRY');
   inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
   // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
     // Process |result| here (or maybe do nothing at all).
@@ -55,18 +55,18 @@ function loadListener(url) {
 function createOpenURLEntry(url) {
   if (url) {
     chrome.tabs.create({"url": url}, function (tab) {
-      console.log('OPEN NEW PAGE')
+      printLog('OPEN NEW PAGE')
       inspectingTab = JSON.parse(JSON.stringify(tab));
-      printLog('log', inspectingTab)
+      printLog( inspectingTab)
       updateBadge();
       loadListener(url);
     });
   } else {
     chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
       if (!tabs || tabs.length < 1) return;
-      console.log('CURRENT PAGE')
+      printLog('CURRENT PAGE')
       inspectingTab = JSON.parse(JSON.stringify(tabs[0]));
-      printLog('log', inspectingTab)
+      printLog( inspectingTab)
       loadListener(inspectingTab.url);
       updateBadge();
     });
@@ -159,7 +159,7 @@ chrome.runtime.onMessage.addListener(function (action) {
     //   break;
     // }
     case 'console':
-      printLog(action.type, action.data);
+      printLog(action.type, action.msg, action.data);
       break;
   }
   updateBadge();

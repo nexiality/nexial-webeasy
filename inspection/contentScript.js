@@ -15,7 +15,7 @@ const innerTextLength = 15;
 // (document.head || document.documentElement).appendChild(style);
 
 function start(stepValue) {
-  sendConsole('info', 'BROWSER RECEIVED: START INSPECTING');
+  sendConsole('log', 'BROWSER RECEIVED: START INSPECTING');
   step = stepValue + 1;
   focusedInput = null;
   clickedElement = null;
@@ -40,8 +40,20 @@ function handleFocus(event) {
 
   if(target.tagName === 'INPUT' && target.type !== 'submit') {
     focusedInput = event;
-    sendConsole('log', `INPUT FOCUS: ${event.target.value}`);
+    sendConsole('log', 'INPUT FOCUS :', event.target.value);
   }
+  target.addEventListener("keyup", function(event) {
+    // Number 13 is the "Enter" key on the keyboard
+    console.log(event, event.keyCode)
+    if (event.keyCode === 13) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      focusedInput.target.value += '{ENTER}';
+      sendConsole('log', 'INPUT ENTER PRESS :', focusedInput.target.value);
+      sendInspectInfo('typeKeys(locator,value)', focusedInput);
+      focusedInput = null;
+    }
+  });
 }
 
 function handleFocusout(event) {
@@ -56,9 +68,9 @@ function handleFocusout(event) {
 }
 
 function onClickElement(event) {
-  sendConsole('log', `MOUSE CLICK : ${event.button}`);
+  sendConsole('log', `MOUSE CLICK : `, event.button);
   if (event.button === 2) {
-    sendConsole('log', `RIGHT CLICK RETURN FROM onClickElement : ${event.button}`);
+    sendConsole('log', `RIGHT CLICK RETURN FROM onClickElement : `, event.button);
     return;
   }
   if (event === undefined) event = window.event;
@@ -66,7 +78,7 @@ function onClickElement(event) {
 
   if(focusedInput && focusedInput.target.value) {
     sendInspectInfo('type(locator,value)', focusedInput);
-    sendConsole('log', `INPUT FOCUSOUT: ${focusedInput.target.value}`);
+    sendConsole('log', `INPUT FOCUSOUT: `, focusedInput.target.value);
     focusedInput = null;
   }
 
@@ -75,7 +87,7 @@ function onClickElement(event) {
     (target.tagName === 'DIV' && target.innerText) ||
     clickableElement.includes(target.tagName.toLowerCase())
   ) {
-    sendConsole('log', `CLICK: ${target.tagName}`);
+    sendConsole('log', `CLICK: `, target.tagName);
     sendInspectInfo('click(locator)', event);
   }
 }
@@ -85,7 +97,7 @@ function handleChange(event) {
   var target = "target" in event ? event.target : event.srcElement;
 
   if(target.tagName === 'SELECT') {
-    sendConsole('log', `SELECT: ${target.tagName}`);
+    sendConsole('log', `SELECT: `, target.tagName);
     sendInspectInfo('select(locator,text)', event);
   }
 }
@@ -211,7 +223,7 @@ function getDomPath(el, command) {
        (['html', 'body'].includes(node['node']))
     ) {
       el = el.parentNode;
-      sendConsole('log', `SKIP NODE : ${node['node']}`);
+      sendConsole('log', `SKIP NODE :`, node['node']);
       continue;
     }
     if (el.hasAttributes()) {
@@ -227,7 +239,7 @@ function getDomPath(el, command) {
       }
     }
     stack.unshift(node);
-    sendConsole('log', `ENTRY NODE : ${node['node']}`);
+    sendConsole('log', `ENTRY NODE : `, node['node']);
     el = el.parentNode;
   }
   sendConsole('groupEnd', '');
@@ -236,16 +248,17 @@ function getDomPath(el, command) {
   if(result.length) {
     sendConsole('info', `FIND THESE PARENTS : ${findParents}`);
     result.push(stack[stack.length -1])
-    sendConsole('log', `PATHS : ${result}`);
-    sendConsole('groupEnd', '');
+    sendConsole('log',  `PATHS :`, result);
+    sendConsole('log', 'groupEnd', '');
     return result;
   }
-  sendConsole('log', `PATHS : ${stack}`);
-  sendConsole('groupEnd', '');
+  sendConsole('log',  `PATHS :`, stack);
+  sendConsole('log', 'groupEnd', '');
   return stack;
 }
 
 function getXPath(element) {
+  //Todo: sort in simple form
   if (element.id !== "") {
     var xpathWithId = '//*[@id="' + element.id + '"]';
     return xpathWithId;
@@ -266,6 +279,7 @@ function getXPath(element) {
 }
 
 function getCssPath(el) {
+  //Todo: sort in simple form
   if (!(el instanceof Element)) return;
   var path = [];
   while (el.nodeType === Node.ELEMENT_NODE) {
@@ -289,7 +303,7 @@ function getCssPath(el) {
 }
 
 function sendInspectInfo(command, event) {
-  sendConsole('log', `COMMAND : ${command}`);
+  sendConsole( 'log', `COMMAND : ${command}`);
   var data = {
     step   : step++,
     command: command,
@@ -298,13 +312,13 @@ function sendInspectInfo(command, event) {
   };
   const paths = getDomPath(event.target, command);
   var locator = getLocator(event.target, paths);
-  sendConsole('log', `LOCATOR`);
   if (!locator.length) {
     locator =  [
       'css=' + getCssPath(event.target),
       'xpath=' + getXPath(event.target)
     ]
   }
+  sendConsole( 'log', `LOCATOR`, locator);
 
   // console.log('command = ' + command);
   switch (command) {
@@ -313,6 +327,7 @@ function sendInspectInfo(command, event) {
       data.param['locator'] = locator;
       break;
     case 'type(locator,value)':
+    case 'typeKeys(locator,value)':
     case 'assertValue(locator,value)':
       data.param['locator'] = locator;
       data.param['value'] = event.target.value || '(empty)';
@@ -344,7 +359,7 @@ function sendInspectInfo(command, event) {
   };
 
   if (!chrome || !chrome.runtime || !payload) return;
-  sendConsole('log', `SEND PAYLOAD : ${payload}`);
+  sendConsole('log',  `SEND PAYLOAD :`, payload);
   // console.info(payload);
   chrome.runtime.sendMessage(payload);
 }
