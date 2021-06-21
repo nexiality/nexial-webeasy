@@ -61,10 +61,17 @@ chrome.runtime.onInstalled.addListener(function () {
                         parentId: "wait...",
                         contexts: ["selection"]
                       });
+  contextMenus.create({
+    title:    "Show locator",
+    id:       "findLocator",
+    contexts: ["all"]
+  });
 });
 
-function callbackContextmenu(info, tab, data) {
-  sendRunTimeMessage({action: "getContextMenuElement", command: data, selectionText: info.selectionText})
+function callbackContextmenu(info, tab, command) {
+  if(command === 'findLocator') {
+    sendRunTimeMessage({action: "findLocator"})
+  } else sendRunTimeMessage({action: "getContextMenuElement", command: command, selectionText: info.selectionText})
 }
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
@@ -95,6 +102,9 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
       break;
     case 'waitForText':
       command = 'waitForTextPresent(text)';     // text in div, p, span, i
+      break;
+    case 'findLocator':
+      command = 'findLocator';
       break;
   }
   callbackContextmenu(info, tab, command);

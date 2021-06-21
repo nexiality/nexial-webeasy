@@ -377,6 +377,71 @@ function sendInspectInfo(command, event) {
   chrome.runtime.sendMessage(payload);
 }
 
+/***************** popup to show locator list ********************/
+
+function getLocatorElement(items, editable = true) {
+  let selectList = document.createElement("select");
+  selectList.setAttribute('class', 'form-control')
+  if (!editable) selectList.setAttribute('disabled', 'true')
+
+  //Create and append the options
+  let optgroup = '', optgroupLabel = '';
+  for (let index = 0; index < items.length; index++) {
+    if ((items[index]).includes('=') && optgroupLabel !== items[index].split('=')[0]) {
+      optgroupLabel = items[index].split('=')[0];
+      optgroup = document.createElement("optgroup");
+      optgroup.setAttribute('label', optgroupLabel.toUpperCase())
+    }
+    let option = document.createElement("option");
+    option.value = items[index];
+    option.text = items[index];
+    if (optgroup) {
+      optgroup.appendChild(option);
+      selectList.appendChild(optgroup);
+    } else {
+      selectList.appendChild(option);
+    }
+  }
+  return selectList;
+}
+
+function createLocatorDialog(locator) {
+  document.body.innerHTML += `
+  <dialog>
+    <div class="card w-50">
+      <div class="card-body">
+        <div class="card-title">
+          <h5>Card title</h5>
+          <button type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  `;
+
+  var dialog = document.querySelector("dialog");
+  // const dialog = document.getElementsByClassName("card-body")
+  const cmdDropdown = getLocatorElement(locator)
+  dialog.appendChild(cmdDropdown);
+  dialog.querySelector("button").addEventListener("click", function() {
+    dialog.close();
+  })
+  dialog.showModal();
+}
+
+function findLocator() {
+  const domPaths = filterDomPath(clickedElement.target, '');
+  const locatorList = getLocator(clickedElement.target, domPaths);
+  let locator = locatorList.locator;
+  if (!locator.length) {
+    locator = ["css=" + getCssPath(clickedElement.target), "xpath=" + getXPath(clickedElement.target)];
+  }
+  createLocatorDialog(locator);
+}
+/**************************************************************************/
+
 document.addEventListener(
   "contextmenu",
   function (event) {
@@ -403,6 +468,9 @@ chrome.runtime.onMessage.addListener(function (request) {
       break;
     case "paused":
       stop();
+      break;
+    case "findLocator":
+      findLocator();
       break;
   }
   sendConsole("info", `BROWSER : ${request.action} INSPECTING`);
