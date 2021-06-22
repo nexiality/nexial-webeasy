@@ -348,7 +348,8 @@ function sendInspectInfo(command, event) {
       break;
     case "assertText(locator,text)":
       data.param["locator"] = locator;
-      data.param["text"] = event.target.textContent || event.target.innerText || "<MISSING>";
+      if (event.target.tagName === "SELECT") data.param["text"] = event.target[event.target.selectedIndex].text;
+      else data.param["text"] = event.target.textContent || event.target.innerText || "<MISSING>";
       break;
     case "select(locator,text)":
       data.param["locator"] = locator;
