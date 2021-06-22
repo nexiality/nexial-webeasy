@@ -144,6 +144,11 @@ function getElementByXpath(path) {
     .singleNodeValue;
 }
 
+function updatingText(txt) {
+  txt = txt.replace(/\n/g, "'\\n'");   // replace new line with \n
+  return txt.trim();  // trim extra space
+}
+
 function createPaths(el, baseXpathNode, baseCssPath) {
   var res = {
     xpath: [],
@@ -197,7 +202,7 @@ function getLocator(e, paths) {
       }
       if (el.innerText && el.innerText.length <= innerTextLength) {
         xpath.push(
-          "xpath=//" + el.node + `[normalize-space(string(.))=normalize-space('${el.innerText}')]`
+          "xpath=//" + el.node + `[normalize-space(string(.))=normalize-space('${updatingText(el.innerText)}')]`
         );
         if (nodeList.includes(el.node))
           selectedLocator =
