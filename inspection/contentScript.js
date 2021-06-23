@@ -149,13 +149,15 @@ function updatingText(txt) {
   return txt.trim();  // trim extra space
 }
 
-function createPaths(el, baseXpathNode, baseCssPath) {
+function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   let res = {
     xpath: [],
     css: [],
   };
   if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
-  if (baseCssPath) baseCssPath = baseCssPath.replace("css=", " > ");
+  if (baseCssPath && !isFiltered) {
+    baseCssPath = baseCssPath.replace("css=", " > ");
+  } else baseCssPath = baseCssPath.replace("css=", " ");
   for (const attr in el.attribute) {
     let value = el.attribute[attr];
     if (attr === "class") {
@@ -178,7 +180,7 @@ function createPaths(el, baseXpathNode, baseCssPath) {
   return res;
 }
 
-function getLocator(e, paths) {
+function getLocator(e, paths, isFiltered) {
   let locator = [],
     xpath = [],
     css = [],
@@ -195,7 +197,7 @@ function getLocator(e, paths) {
     if (i === paths.length - 1) {
       // Main Element with all attribute
       // Xpath=//tagname[@attribute='value']
-      const path = createPaths(el, "", "");
+      const path = createPaths(el, "", "", isFiltered);
       if (path) {
         xpath = path.xpath;
         css = path.css;
@@ -215,7 +217,7 @@ function getLocator(e, paths) {
       let activeElxpath = xpath[0] ? xpath[0] : "xpath=//" + activeElnode,
         activeElcss = css[0] ? css[0] : "css=" + activeElnode;
 
-      const relativePaths = createPaths(el, activeElxpath, activeElcss);
+      const relativePaths = createPaths(el, activeElxpath, activeElcss, isFiltered);
       if (relativePaths) {
         xpath = xpath.concat(relativePaths.xpath);
         css = css.concat(relativePaths.css);
@@ -272,8 +274,15 @@ function filterDomPath(el, command) {
       domFilterList.push(node);
     }
   }
-  if (domFilterList.length > 1) return domFilterList;
-  return domPathList;
+  if (domFilterList.length > 1)
+    return {
+      domPaths: domFilterList,
+      isFiltered: true
+    };
+  return {
+    domPaths: domPathList,
+    isFiltered: false
+  };
 }
 
 function getXPath(element) {
@@ -322,14 +331,15 @@ function getCssPath(el) {
 }
 
 function sendInspectInfo(command, event) {
-  const domPaths = filterDomPath(event.target, command);
-  const locatorList = getLocator(event.target, domPaths);
+  const paths = filterDomPath(event.target, command);
+  const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
   let locator = locatorList.locator;
   if (!locator.length) {
     locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)];
   }
   sendConsole("log", `COMMAND : ${command}`);
-  sendConsole("log", "DOM PATH FILTER LIST : ", domPaths);
+  sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
+  sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.domPaths);
   sendConsole("log", "LOCATOR LIST : ", locatorList);
 
   let data = {
@@ -438,8 +448,8 @@ function createLocatorDialog(locator) {
 }
 
 function findLocator() {
-  const domPaths = filterDomPath(clickedElement.target, '');
-  const locatorList = getLocator(clickedElement.target, domPaths);
+  const paths = filterDomPath(clickedElement.target, '');
+  const locatorList = getLocator(clickedElement.target, paths.domPaths, paths.isFiltered);
   let locator = locatorList.locator;
   if (!locator.length) {
     locator = ["css=" + getCssPath(clickedElement.target), "xpath=" + getXPath(clickedElement.target)];
