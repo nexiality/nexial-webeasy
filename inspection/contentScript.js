@@ -1,6 +1,6 @@
-var clickedElement = null, selectionText = null;
-var focusedInput = null;
-var step = null;
+let clickedElement = null, selectionText = null;
+let focusedInput = null;
+let step = null;
 const hasAttributes = ["name", "id", "aria-label", "placeholder", "title", "alt", "class"]; //Order priority wise
 const clickableElement = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5"];
 const findClickedElementParent = ["path", "svg", "i", "span"];
@@ -9,7 +9,7 @@ const innerTextLength = 100;
 const nodeList = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
 
 // Append Style on hover get element
-// var style = document.createElement("link");
+// let style = document.createElement("link");
 // style.rel = "stylesheet";
 // style.type = "text/css";
 // style.href = chrome.extension.getURL("resources/style/nexial.css");
@@ -37,7 +37,7 @@ function stop() {
 
 function handleFocus(event) {
   if (event === undefined) event = window.event;
-  var target = "target" in event ? event.target : event.srcElement;
+  let target = "target" in event ? event.target : event.srcElement;
   //Todo:  Input TYpe Image, submit, button, reset
   if (target.tagName === "INPUT" && target.type !== "submit") {
     focusedInput = event;
@@ -59,7 +59,7 @@ function handleFocus(event) {
 
 function handleFocusout(event) {
   // if (event === undefined) event = window.event;
-  // var target = "target" in event ? event.target : event.srcElement;
+  // let target = "target" in event ? event.target : event.srcElement;
   // if(target.tagName === 'INPUT' && target.type !== 'submit') {
   //   const command = 'type(locator,value)';
   //   console.log('INPUT NOT SUBMIT EVENT ====================================== ', event)
@@ -74,7 +74,7 @@ function onClickElement(event) {
     return;
   }
   if (event === undefined) event = window.event;
-  var target = "target" in event ? event.target : event.srcElement;
+  let target = "target" in event ? event.target : event.srcElement;
 
   if (focusedInput && focusedInput.target.value) {
     sendInspectInfo("type(locator,value)", focusedInput);
@@ -94,7 +94,7 @@ function onClickElement(event) {
 
 function handleChange(event) {
   if (event === undefined) event = window.event;
-  var target = "target" in event ? event.target : event.srcElement;
+  let target = "target" in event ? event.target : event.srcElement;
 
   if (target.tagName === "SELECT") {
     sendConsole("log", "SELECT: ", target.tagName);
@@ -104,8 +104,8 @@ function handleChange(event) {
 
 function onMouseHoverElement(event) {
   // if (event === undefined) event = window.event;
-  // var target = "target" in event ? event.target : event.srcElement;
-  // var tooltip = document.createElement("span");
+  // let target = "target" in event ? event.target : event.srcElement;
+  // let tooltip = document.createElement("span");
   // tooltip.setAttribute("nexial-locator-data-tooltip", target.tagName);
   // target.appendChild(tooltip);
   // target.classList.add("_nexial-hover");
@@ -118,13 +118,13 @@ function onMouseHoverElement(event) {
 }
 
 function hasNumbers(str) {
-  var regex = /\d/g;
+  let regex = /\d/g;
   return regex.test(str);
 }
 
 function hasOnlyAlphabet(str) {
   // No special character and number i.e only alphabet
-  var regex = /^[A-Za-z]+$/;
+  let regex = /^[A-Za-z]+$/;
   return regex.test(str);
 }
 
@@ -150,18 +150,18 @@ function updatingText(txt) {
 }
 
 function createPaths(el, baseXpathNode, baseCssPath) {
-  var res = {
+  let res = {
     xpath: [],
     css: [],
   };
   if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
   if (baseCssPath) baseCssPath = baseCssPath.replace("css=", " > ");
   for (const attr in el.attribute) {
-    var value = el.attribute[attr];
+    let value = el.attribute[attr];
     if (attr === "class") {
       if (res["xpath"].length) return res;
       const classList = el.attribute["class"];
-      for (var j = 0; j <= classList.length - 1; j++) {
+      for (let j = 0; j <= classList.length - 1; j++) {
         if (hasOnlyAlphabet(classList[j])) {
           res["xpath"].push("xpath=//" + el.node + `[@${attr}='${classList[j]}']` + baseXpathNode);
           res["css"].push("css=" + el.node + `.${classList[j]}` + baseCssPath);
@@ -179,7 +179,7 @@ function createPaths(el, baseXpathNode, baseCssPath) {
 }
 
 function getLocator(e, paths) {
-  var locator = [],
+  let locator = [],
     xpath = [],
     css = [],
     selectedLocator = null;
@@ -189,7 +189,7 @@ function getLocator(e, paths) {
   if (e.id) locator.push("id=" + e.id);
   if (e.name) locator.push("name=" + e.name);
 
-  for (var i = paths.length - 1; i >= 0; i--) {
+  for (let i = paths.length - 1; i >= 0; i--) {
     const el = paths[i];
     if (el.attribute["class"]) el.attribute["class"] = el.attribute["class"].split(" ");
     if (i === paths.length - 1) {
@@ -212,7 +212,7 @@ function getLocator(e, paths) {
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
-      var activeElxpath = xpath[0] ? xpath[0] : "xpath=//" + activeElnode,
+      let activeElxpath = xpath[0] ? xpath[0] : "xpath=//" + activeElnode,
         activeElcss = css[0] ? css[0] : "css=" + activeElnode;
 
       const relativePaths = createPaths(el, activeElxpath, activeElcss);
@@ -230,9 +230,9 @@ function getLocator(e, paths) {
 
 function getDomPath(el) {
   sendConsole("group", "DOM PATH LIST");
-  var stack = [];
+  let stack = [];
   while (el.parentNode != null) {
-    var node = {};
+    let node = {};
     node["node"] = el.nodeName.toLowerCase();
     node["innerText"] = el.innerText;
     node["attribute"] = [];
@@ -242,7 +242,7 @@ function getDomPath(el) {
       continue;
     }
     if (el.hasAttributes()) {
-      for (var i = 0; i <= hasAttributes.length - 1; i++) {
+      for (let i = 0; i <= hasAttributes.length - 1; i++) {
         const attrs = el.attributes[`${hasAttributes[i]}`];
         if (attrs) node["attribute"][attrs.name] = attrs.value;
       }
@@ -259,8 +259,8 @@ function filterDomPath(el, command) {
   // [1, 2, 3].forEach((element) => {
   //   console.log(element);
   // });
-  var domPathList = getDomPath(el);
-  var domFilterList = [];
+  let domPathList = getDomPath(el);
+  let domFilterList = [];
   if (command === "click(locator)") {
     const index = domPathList.findIndex((x) => x.node === "button");
     if(index !== -1) domPathList.length = index + 1;
@@ -279,14 +279,14 @@ function filterDomPath(el, command) {
 function getXPath(element) {
   //Todo: sort in simple form
   if (element.id !== "") {
-    var xpathWithId = '//*[@id="' + element.id + '"]';
+    let xpathWithId = '//*[@id="' + element.id + '"]';
     return xpathWithId;
   }
   if (element === document.body) return element.tagName.toLowerCase();
-  var ix = 0;
-  var siblings = element.parentNode.childNodes;
-  for (var i = 0; i < siblings.length; i++) {
-    var sibling = siblings[i];
+  let ix = 0;
+  let siblings = element.parentNode.childNodes;
+  for (let i = 0; i < siblings.length; i++) {
+    let sibling = siblings[i];
     if (sibling === element)
       return (
         getXPath(element.parentNode) + "/" + element.tagName.toLowerCase() + "[" + (ix + 1) + "]"
@@ -300,15 +300,15 @@ function getXPath(element) {
 function getCssPath(el) {
   //Todo: sort in simple form
   if (!(el instanceof Element)) return;
-  var path = [];
+  let path = [];
   while (el.nodeType === Node.ELEMENT_NODE) {
-    var selector = el.nodeName.toLowerCase();
+    let selector = el.nodeName.toLowerCase();
     if (el.id) {
       selector += "#" + el.id;
       path.unshift(selector);
       break;
     } else {
-      var sib = el,
+      let sib = el,
         nth = 1;
       while ((sib = sib.previousElementSibling)) {
         if (sib.nodeName.toLowerCase() == selector) nth++;
@@ -332,7 +332,7 @@ function sendInspectInfo(command, event) {
   sendConsole("log", "DOM PATH FILTER LIST : ", domPaths);
   sendConsole("log", "LOCATOR LIST : ", locatorList);
 
-  var data = {
+  let data = {
     step: step++,
     command: command,
     param: {},
@@ -427,7 +427,7 @@ function createLocatorDialog(locator) {
   </dialog>
   `;
 
-  var dialog = document.querySelector("dialog");
+  let dialog = document.querySelector("dialog");
   // const dialog = document.getElementsByClassName("card-body")
   const cmdDropdown = getLocatorElement(locator)
   dialog.appendChild(cmdDropdown);
