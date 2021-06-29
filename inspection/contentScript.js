@@ -423,23 +423,25 @@ function getLocatorElement(items, editable = true) {
 
 function createLocatorDialog(locator) {
   document.body.innerHTML += `
-  <dialog>
-    <div class="card w-50">
-      <div class="card-body">
-        <div class="card-title">
-          <h5>Card title</h5>
-          <button type="button" class="close" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      </div>
+  <dialog class="">
+    <div class="">
+      <div class="show-locator-header">Show Selector</div>
+      <button type="button" class="close" data-dismiss="modal"> × </button>
     </div>
   </dialog>
   `;
 
   let dialog = document.querySelector("dialog");
-  // const dialog = document.getElementsByClassName("card-body")
-  const cmdDropdown = getLocatorElement(locator)
+  dialog.style.position = "absolute";
+  dialog.style.position = "relative";
+  dialog.style.border = "1px solid #999";
+  dialog.style.border = "1px solid rgba(0,0,0,.2)";
+  dialog.style.outline = "0";
+  dialog.getElementsByClassName("show-locator-header")[0].style.display = "inline-block";
+  dialog.getElementsByClassName("close")[0].style.float = "right";
+
+  const cmdDropdown = getLocatorElement(locator);
+  cmdDropdown.style.margin = "25px 0px";
   dialog.appendChild(cmdDropdown);
   dialog.querySelector("button").addEventListener("click", function() {
     dialog.close();
