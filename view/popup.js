@@ -1,4 +1,4 @@
-var inspectElementList = [];
+let inspectElementList = [];
 
 // fetch current tab url while opening the popup [without tabs permission]
 // chrome.tabs.query({active:true,currentWindow:true}, function(tabArray){
@@ -99,7 +99,7 @@ pauseInspect.addEventListener("click", function () {
 }, false);
 
 document.getElementById("startInspect").addEventListener("click", function () {
-  var url = document.getElementById("url").value;
+  let url = document.getElementById("url").value;
   if (!validURL(url)) {
     let validFeedback = document.getElementsByClassName('valid-feedback')[0];
     validFeedback.classList.add("d-block");

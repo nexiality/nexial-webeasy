@@ -1,7 +1,7 @@
-var inspectstatus = 'stop';
-var inspectElementList = [];
-var inspectingTab = null;
-var step = 1;
+let inspectstatus = 'stop';
+let inspectElementList = [];
+let inspectingTab = null;
+let step = 1;
 // Add a `manifest` property to the `chrome` object.
 chrome.manifest = chrome.app.getDetails();
 
@@ -83,10 +83,10 @@ function sendRunTimeMessage(message) {
   });
 }
 
-var injectIntoTab = function (tab) {
+let injectIntoTab = function (tab) {
   // You could iterate through the content scripts here
-  var scripts = chrome.manifest.content_scripts[0].js;
-  var i = 0, s = scripts.length;
+  let scripts = chrome.manifest.content_scripts[0].js;
+  let i = 0, s = scripts.length;
   for( ; i < s; i++ ) {
       chrome.tabs.executeScript(tab.id, {
           file: scripts[i]
@@ -98,10 +98,10 @@ var injectIntoTab = function (tab) {
 chrome.windows.getAll({
   populate: true
 }, function (windows) {
-  var i = 0, w = windows.length, currentWindow;
+  let i = 0, w = windows.length, currentWindow;
   for( ; i < w; i++ ) {
       currentWindow = windows[i];
-      var j = 0, t = currentWindow.tabs.length, currentWindowTab;
+      let j = 0, t = currentWindow.tabs.length, currentWindowTab;
       for( ; j < t; j++ ) {
         currentWindowTab = currentWindow.tabs[j];
           // Skip chrome:// and https:// pages

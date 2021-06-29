@@ -175,7 +175,7 @@ function createDeleteButton(step) {
   button.innerHTML = '<i class="fa fa-trash"></i>';
   button.onclick = function (e) {
     document.getElementById("step_" + step).remove();
-    var index = inspectElementList.findIndex(stepIndex => stepIndex === step)
+    let index = inspectElementList.findIndex(stepIndex => stepIndex === step)
     if (index !== -1) inspectElementList.splice(index, 1);
     updateTableRow();
     updateBackground();
@@ -242,7 +242,7 @@ function createUpDownButton(step, direction) {
     button.setAttribute('id', ('up_' + step));
   }
   button.onclick = function (e) {
-    var row = $(this).closest('tr');
+    let row = $(this).closest('tr');
     const indexAt = document.getElementById('step_' + step).rowIndex;
     const totalRowCount = table.tBodies[0].rows.length;
 
