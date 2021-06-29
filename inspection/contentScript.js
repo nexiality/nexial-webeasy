@@ -444,6 +444,7 @@ function createLocatorDialog(locator) {
   cmdDropdown.style.margin = "25px 0px";
   dialog.appendChild(cmdDropdown);
   dialog.querySelector("button").addEventListener("click", function() {
+    cmdDropdown.remove();
     dialog.close();
   })
   dialog.showModal();
