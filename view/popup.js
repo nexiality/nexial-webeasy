@@ -49,6 +49,7 @@ function validURL(myURL) {
 }
 
 function start() {
+  console.log('start')
   document.getElementById("stopOption").style.display = "block";
   document.getElementById("showStatus").style.display = "block";
   document.getElementById("startOption").style.display = "none";
@@ -232,7 +233,9 @@ document.getElementById("clear").addEventListener("click", clear);
 window.onload = function () {
   console.log("popup loaded");
   chrome.runtime.getBackgroundPage((background) => {
-    const inspectStatus = background.inspectstatus;
+    console.log(background)
+    const inspectStatus = background.inspectStatus;
+    console.log("current status", inspectStatus)
     if (inspectStatus === 'start') start();
     else if (inspectStatus === 'paused') pause();
     else if (inspectStatus === 'stop') stop();

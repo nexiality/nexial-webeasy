@@ -1,4 +1,4 @@
-let inspectstatus = 'stop';
+let inspectStatus = 'stop';
 let inspectElementList = [];
 let inspectingTab = null;
 let step = 1;
@@ -8,14 +8,14 @@ chrome.manifest = chrome.app.getDetails();
 function start(url) {
   printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
   inspectElementList = [];
-  inspectstatus = 'start';
+  inspectStatus = 'start';
   createOpenURLEntry(url);
   sendRunTimeMessage({action: 'start', startStep: step})
 }
 
 function stop() {
   printLog('groupend', `BACKGROUND RECEIVED STOP INSPECTING`);
-  inspectstatus = 'stop';
+  inspectStatus = 'stop';
   step = 1;
   inspectingTab = null;
   // sendResponse({json: inspectElementList});
@@ -25,7 +25,7 @@ function stop() {
 
 function pause() {
   printLog( `BACKGROUND RECEIVED PAUSE INSPECTING`);
-  inspectstatus = 'paused';
+  inspectStatus = 'paused';
   sendRunTimeMessage({action: 'paused'})
   updateBadge();
 }
@@ -36,7 +36,7 @@ function clear() {
 }
 
 function updateBadge() {
-  if (inspectstatus === 'start' && inspectingTab) {
+  if (inspectStatus === 'start' && inspectingTab) {
     chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
     chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
   } else {
@@ -113,7 +113,7 @@ chrome.windows.getAll({
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (inspectstatus === 'start' && changeInfo.status === 'complete') {
+  if (inspectStatus === 'start' && changeInfo.status === 'complete') {
     sendRunTimeMessage({action: 'start', startStep: step});
     updateBadge();
     // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
@@ -127,13 +127,13 @@ chrome.runtime.onMessage.addListener(function (action) {
     // case 'start_inspecting': {
     //   printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
     //   inspectElementList = [];
-    //   inspectstatus = 'start';
+    //   inspectStatus = 'start';
     //   createOpenURLEntry(action.value);
     //   sendRunTimeMessage({action: 'start', startStep: step})
     //   break;
     // }
     // case 'stop_inspecting': {
-    //   inspectstatus = 'stop';
+    //   inspectStatus = 'stop';
     //   step = 1;
     //   inspectingTab = null;
     //   // sendResponse({json: inspectElementList});
@@ -146,11 +146,11 @@ chrome.runtime.onMessage.addListener(function (action) {
       break;
     }
     // case 'inspect_status': {
-    //   // sendResponse({res: inspectstatus, json: inspectElementList});
+    //   // sendResponse({res: inspectStatus, json: inspectElementList});
     //   break;
     // }
     // case 'pause_inspecting': {
-    //   inspectstatus = 'paused';
+    //   inspectStatus = 'paused';
     //   sendRunTimeMessage({action: 'paused'})
     //   break;
     // }
@@ -164,3 +164,6 @@ chrome.runtime.onMessage.addListener(function (action) {
   }
   updateBadge();
 });
+
+window.inspectStatus = inspectStatus;
+window.inspectElementList = inspectElementList;
