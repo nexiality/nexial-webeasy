@@ -23,7 +23,7 @@ function clear() {
   document.getElementById("inspectDataOption").style.display = "none";
 }
 
-function copyScript() {
+function createScript() {
   let delim = '\t';
   let script = '';
 
@@ -218,7 +218,7 @@ document.getElementById("copyToNexialInfo").addEventListener("click", function (
 
 document.getElementById("copyToNexial").addEventListener("click", function () {
   let dummy = document.body.appendChild(document.createElement("textarea"));
-  dummy.value = copyScript();
+  dummy.value = createScript();
   document.body.appendChild(dummy);
   dummy.focus();
   dummy.select();
