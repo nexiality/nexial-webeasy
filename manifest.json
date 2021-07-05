@@ -36,5 +36,5 @@
   "name": "Nexial WebEZ",
   "version": "1.0.0",
   "permissions": [ "storage", "activeTab", "contextMenus" ],
-  "web_accessible_resources": [ "resources/style/nexial.css" ]
+  "web_accessible_resources": [ "resources/style/nexial.css", "view/dialogInjector.js" ]
 }

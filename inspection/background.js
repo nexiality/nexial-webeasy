@@ -1,5 +1,5 @@
-let inspectStatus = 'stop';
-let inspectElementList = [];
+window.inspectStatus = 'stop';
+window.inspectElementList = [];
 let inspectingTab = null;
 let step = 1;
 // Add a `manifest` property to the `chrome` object.
@@ -7,36 +7,36 @@ chrome.manifest = chrome.app.getDetails();
 
 function start(url) {
   printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
-  inspectElementList = [];
-  inspectStatus = 'start';
+  window.inspectElementList = [];
+  window.inspectStatus = 'start';
   createOpenURLEntry(url);
-  sendRunTimeMessage({action: 'start', startStep: step})
+  sendRunTimeMessage({action: window.inspectStatus, startStep: step})
 }
 
 function stop() {
   printLog('groupend', `BACKGROUND RECEIVED STOP INSPECTING`);
-  inspectStatus = 'stop';
+  window.inspectStatus = 'stop';
   step = 1;
   inspectingTab = null;
-  // sendResponse({json: inspectElementList});
+  // sendResponse({json: window.inspectElementList});
   sendRunTimeMessage({action: 'stop'})
   updateBadge();
 }
 
 function pause() {
   printLog( `BACKGROUND RECEIVED PAUSE INSPECTING`);
-  inspectStatus = 'paused';
+  window.inspectStatus = 'paused';
   sendRunTimeMessage({action: 'paused'})
   updateBadge();
 }
 
 function clear() {
-  inspectElementList = [];
+  window.inspectElementList = [];
   updateBadge();
 }
 
 function updateBadge() {
-  if (inspectStatus === 'start' && inspectingTab) {
+  if (window.inspectStatus === 'start' && inspectingTab) {
     chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
     chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
   } else {
@@ -46,7 +46,7 @@ function updateBadge() {
 
 function loadListener(url) {
   printLog( 'CREATE OPEN URL ENTRY');
-  inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
+  window.inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
   // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
     // Process |result| here (or maybe do nothing at all).
   // });
@@ -113,8 +113,8 @@ chrome.windows.getAll({
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (inspectStatus === 'start' && changeInfo.status === 'complete') {
-    sendRunTimeMessage({action: 'start', startStep: step});
+  if (window.inspectStatus === 'start' && changeInfo.status === 'complete') {
+    sendRunTimeMessage({action: window.inspectStatus, startStep: step});
     updateBadge();
     // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
     // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
@@ -126,36 +126,36 @@ chrome.runtime.onMessage.addListener(function (action) {
   switch (action.cmd) {
     // case 'start_inspecting': {
     //   printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
-    //   inspectElementList = [];
-    //   inspectStatus = 'start';
+    //   window.inspectElementList = [];
+    //   window.inspectStatus = 'start';
     //   createOpenURLEntry(action.value);
     //   sendRunTimeMessage({action: 'start', startStep: step})
     //   break;
     // }
     // case 'stop_inspecting': {
-    //   inspectStatus = 'stop';
+    //   window.inspectStatus = 'stop';
     //   step = 1;
     //   inspectingTab = null;
-    //   // sendResponse({json: inspectElementList});
+    //   // sendResponse({json: window.inspectElementList});
     //   sendRunTimeMessage({action: 'stop'})
     //   break;
     // }
     case 'inspecting': {
       step = action.value.step;
-      inspectElementList.push(action.value);
+      window.inspectElementList.push(action.value);
       break;
     }
     // case 'inspect_status': {
-    //   // sendResponse({res: inspectStatus, json: inspectElementList});
+    //   // sendResponse({res: window.inspectStatus, json: window.inspectElementList});
     //   break;
     // }
     // case 'pause_inspecting': {
-    //   inspectStatus = 'paused';
+    //   window.inspectStatus = 'paused';
     //   sendRunTimeMessage({action: 'paused'})
     //   break;
     // }
     // case 'clear_inspection': {
-    //   inspectElementList = [];
+    //   window.inspectElementList = [];
     //   break;
     // }
     case 'console':
@@ -165,5 +165,5 @@ chrome.runtime.onMessage.addListener(function (action) {
   updateBadge();
 });
 
-window.inspectStatus = inspectStatus;
-window.inspectElementList = inspectElementList;
+// window.window.inspectStatus = window.inspectStatus;
+// window.window.inspectElementList = window.inspectElementList;
