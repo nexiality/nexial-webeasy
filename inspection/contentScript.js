@@ -374,6 +374,10 @@ function sendInspectInfo(command, event) {
     case "waitForTextPresent(text)":
       data.param["text"] = selectionText || event.target.innerText || "<MISSING>";
       break;
+    case "waitForElementTextPresent(locator,text)":
+      data.param["locator"] = locator;
+      data.param["text"] = selectionText || event.target.innerText || "<MISSING>";
+      break;
     case "waitForElementPresent(locator,waitMs)":
     case "waitUntilVisible(locator,waitMs)":
     case "waitUntilEnabled(locator,waitMs)":

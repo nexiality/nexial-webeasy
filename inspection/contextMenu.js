@@ -44,6 +44,12 @@ chrome.runtime.onInstalled.addListener(function () {
                         contexts: ["all"]
                       });
   contextMenus.create({
+                        title:    "the text of this element is found",
+                        id:       "waitForElementTextPresent",
+                        parentId: "wait...",
+                        contexts: ["all"]
+                      });
+  contextMenus.create({
                         title:    "this element is visible",
                         id:       "waitUntilVisible",
                         parentId: "wait...",
@@ -93,6 +99,9 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
       break;
     case 'waitForElementPresent':
       command = 'waitForElementPresent(locator,waitMs)';
+      break;
+    case 'waitForElementTextPresent':
+      command = 'waitForElementTextPresent(locator,text)';
       break;
     case 'waitUntilVisible':
       command = 'waitUntilVisible(locator,waitMs)';
