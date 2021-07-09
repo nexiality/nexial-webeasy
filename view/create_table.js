@@ -288,7 +288,7 @@ function createInputBox(data, editable = true) {
 function updateTableRow() {
   const rows = table.tBodies[0].rows;
 
-  for (i = 0; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     rows[i].cells[0].innerHTML = i + 1;    // Update step cell
 
     // Make first row's up and last row's down disable
@@ -367,8 +367,7 @@ function tableFromJson() {
 
   // Create table header row using the extracted headers above.
   let head = table.createTHead();
-  let tr = head.insertRow(-1);                                       // table row.
-
+  let tr = head.insertRow(-1);
 
   // table header.
   for (i = 0; i < col.length; i++) {

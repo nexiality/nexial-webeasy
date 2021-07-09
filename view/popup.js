@@ -74,12 +74,25 @@ function stop() {
   });
 }
 
-let pauseInspect = document.getElementById("pauseInspect");
-
 function pause() {
   start();
   pauseInspect.value = 'Resume';
 }
+
+function setClasses(/*String*/id, /*String*/classes) {
+  document.getElementById(id).setAttribute("class", classes);
+}
+
+
+let maximizePopup = document.getElementById("maximizePopup");
+let closePopup = document.getElementById("closePopup");
+let startInspect = document.getElementById("startInspect");
+let nowInspect = document.getElementById("nowInspect");
+let pauseInspect = document.getElementById("pauseInspect");
+let stopInspect = document.getElementById("stopInspect");
+let showHelp = document.getElementById("showHelp");
+let copyToNexial = document.getElementById("copyToNexial");
+let clearInspection = document.getElementById("clear");
 
 pauseInspect.addEventListener("click", function () {
   pauseInspect.classList.toggle("btn-default");
@@ -99,7 +112,7 @@ pauseInspect.addEventListener("click", function () {
   }
 }, false);
 
-document.getElementById("startInspect").addEventListener("click", function () {
+startInspect.addEventListener("click", function () {
   let url = document.getElementById("url").value;
   if (!validURL(url)) {
     let validFeedback = document.getElementsByClassName('valid-feedback')[0];
@@ -113,16 +126,20 @@ document.getElementById("startInspect").addEventListener("click", function () {
   });
   // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: commandValue});
 });
+startInspect.addEventListener("mouseover", () => setClasses("startInspectInfo", "badge badge-focus"));
+startInspect.addEventListener("mouseout", () => setClasses("startInspectInfo", "badge"));
 
-document.getElementById("nowInspect").addEventListener("click", function () {
+nowInspect.addEventListener("click", function () {
   start();
   chrome.runtime.getBackgroundPage((background) => {
     background.start('');
   });
   // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: ''});
 }, false);
+nowInspect.addEventListener("mouseover", () => setClasses("nowInspectInfo", "badge badge-focus"));
+nowInspect.addEventListener("mouseout", () => setClasses("nowInspectInfo", "badge"));
 
-document.getElementById("stopInspect").addEventListener("click", function () {
+stopInspect.addEventListener("click", function () {
   stop();
   chrome.runtime.getBackgroundPage((background) => {
     background.stop();
@@ -136,17 +153,99 @@ document.getElementById("stopInspect").addEventListener("click", function () {
   // });
 });
 
-document.getElementById("showHelp").addEventListener("click", function () {
+showHelp.addEventListener("click", function () {
   if (!chrome || !chrome.tabs) return;
   chrome.tabs.create({url: 'https://nexiality.github.io/documentation/'});
   return false;
 }, false);
 
-document.getElementById("maximizePopup").addEventListener("click", async () => {
+maximizePopup.addEventListener("click", async () => {
   let url = chrome.runtime.getURL("NexialWebEZ.html");
   let tab = await chrome.tabs.create({ url });
   console.log(`Created tab ${tab}`);
 })
+
+closePopup.addEventListener("click", function () {
+  window.close();
+}, false);
+
+copyToNexial.addEventListener("click", function () {
+  let dummy = document.body.appendChild(document.createElement("textarea"));
+  dummy.value = createScript();
+  document.body.appendChild(dummy);
+  dummy.focus();
+  dummy.select();
+  document.execCommand('copy');
+  document.body.removeChild(dummy);
+}, false);
+copyToNexial.addEventListener("mouseover", () => setClasses("copyToNexialInfo", "badge badge-focus"));
+copyToNexial.addEventListener("mouseout", () => setClasses("copyToNexialInfo", "badge"));
+
+clearInspection.addEventListener("click", clear);
+clearInspection.addEventListener("mouseover", () => setClasses("clearInfo", "badge badge-focus"));
+clearInspection.addEventListener("mouseout", () => setClasses("clearInfo", "badge"));
+
+
+document.getElementById("startInspectInfo").addEventListener("click", function () {
+  info('Inspect',
+       'Enter a valid URL and click on this button to start the WebEZ inspection ' +
+       'process on the specified URL . WebEZ will capture and inspect your mouse ' +
+       'clicks and keyboard inputs (when interacting with a form). Additionally, ' +
+       'you may add waits ' + 'and assertions via the context menu. When you are ' +
+       'done interacting with your browser, return back to WebEZ and click on ' +
+       '"Stop".' +
+       '<div style="text-align: center"><img' +
+       ' src="https://nexiality.github.io/documentation/webez/image/inspect.gif"' +
+       ' alt="HOWTO: Inspect" style="width:90%;margin:5px 0"/></div>'
+  );
+}, false);
+
+document.getElementById("nowInspectInfo").addEventListener("click", function () {
+  info('Inspect Current Page',
+       'Click this button to start the WebEZ inspection process on the current ' +
+       'web page. WebEZ will capture and inspect your mouse clicks and keyboard ' +
+       'inputs (when interacting with a form). Additionally, you may add waits ' +
+       'and assertions via the context menu. When you are done interacting with ' +
+       'your browser, return back to WebEZ and click on "Stop".' +
+       '<div style="text-align: center"><img' +
+       ' src="https://nexiality.github.io/documentation/webez/image/inspect-now.gif"' +
+       ' alt="HOWTO: Inspect Now" style="width:90%;margin:5px 0"/></div>'
+  );
+}, false);
+
+document.getElementById("clearInfo").addEventListener("click", function () {
+  info('Clear',
+       'Use this button to clear away all the captured steps. Please note that ' +
+       'there is no Undo for this functionality.'
+  );
+}, false);
+
+document.getElementById("copyToNexialInfo").addEventListener("click", function () {
+  info('Copy to Nexial script',
+       'Use this button to copy the current steps and commands to clipboard. ' +
+       'Open up the test scenario of your choosing, then perform Paste (' +
+       '<code>CTRL+v</code> for Windows, <code>COMMAND+v</code> for Mac) on a ' +
+       '"cmd type" cell. Edit the copied steps as needed. Be sure to set your ' +
+       'browser type via <code>nexial.browser</code> System variable before ' +
+       'running the script' +
+       '<div style="text-align: center"><img' +
+       ' src="https://nexiality.github.io/documentation/webez/image/copy-to-nexial.gif"' +
+       ' alt="HOWTO: Copy to Nexial" style="width:90%;margin:5px 0"/></div>'
+  );
+}, false);
+
+
+window.onload = function () {
+  console.log("popup loaded");
+  chrome.runtime.getBackgroundPage((background) => {
+    console.log(background)
+    const inspectStatus = background.inspectStatus;
+    console.log("current status", inspectStatus)
+    if (inspectStatus === 'start') start();
+    else if (inspectStatus === 'paused') pause();
+    else if (inspectStatus === 'stop') stop();
+  });
+}
 
 // document.getElementById("maximizePopup").addEventListener("click", function () {
 //   if (!chrome || !chrome.windows || !chrome.i18n || !chrome.tabs || !chrome.storage) return;
@@ -196,51 +295,6 @@ document.getElementById("maximizePopup").addEventListener("click", async () => {
 
 //   chrome.tabs.update(targetTabId, {active: true});
 // }, false);
-
-document.getElementById("closePopup").addEventListener("click", function () {
-  window.close();
-}, false);
-
-document.getElementById("startInspectInfo").addEventListener("click", function () {
-  info('Start Inspect', 'startInspectInfo');
-}, false);
-
-document.getElementById("nowInspectInfo").addEventListener("click", function () {
-  info('Inspect Now', 'nowInspectInfo');
-}, false);
-
-document.getElementById("clearInfo").addEventListener("click", function () {
-  info('Clear', 'clearInfo');
-}, false);
-
-document.getElementById("copyToNexialInfo").addEventListener("click", function () {
-  info('Copy to Nexial', 'copyToNexialInfo');
-}, false);
-
-document.getElementById("copyToNexial").addEventListener("click", function () {
-  let dummy = document.body.appendChild(document.createElement("textarea"));
-  dummy.value = createScript();
-  document.body.appendChild(dummy);
-  dummy.focus();
-  dummy.select();
-  document.execCommand('copy');
-  document.body.removeChild(dummy);
-}, false);
-// document.getElementById("copyToNexial").addEventListener("click", copyToNexial);
-
-document.getElementById("clear").addEventListener("click", clear);
-
-window.onload = function () {
-  console.log("popup loaded");
-  chrome.runtime.getBackgroundPage((background) => {
-    console.log(background)
-    const inspectStatus = background.inspectStatus;
-    console.log("current status", inspectStatus)
-    if (inspectStatus === 'start') start();
-    else if (inspectStatus === 'paused') pause();
-    else if (inspectStatus === 'stop') stop();
-  });
-}
 
 // Messenger.sendInternalMessage({cmd: 'inspect_status', value: ''}, function (response) {
 //   Logger.debug('inspect_status  =  ', response)
