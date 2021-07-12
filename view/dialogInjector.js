@@ -35,10 +35,12 @@ function createUI(locator) {
       <ul id="nexial-locator-list">
       </ul>
       <div class="copy-content">
-        <textarea id="nexial-selected-locator"> </textarea>
+        <textarea id="nexial-selected-locator" spellcheck="false"> </textarea>
       </div>
     </div>
     `;
+  } else {
+    document.getElementById("nexial-locator-list").innerHTML = '';
   }
   createLocatorList(locator)
 }
