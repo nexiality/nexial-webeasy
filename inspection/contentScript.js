@@ -9,11 +9,11 @@ const innerTextLength = 100;
 const nodeList = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
 
 // Append Style on hover get element
-// let style = document.createElement("link");
-// style.rel = "stylesheet";
-// style.type = "text/css";
-// style.href = chrome.extension.getURL("resources/style/nexial.css");
-// (document.head || document.documentElement).appendChild(style);
+let style = document.createElement("link");
+style.rel = "stylesheet";
+style.type = "text/css";
+style.href = chrome.extension.getURL("resources/style/nexial.css");
+(document.head || document.documentElement).appendChild(style);
 
 function start(stepValue) {
   sendConsole("log", "BROWSER RECEIVED: START INSPECTING");

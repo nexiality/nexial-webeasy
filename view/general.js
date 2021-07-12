@@ -1,8 +1,9 @@
 function createSelectElement(items, editable = true) {
   // Create and append select list
   let selectList = document.createElement("select");
-  selectList.setAttribute('class', 'form-control')
-  if (!editable) selectList.setAttribute('disabled', 'true')
+  selectList.setAttribute('class', 'form-control');
+  selectList.setAttribute('id', 'nexial-locator-select')
+  if (!editable) selectList.setAttribute('disabled', 'true');
 
   //Create and append the options
   let optgroup = '', optgroupLabel = '';
