@@ -7,52 +7,77 @@ function copyLocator(str) {
   document.execCommand('copy');
 }
 
-function createLocatorList(locator) {
-  let ul = document.getElementById("nexial-locator-list");
+// function createLocatorList(locator) {
+//   let ul = document.getElementById("nexial-locator-list");
+//   let selectedLocatorElement = document.getElementById("nexial-selected-locator");
+
+//   for (let index = 0; index < locator.length; index++) {
+//     let li = document.createElement("li");
+//     let copyBtn = document.createElement('button');
+
+//     li.appendChild(document.createTextNode(locator[index]));
+//     copyBtn.innerHTML = 'copy';
+//     copyBtn.addEventListener("click", function () {
+//       selectedLocatorElement.value = '';
+//       selectedLocatorElement.value = locator[index];
+//       copyLocator(locator[index]);
+//     });
+//     li.appendChild(copyBtn);
+//     ul.appendChild(li);
+//   }
+// }
+
+function createSelectLocator(locator) {
+  let div = document.getElementById("nexial-locator-list");
   let selectedLocatorElement = document.getElementById("nexial-selected-locator");
-
-  for (let index = 0; index < locator.length; index++) {
-    let li = document.createElement("li");
-    let copyBtn = document.createElement('button');
-
-    li.appendChild(document.createTextNode(locator[index]));
-    copyBtn.innerHTML = 'copy';
-    copyBtn.addEventListener("click", function () {
-      selectedLocatorElement.value = '';
-      selectedLocatorElement.value = locator[index];
-      copyLocator(locator[index]);
-    });
-    li.appendChild(copyBtn);
-    ul.appendChild(li);      
+  const locatorDropdown = createSelectElement(locator);
+  locatorDropdown.onchange = function (event) {
+    selectedLocatorElement.value = '';
+    selectedLocatorElement.value = event.target.value;
+    // console.log(event, '#############')
   }
+  div.appendChild(locatorDropdown);
+
+  
+  // let copyBtn = document.createElement('button');
+  // copyBtn.innerHTML = 'copy';
+  // copyBtn.addEventListener("click", function () {
+  //   copyLocator(selectedLocatorElement.value);
+  // });
+  // document.getElementById("nexial-copy-container").appendChild(copyBtn);
 }
 
 function createUI(locator) {
-  if(!document.getElementById("mySidenavR")) {
+  const ui = document.getElementById("nexial-show-locator-sideNav");
+  if(!ui) {
     document.body.innerHTML += `
-    <div id="mySidenavR" class="sidenavR">
-      <button type="button" class="closebtn"> x </button>
-      <ul id="nexial-locator-list">
-      </ul>
-      <div class="copy-content">
+    <div id="nexial-show-locator-sideNav" class="sidenavR">
+      <button type="button" class="nexial-closebtn"> x </button>
+      <div id="nexial-locator-list">
+      </div>
+      <div id="nexial-copy-container">
         <textarea id="nexial-selected-locator" spellcheck="false"> </textarea>
+        <button id="nexial-copybtn"> copy </button>
       </div>
     </div>
     `;
+    document.getElementById("nexial-copybtn").addEventListener("click", function() {
+      copyLocator(document.getElementById("nexial-selected-locator").value);
+    });
   } else {
     document.getElementById("nexial-locator-list").innerHTML = '';
   }
-  createLocatorList(locator)
+  createSelectLocator(locator);
 }
 
 // function openNavR() {
-//   document.getElementById("mySidenavR").style.width = "250px";
+//   document.getElementById("nexial-show-locator-sideNav").style.width = "250px";
 // }
 
 function closeNavR() {
-  document.getElementById("mySidenavR").querySelector("button").addEventListener("click", function() {
-    // document.getElementById("mySidenavR").style.width = "0";
-    document.getElementById("mySidenavR").remove();
+  document.getElementById("nexial-closebtn").addEventListener("click", function() {
+    // document.getElementById("nexial-show-locator-sideNav").style.width = "0";
+    document.getElementById("nexial-show-locator-sideNav").remove();
     // document.getElementById("nexial-locator-select").remove();
   })
 }
@@ -102,7 +127,7 @@ function createRightPannel(locator) {
 //   dialog.showModal();
 // }
 
-function findLocator() {
+function findLocator(clickedElement) {
   const paths = filterDomPath(clickedElement.target, '');
   const locatorList = getLocator(clickedElement.target, paths.domPaths, paths.isFiltered);
   let locator = locatorList.locator;

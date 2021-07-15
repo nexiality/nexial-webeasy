@@ -41,19 +41,6 @@
 	background: rgb(196, 196, 196);
 }
 
-.sidenav {
-	background-color: #111;
-	height: 100%;
-	left: 0;
-	overflow-x: hidden;
-	padding-top: 60px;
-	position: fixed;
-	top: 0;
-	transition: .5s;
-	width: 0;
-	z-index: 1;
-}
-
 .sidenavR {
 	background-color: #111;
 	width: 300px;
@@ -70,7 +57,7 @@
 .sidenavR #nexial-locator-list {
 	margin: 0 auto;
 	padding: 10px 0;
-	width: 270px;
+	width: 272px;
 }
 
 .sidenavR li {
@@ -87,7 +74,7 @@
 	font-style: italic;
 }
 
-.sidenav a,.sidenavR a {
+.sidenavR a {
 	color: #818181;
 	display: block;
 	font-size: 25px;
@@ -96,19 +83,34 @@
 	transition: .3s;
 }
 
-.sidenav a:hover,.offcanvas a:focus,.sidenavR a:hover,.offcanvas a:focus {
+.sidenavR a:hover,.offcanvas a:focus {
 	color: #f1f1f1;
 }
 
-.sidenav .closebtn,.sidenavR .closebtn {
+.sidenavR .closebtn {
 	float: right;
 	font-size: 20px;
     /* margin-left: 50px; */
 	position: absolute;
 	right: 15px;
 	top: 20px;
+  
+  background: lightgray;
+  padding: 3px 5px;
+  line-height: 1;
 }
-
+.sidenavR .copybtn {
+	margin-top: 10px;
+    margin-right: 10px;
+}
+.sidenavR select {
+	display: block;
+    width: 100%;
+    padding: .375rem 2.25rem .375rem .75rem;
+    font-size: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
 #nexial-selected-locator {
 	margin: 0 auto;
 	width: 270px;

@@ -425,7 +425,8 @@ chrome.runtime.onMessage.addListener(function (request) {
       stop();
       break;
     case "findLocator":
-      findLocator();
+      findLocator(clickedElement);
+      clickedElement = null;
       break;
   }
   sendConsole("info", `BROWSER : ${request.action} INSPECTING`);
