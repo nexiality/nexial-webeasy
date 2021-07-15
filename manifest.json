@@ -2,6 +2,7 @@
   "background": {
     "persistent": false,
     "scripts": [
+      "env.js",
       "resources/scripts/console.js",
       "inspection/background.js",
       "inspection/contextMenu.js"
@@ -17,6 +18,7 @@
   "content_scripts": [
     {
       "js": [
+        "env.js",
         "resources/scripts/console.js",
         "view/general.js",
         "view/dialogInjector.js",
@@ -35,6 +37,6 @@
   "manifest_version": 2,
   "name": "Nexial WebEZ",
   "version": "1.0.0",
-  "permissions": [ "storage", "activeTab", "contextMenus" ],
+  "permissions": [ "storage", "activeTab", "contextMenus", "management" ],
   "web_accessible_resources": [ "resources/style/nexial.css", "view/dialogInjector.js" ]
 }

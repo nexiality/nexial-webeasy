@@ -1,5 +1,6 @@
+
 function sendConsole(level, logging, data = null) {
-  printLog(level, logging, data);
+  if (APP_ENV === "development") printLog(level, logging, data);
   const payload = {
     cmd : 'console',
     msg : logging,

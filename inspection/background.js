@@ -167,3 +167,10 @@ chrome.runtime.onMessage.addListener(function (action) {
 
 // window.window.inspectStatus = window.inspectStatus;
 // window.window.inspectElementList = window.inspectElementList;
+chrome.management.get(chrome.runtime.id, function (extensionInfo) {
+  console.log(extensionInfo)
+  APP_ENV = extensionInfo.installType;
+  console.log('installType MODE =', APP_ENV)
+  if (extensionInfo.installType === 'development') {
+  }
+});
