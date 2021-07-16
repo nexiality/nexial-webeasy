@@ -18,7 +18,6 @@ function stop() {
   window.inspectStatus = 'stop';
   step = 1;
   inspectingTab = null;
-  // sendResponse({json: window.inspectElementList});
   sendRunTimeMessage({action: 'stop'})
   updateBadge();
 }
@@ -47,9 +46,6 @@ function updateBadge() {
 function loadListener(url) {
   printLog( 'CREATE OPEN URL ENTRY');
   window.inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
-  // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, function (result) {
-    // Process |result| here (or maybe do nothing at all).
-  // });
 }
 
 function createOpenURLEntry(url) {
@@ -84,7 +80,6 @@ function sendRunTimeMessage(message) {
 }
 
 let injectIntoTab = function (tab) {
-  // You could iterate through the content scripts here
   let scripts = chrome.manifest.content_scripts[0].js;
   let i = 0, s = scripts.length;
   for( ; i < s; i++ ) {
@@ -116,48 +111,17 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (window.inspectStatus === 'start' && changeInfo.status === 'complete') {
     sendRunTimeMessage({action: window.inspectStatus, startStep: step});
     updateBadge();
-    // chrome.tabs.executeScript(null, {file: '/inspection/utils.js'}, () => chrome.runtime.lastError);
-    // chrome.tabs.executeScript(null, {file: '/inspection/eventInspecting.js'}, () => chrome.runtime.lastError);
   }
 })
 
 chrome.runtime.onMessage.addListener(function (action) {
 
   switch (action.cmd) {
-    // case 'start_inspecting': {
-    //   printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
-    //   window.inspectElementList = [];
-    //   window.inspectStatus = 'start';
-    //   createOpenURLEntry(action.value);
-    //   sendRunTimeMessage({action: 'start', startStep: step})
-    //   break;
-    // }
-    // case 'stop_inspecting': {
-    //   window.inspectStatus = 'stop';
-    //   step = 1;
-    //   inspectingTab = null;
-    //   // sendResponse({json: window.inspectElementList});
-    //   sendRunTimeMessage({action: 'stop'})
-    //   break;
-    // }
     case 'inspecting': {
       step = action.value.step;
       window.inspectElementList.push(action.value);
       break;
     }
-    // case 'inspect_status': {
-    //   // sendResponse({res: window.inspectStatus, json: window.inspectElementList});
-    //   break;
-    // }
-    // case 'pause_inspecting': {
-    //   window.inspectStatus = 'paused';
-    //   sendRunTimeMessage({action: 'paused'})
-    //   break;
-    // }
-    // case 'clear_inspection': {
-    //   window.inspectElementList = [];
-    //   break;
-    // }
     case 'console':
       printLog(action.type, action.msg, action.data);
       break;
@@ -165,8 +129,6 @@ chrome.runtime.onMessage.addListener(function (action) {
   updateBadge();
 });
 
-// window.window.inspectStatus = window.inspectStatus;
-// window.window.inspectElementList = window.inspectElementList;
 chrome.management.get(chrome.runtime.id, function (extensionInfo) {
   console.log(extensionInfo)
   APP_ENV = extensionInfo.installType;

@@ -21,18 +21,14 @@ function start(stepValue) {
   focusedInput = null;
   clickedElement = null;
   document.addEventListener("focus", handleFocus, true);
-  // document.addEventListener("focusout", handleFocusout);
   document.addEventListener("mousedown", onClickElement);
   document.addEventListener("change", handleChange);
-  // document.addEventListener("mouseover", onMouseHoverElement);
 }
 
 function stop() {
   document.removeEventListener("focus", handleFocus, true);
-  // document.removeEventListener("focusout", handleFocusout);
   document.removeEventListener("mousedown", onClickElement);
   document.removeEventListener("change", handleChange);
-  // document.removeEventListener("mouseover", onMouseHoverElement);
 }
 
 function handleFocus(event) {
@@ -47,7 +43,6 @@ function handleFocus(event) {
     // Number 13 is the "Enter" key on the keyboard
     console.log(event, event.keyCode);
     if (event.keyCode === 13) {
-      // Cancel the default action, if needed
       event.preventDefault();
       focusedInput.target.value += "{ENTER}";
       sendConsole("log", "INPUT ENTER PRESS :", focusedInput.target.value);
@@ -55,16 +50,6 @@ function handleFocus(event) {
       focusedInput = null;
     }
   });
-}
-
-function handleFocusout(event) {
-  // if (event === undefined) event = window.event;
-  // let target = "target" in event ? event.target : event.srcElement;
-  // if(target.tagName === 'INPUT' && target.type !== 'submit') {
-  //   const command = 'type(locator,value)';
-  //   console.log('INPUT NOT SUBMIT EVENT ====================================== ', event)
-  //   sendInspectInfo(command, event);
-  // }
 }
 
 function onClickElement(event) {
@@ -100,21 +85,6 @@ function handleChange(event) {
     sendConsole("log", "SELECT: ", target.tagName);
     sendInspectInfo("select(locator,text)", event);
   }
-}
-
-function onMouseHoverElement(event) {
-  // if (event === undefined) event = window.event;
-  // let target = "target" in event ? event.target : event.srcElement;
-  // let tooltip = document.createElement("span");
-  // tooltip.setAttribute("nexial-locator-data-tooltip", target.tagName);
-  // target.appendChild(tooltip);
-  // target.classList.add("_nexial-hover");
-  // target.addEventListener("mouseout", function () {
-  //   if (tooltip.parentNode) {
-  //     target.removeChild(tooltip);
-  //     target.classList.remove("_nexial-hover");
-  //   }
-  // });
 }
 
 function hasNumbers(str) {
@@ -185,7 +155,6 @@ function getLocator(e, paths, isFiltered) {
     xpath = [],
     css = [],
     selectedLocator = null;
-  // const tag = (e.tagName).toLowerCase();
   const activeElnode = paths[paths.length - 1].node;
 
   if (e.id) locator.push("id=" + e.id);
@@ -258,9 +227,6 @@ function getDomPath(el) {
 }
 
 function filterDomPath(el, command) {
-  // [1, 2, 3].forEach((element) => {
-  //   console.log(element);
-  // });
   let domPathList = getDomPath(el);
   let domFilterList = [];
   if (command === "click(locator)") {

@@ -1,10 +1,5 @@
 let inspectElementList = [];
 
-// fetch current tab url while opening the popup [without tabs permission]
-// chrome.tabs.query({active:true,currentWindow:true}, function(tabArray){
-//   console.log( 'Current URL ', tabArray[0].url);
-// });
-
 function info(title, text) {
   document.getElementById('infoModalLabel').innerHTML = ''
   document.getElementById('infoModalLabel').innerHTML = title;
@@ -83,7 +78,6 @@ function setClasses(/*String*/id, /*String*/classes) {
   document.getElementById(id).setAttribute("class", classes);
 }
 
-
 let maximizePopup = document.getElementById("maximizePopup");
 let closePopup = document.getElementById("closePopup");
 let startInspect = document.getElementById("startInspect");
@@ -99,7 +93,6 @@ pauseInspect.addEventListener("click", function () {
   pauseInspect.classList.toggle("btn-primary");
   if (pauseInspect.value === 'Pause') {
     pauseInspect.value = 'Resume';
-    // Messenger.sendInternalMessage({cmd: 'pause_inspecting', value: true});
     chrome.runtime.getBackgroundPage((background) => {
       background.pause();
     });
@@ -124,7 +117,6 @@ startInspect.addEventListener("click", function () {
   chrome.runtime.getBackgroundPage((background) => {
     background.start(url);
   });
-  // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: commandValue});
 });
 startInspect.addEventListener("mouseover", () => setClasses("startInspectInfo", "badge badge-focus"));
 startInspect.addEventListener("mouseout", () => setClasses("startInspectInfo", "badge"));
@@ -134,7 +126,6 @@ nowInspect.addEventListener("click", function () {
   chrome.runtime.getBackgroundPage((background) => {
     background.start('');
   });
-  // Messenger.sendInternalMessage({cmd: 'start_inspecting', value: ''});
 }, false);
 nowInspect.addEventListener("mouseover", () => setClasses("nowInspectInfo", "badge badge-focus"));
 nowInspect.addEventListener("mouseout", () => setClasses("nowInspectInfo", "badge"));
@@ -144,13 +135,6 @@ stopInspect.addEventListener("click", function () {
   chrome.runtime.getBackgroundPage((background) => {
     background.stop();
   });
-  // Messenger.sendInternalMessage({cmd: 'stop_inspecting', value: false}, function (response) {
-  //   Logger.debug(response);
-  //   if (response.hasOwnProperty('json')) {
-  //     inspectElementList = response.json;
-  //     tableFromJson();
-  //   }
-  // });
 });
 
 showHelp.addEventListener("click", function () {
@@ -247,72 +231,3 @@ window.onload = function () {
   });
 }
 
-// document.getElementById("maximizePopup").addEventListener("click", function () {
-//   if (!chrome || !chrome.windows || !chrome.i18n || !chrome.tabs || !chrome.storage) return;
-
-//   let extensionUrl = "chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/NexialWebEZ.html";
-
-//   let targetTabId;
-//   chrome.storage.local.get(['maximized_popup_tab_id'], function (result) {
-//     targetTabId = !result ? null : result.key;
-//   });
-
-//   if (!targetTabId) {
-//     // first time, open new tab
-//     console.log('new tab');
-//     chrome.tabs.create({url: extensionUrl, active: true}, function (tab) {
-//       chrome.storage.local.set({'maximized_popup_tab_id': tab.id, 'maximized_popup_window_id': tab.windowId});
-//     });
-
-//     return;
-//   }
-
-//   let currentWindowIncognito = false;
-//   chrome.windows.getCurrent(function (currentWindow) {
-//     currentWindowIncognito = currentWindow && currentWindow.incognito;
-//   });
-
-//   if (currentWindowIncognito) {
-//     let targetWinId;
-//     chrome.storage.local.get(['maximized_popup_window_id'], function (result) {
-//       targetWinId = !result ? null : result.key;
-//     });
-
-//     if (targetWinId) {
-//       chrome.windows.get({windowId: targetWinId}, function (win) {
-//         if (win && win.tabs) {
-//           for (let i = 0; i < win.tabs.length; i++) {
-//             let tab = win.tabs[i];
-//             if (tab.id === targetTabId) {
-//               chrome.tabs.update(targetTabId, {active: true});
-//               return;
-//             }
-//           }
-//         }
-//       });
-//     }
-//   }
-
-//   chrome.tabs.update(targetTabId, {active: true});
-// }, false);
-
-// Messenger.sendInternalMessage({cmd: 'inspect_status', value: ''}, function (response) {
-//   Logger.debug('inspect_status  =  ', response)
-//   if (response.res !== 'stop') {
-//     start();
-//     if (response.res === 'paused') pause();
-//   } else if (response.hasOwnProperty('json')) {
-//     inspectElementList = response.json;
-//     if (inspectElementList.length) {
-//       tableFromJson();
-//       document.getElementById("inspectDataOption").style.display = "block";
-//     }
-//   }
-// });
-
-// chrome.runtime.onMessage.addListener(function(msg) {
-//   console.log("message recieved in popup js - " + msg);
-//   if (msg.hasOwnProperty('json')) {
-//     tableFromJson(msg.json)
-//   }
-// });

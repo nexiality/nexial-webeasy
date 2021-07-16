@@ -386,12 +386,6 @@ function tableFromJson() {
     addRow(inspectElementList[i]);
   }
 
-  // Now, add the newly created table with json data, to a container.
-  // let divShowData = document.getElementById('showData');
-  // divShowData.setAttribute('style', ('visibility: hidden'));
-  // divShowData.innerHTML = "";
-  // divShowData.appendChild(table);
   updateTableRow();
-  // divShowData.setAttribute('style', ('visibility: visible'));
   $(showDataDiv).show();
 }
