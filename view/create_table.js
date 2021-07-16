@@ -98,6 +98,7 @@ function updateParamRow(step) {
 function editRow(step) {
   toggleEditable(step, true);
   document.getElementById("command_" + step).onchange = function (e) {
+    document.getElementById("command_link_" + step).href = `${APP_DOC_URL}/${e.target.value}`;
     deleteSubTable(step);
     updateParamRow(step);
   };
@@ -341,9 +342,10 @@ function addRow(data, indexAt = -1) {
 
       const linkForCmd = document.createElement("A");
       linkForCmd.setAttribute("class", "command-link");
+      linkForCmd.setAttribute('id', ('command_link_' + currentStep));
       linkForCmd.setAttribute("target", "_blank");
       linkForCmd.innerHTML = `<i class="fa fa-external-link" aria-hidden="true"></i>`;
-      linkForCmd.href = `https://nexiality.github.io/documentation/commands/web/${data[key]}`; 
+      linkForCmd.href = `${APP_DOC_URL}/${data[key]}`;
       cell.appendChild(cmdDropdown);
       cell.appendChild(linkForCmd)
     } else {
