@@ -334,10 +334,18 @@ function addRow(data, indexAt = -1) {
       const sub_table = createSubTable(data['param'], currentStep);
       cell.appendChild(sub_table);
     } else if (key === "command") {
-      const cmdDropdown = createSelectElement(cmd, false)
-      cmdDropdown.setAttribute('id', (key + '_' + currentStep))
+      const cmdDropdown = createSelectElement(cmd, false);
+      cmdDropdown.setAttribute('id', (key + '_' + currentStep));
+      cmdDropdown.setAttribute("class", "form-control command");
       cmdDropdown.value = data[key];
+
+      const linkForCmd = document.createElement("A");
+      linkForCmd.setAttribute("class", "command-link");
+      linkForCmd.setAttribute("target", "_blank");
+      linkForCmd.innerHTML = `<i class="fa fa-external-link" aria-hidden="true"></i>`;
+      linkForCmd.href = `https://nexiality.github.io/documentation/commands/web/${data[key]}`; 
       cell.appendChild(cmdDropdown);
+      cell.appendChild(linkForCmd)
     } else {
       cell.innerHTML = currentStep;
       // cell.innerHTML = (table.tBodies[0].rows.length);

@@ -253,3 +253,11 @@ footer {
 #infoModal .modal-dialog {
     max-width: 90% !important;
 }
+.command {
+    display: inline-block;
+    width: 93%;
+}
+.command-link {
+    display: inline-block;
+    padding: 3px;
+}
