@@ -7,6 +7,8 @@ const findClickedElementParent = ["path", "svg", "i", "span"];
 const findParents = ["form", "header", "main", "section", "footer"];
 const innerTextLength = 100;
 const nodeList = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
+const inputTypeElement = ["text", "number", "email", "password", "search", "tel", "url"];
+const inputClickElement = ["radio", "checkbox"];
 
 // Append Style on hover get element
 let style = document.createElement("link");
@@ -34,8 +36,10 @@ function stop() {
 function handleFocus(event) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
-  //Todo:  Input TYpe Image, submit, button, reset
-  if (target.tagName === "INPUT" && target.type !== "submit") {
+
+  if (target.tagName !== "INPUT") return;
+  //Todo:  Input TYpe Image, reset
+  if (inputTypeElement.includes(target.type)) {
     focusedInput = event;
     sendConsole("log", "INPUT FOCUS :", event.target.value);
   }
@@ -53,13 +57,14 @@ function handleFocus(event) {
 }
 
 function onClickElement(event) {
+  if (event === undefined) event = window.event;
+  let target = "target" in event ? event.target : event.srcElement;
+
   sendConsole("log", "MOUSE CLICK : ", event.button);
   if (event.button === 2) {
     sendConsole("log", "RIGHT CLICK RETURN FROM onClickElement : ", event.button);
     return;
   }
-  if (event === undefined) event = window.event;
-  let target = "target" in event ? event.target : event.srcElement;
 
   if (focusedInput && focusedInput.target.value) {
     sendInspectInfo("type(locator,value)", focusedInput);
@@ -74,6 +79,9 @@ function onClickElement(event) {
   ) {
     sendConsole("log", "CLICK: ", target.tagName);
     sendInspectInfo("click(locator)", event);
+  } else if (target.tagName === "INPUT" && inputClickElement.includes(target.type)) {
+    if (target.value === "true") sendInspectInfo("assertNotChecked(locator)", event);
+    else if (target.value === "false") sendInspectInfo("assertChecked(locator)", event);
   }
 }
 
@@ -319,6 +327,8 @@ function sendInspectInfo(command, event) {
   switch (command) {
     case "click(locator)":
     case "assertElementPresent(locator)":
+    case "assertChecked(locator)":
+    case "assertNotChecked(locator)":
       data.param["locator"] = locator;
       break;
     case "type(locator,value)":
