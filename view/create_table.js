@@ -343,14 +343,13 @@ function addRow(data, indexAt = -1) {
       const linkForCmd = document.createElement("A");
       linkForCmd.setAttribute("class", "command-link");
       linkForCmd.setAttribute('id', ('command_link_' + currentStep));
-      linkForCmd.setAttribute("target", "_blank");
+      linkForCmd.setAttribute("target", "_nexial_link");
       linkForCmd.innerHTML = `<i class="fa fa-external-link" aria-hidden="true"></i>`;
       linkForCmd.href = `${APP_DOC_URL}/${data[key]}`;
       cell.appendChild(cmdDropdown);
       cell.appendChild(linkForCmd)
     } else {
       cell.innerHTML = currentStep;
-      // cell.innerHTML = (table.tBodies[0].rows.length);
     }
   }
 }
