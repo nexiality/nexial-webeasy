@@ -358,7 +358,6 @@ function addRow(data, indexAt = -1) {
       cell.appendChild(createDocLink(data[key], currentStep))
     } else {
       cell.innerHTML = currentStep;
-      // cell.innerHTML = (table.tBodies[0].rows.length);
     }
   }
 }
