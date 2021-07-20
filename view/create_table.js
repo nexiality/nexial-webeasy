@@ -286,6 +286,20 @@ function createInputBox(data, editable = true) {
   return input;
 }
 
+function createDocLink(searchString, step) {
+  const docLink = document.createElement("A");
+  docLink.setAttribute("class", "command-link");
+  docLink.setAttribute('id', ('command_link_' + step));
+  docLink.setAttribute("target", "_blank");
+  docLink.innerHTML = `<i class="fa fa-external-link" aria-hidden="true"></i>`;
+  // docLink.href = `${APP_DOC_URL}/${searchString}`;
+  
+  docLink.onclick = function () {
+    openDocLink(`${APP_DOC_URL}/${searchString}`);
+  };
+  return docLink;
+}
+
 function updateTableRow() {
   const rows = table.tBodies[0].rows;
 
@@ -340,14 +354,8 @@ function addRow(data, indexAt = -1) {
       cmdDropdown.setAttribute("class", "form-control command");
       cmdDropdown.value = data[key];
 
-      const linkForCmd = document.createElement("A");
-      linkForCmd.setAttribute("class", "command-link");
-      linkForCmd.setAttribute('id', ('command_link_' + currentStep));
-      linkForCmd.setAttribute("target", "_blank");
-      linkForCmd.innerHTML = `<i class="fa fa-external-link" aria-hidden="true"></i>`;
-      linkForCmd.href = `${APP_DOC_URL}/${data[key]}`;
       cell.appendChild(cmdDropdown);
-      cell.appendChild(linkForCmd)
+      cell.appendChild(createDocLink(data[key], currentStep))
     } else {
       cell.innerHTML = currentStep;
       // cell.innerHTML = (table.tBodies[0].rows.length);

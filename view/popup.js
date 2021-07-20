@@ -1,5 +1,18 @@
 let inspectElementList = [];
 
+function openDocLink(url) {
+  chrome.runtime.getBackgroundPage((background) => {
+    if(background.docTab) {
+        const docTab = background.docTab;
+        chrome.tabs.update(docTab.id, {url: url,'active': true}, (tab) => { });
+    } else {
+      chrome.tabs.create({"url": url}, function (tab) {
+        background.docTab = JSON.parse(JSON.stringify(tab));
+      });
+    }
+  });
+}
+
 function info(title, text) {
   document.getElementById('infoModalLabel').innerHTML = ''
   document.getElementById('infoModalLabel').innerHTML = title;
@@ -138,9 +151,9 @@ stopInspect.addEventListener("click", function () {
 });
 
 showHelp.addEventListener("click", function () {
-  if (!chrome || !chrome.tabs) return;
-  chrome.tabs.create({url: 'https://nexiality.github.io/documentation/'});
-  return false;
+  // if (!chrome || !chrome.tabs) return;
+  // chrome.tabs.create({url: 'https://nexiality.github.io/documentation/'});
+  openDocLink(`${APP_DOC_URL}`);
 }, false);
 
 maximizePopup.addEventListener("click", async () => {

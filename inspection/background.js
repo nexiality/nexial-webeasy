@@ -1,6 +1,6 @@
 window.inspectStatus = 'stop';
 window.inspectElementList = [];
-let inspectingTab = null;
+let inspectingTab = null, docTab = null;
 let step = 1;
 // Add a `manifest` property to the `chrome` object.
 chrome.manifest = chrome.app.getDetails();
