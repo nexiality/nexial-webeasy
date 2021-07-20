@@ -1,16 +1,16 @@
-
 function sendConsole(level, logging, data = null) {
-  if (APP_ENV === "development") printLog(level, logging, data);
   const payload = {
     cmd : 'console',
     msg : logging,
     data: data,
     type: level
   };
-  // if (!chrome || !chrome.runtime || !payload) return;
-  // chrome.runtime.reload();  // Fall back to contentscript-only behavior
-  chrome.runtime.sendMessage(payload);
+  if (APP_ENV === "development") {
+    printLog(level, logging, data);
+    chrome.runtime.sendMessage(payload);
+  }
 }
+// ToDo: create funtion fron error log of contenscript i.e browser
 
 function printLog(level, logging, data = null) {
   switch (level) {
