@@ -23,7 +23,14 @@ function createUI(locator) {
   if(!ui) {
     document.body.innerHTML += `
     <div id="nexial-show-locator-sideNav" class="sidenavR">
-      <button type="button" class="nexial-closebtn"> x </button>
+    <div id="nexial-show-locator-header">
+      Nexial WebEZ
+      <ul class="nav float-right headerOption">
+        <li id="nexial-showHelp" title="Click to here more about Nexial WebEZ"> ? </li>
+        <li id="nexial-closebtn" title="Hide Nexial WebEZ"> x </li>
+      </ul>
+    </div>
+      <!-- <button type="button" class="nexial-closebtn"> x </button> -->
       <div id="nexial-locator-list">
       </div>
       <div id="nexial-copy-container">
@@ -39,6 +46,7 @@ function createUI(locator) {
     document.getElementById("nexial-locator-list").innerHTML = '';
   }
   createSelectLocator(locator);
+  closeNavR();
 }
 
 function closeNavR() {
@@ -49,7 +57,6 @@ function closeNavR() {
 
 function createRightPannel(locator) {
   createUI(locator);
-  closeNavR();
 }
 
 function findLocator(clickedElement) {

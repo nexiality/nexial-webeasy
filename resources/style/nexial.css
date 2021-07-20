@@ -41,40 +41,78 @@
 	background: rgb(196, 196, 196);
 }
 
-.sidenavR {
-	background-color: #111;
+#nexial-show-locator-sideNav {
+	background-color: rgba(245,255,245,0.5);
 	width: 300px;
 	height: 100%;
 	overflow-x: hidden;
-	padding-top: 60px;
 	position: fixed;
 	right: 0;
 	top: 0;
 	transition: .5s;
 	z-index: 9999999;
+	border-left: 2px solid rgba(0,0,0,0.5);
+	box-shadow: -6px 0px 10px rgb(0 0 0 / 25%);
 }
 
-.sidenavR #nexial-locator-list {
+#nexial-show-locator-header {
+	height: 42px;
+	padding: 6px !important;
+	font-size: 14pt;
+	font-weight: bold;
+	background: #555555 url(https://nexiality.github.io/documentation/image/nexial-64.png) no-repeat 4px 3px;
+	background-size: 48px;
+	padding: 6px 0 6px 55px !important;
+	color: #eeeeee;
+	text-shadow: -1px -1px 5px black;
+	box-shadow: 0 2px 6px rgb(0 0 0 / 75%);
+}
+
+.headerOption {
+	text-shadow: none;
+	margin-top: -4px;
+	overflow: hidden;
+	float: right;
+}
+
+.nav li {
+	color:         rgba(255, 255, 255, 0.5) !important;
+	padding-right: 10px;
+	cursor:        pointer;
+	font-size:     18px;
+}
+
+.nav li:hover {
+	color:       #ffffff !important;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.50);
+}
+
+#nexial-show-locator-sideNav #nexial-locator-list {
 	margin: 0 auto;
 	padding: 10px 0;
 	width: 272px;
 }
 
-.sidenavR li {
+#nexial-show-locator-sideNav li {
 	background: gray;
 	padding: 6px 10px;
 	border: 1px lightgray solid;
 	word-wrap: break-word;
 	overflow: auto;
 	margin-bottom: 5px;
+	display: inline-block;
 }
 
-.sidenavR button {
+#nexial-show-locator-sideNav button {
 	float: right;
-	font-style: italic;
+	/* font-style: italic; */
+	padding: 5px;
+	border: 1px solid #7a8188;
+	margin: 10px 15px;
+	border-radius: 5px;
 }
 
-.sidenavR a {
+#nexial-show-locator-sideNav a {
 	color: #818181;
 	display: block;
 	font-size: 25px;
@@ -83,11 +121,11 @@
 	transition: .3s;
 }
 
-.sidenavR a:hover,.offcanvas a:focus {
+#nexial-show-locator-sideNav a:hover,.offcanvas a:focus {
 	color: #f1f1f1;
 }
 
-.sidenavR .closebtn {
+#nexial-show-locator-sideNav .closebtn {
 	float: right;
 	font-size: 20px;
     /* margin-left: 50px; */
@@ -99,25 +137,27 @@
   padding: 3px 5px;
   line-height: 1;
 }
-.sidenavR .copybtn {
+#nexial-show-locator-sideNav .copybtn {
 	margin-top: 10px;
-    margin-right: 10px;
+	margin-right: 10px;
 }
-.sidenavR select {
+#nexial-show-locator-sideNav select {
 	display: block;
-    width: 100%;
-    padding: .375rem 2.25rem .375rem .75rem;
-    font-size: 1rem;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
+	width: 100%;
+	padding: .375rem 2.25rem .375rem .75rem;
+	font-size: 1rem;
+	border: 1px solid #7a8188;
+	border-radius: 5px;
 }
 #nexial-selected-locator {
 	margin: 0 auto;
 	width: 270px;
 	height: 122px;
 	display: block;
+	border: 1px solid #7a8188;
+	border-radius: 5px;
 }
 /* @media screen and max-height 450px {
-.sidenav,.sidenavR{padding-top:15px;}
-.sidenav a,.sidenavR a{font-size:18px;}
+.sidenav,#nexial-show-locator-sideNav{padding-top:15px;}
+.sidenav a,#nexial-show-locator-sideNav a{font-size:18px;}
 } */
