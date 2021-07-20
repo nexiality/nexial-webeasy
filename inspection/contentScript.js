@@ -1,14 +1,14 @@
 let clickedElement = null, selectionText = null;
 let focusedInput = null;
 let step = null;
-const hasAttributes = ["name", "id", "aria-label", "placeholder", "title", "alt", "class"]; //Order priority wise
-const clickableElement = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5"];
-const findClickedElementParent = ["path", "svg", "i", "span"];
-const findParents = ["form", "header", "main", "section", "footer"];
-const innerTextLength = 100;
-const nodeList = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
-const inputTypeElement = ["text", "number", "email", "password", "search", "tel", "url"];
-const inputClickElement = ["radio", "checkbox"];
+const HAS_ATTRIBUTES = ["name", "id", "aria-label", "placeholder", "title", "alt", "class"]; //Order priority wise
+const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5"];
+const FIND_CLICKED_ELEMENT_PARENT = ["path", "svg", "i", "span"];
+const FIND_PARENTS = ["form", "header", "main", "section", "footer"];
+const INNER_TEXT_LENGTH = 100;
+const NODE_LIST = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
+const INPUT_TYPE_ELEMENT = ["text", "number", "email", "password", "search", "tel", "url"];
+const INPUT_CLICK_ELEMENT = ["radio", "checkbox"];
 
 // Append Style on hover get element
 let style = document.createElement("link");
@@ -39,7 +39,7 @@ function handleFocus(event) {
 
   if (target.tagName !== "INPUT") return;
   //Todo:  Input TYpe Image, reset
-  if (inputTypeElement.includes(target.type)) {
+  if (INPUT_TYPE_ELEMENT.includes(target.type)) {
     focusedInput = event;
     sendConsole("log", "INPUT FOCUS :", event.target.value);
   }
@@ -75,11 +75,11 @@ function onClickElement(event) {
   if (
     (target.tagName === "INPUT" && target.type === "submit") ||
     (target.tagName === "DIV" && target.innerText) ||
-    clickableElement.includes(target.tagName.toLowerCase())
+    CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())
   ) {
     sendConsole("log", "CLICK: ", target.tagName);
     sendInspectInfo("click(locator)", event);
-  } else if (target.tagName === "INPUT" && inputClickElement.includes(target.type)) {
+  } else if (target.tagName === "INPUT" && INPUT_CLICK_ELEMENT.includes(target.type)) {
     if (target.value === "true") sendInspectInfo("assertNotChecked(locator)", event);
     else if (target.value === "false") sendInspectInfo("assertChecked(locator)", event);
   }
@@ -179,11 +179,11 @@ function getLocator(e, paths, isFiltered) {
         xpath = path.xpath;
         css = path.css;
       }
-      if (el.innerText && el.innerText.length <= innerTextLength) {
+      if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
         xpath.push(
           "xpath=//" + el.node + `[normalize-space(string(.))=normalize-space('${updatingText(el.innerText)}')]`
         );
-        if (nodeList.includes(el.node))
+        if (NODE_LIST.includes(el.node))
           selectedLocator =
             "xpath=//" +
             el.node +
@@ -221,8 +221,8 @@ function getDomPath(el) {
       continue;
     }
     if (el.hasAttributes()) {
-      for (let i = 0; i <= hasAttributes.length - 1; i++) {
-        const attrs = el.attributes[`${hasAttributes[i]}`];
+      for (let i = 0; i <= HAS_ATTRIBUTES.length - 1; i++) {
+        const attrs = el.attributes[`${HAS_ATTRIBUTES[i]}`];
         if (attrs) node["attribute"][attrs.name] = attrs.value;
       }
     }
@@ -244,7 +244,7 @@ function filterDomPath(el, command) {
   sendConsole("log", "DOM PATH FILTER BUTTON : ", domPathList);
   for (let index = 0; index < domPathList.length; index++) {
     const node = domPathList[index];
-    if (findParents.includes(node["node"]) || index === domPathList.length - 1) {
+    if (FIND_PARENTS.includes(node["node"]) || index === domPathList.length - 1) {
       domFilterList.push(node);
     }
   }
