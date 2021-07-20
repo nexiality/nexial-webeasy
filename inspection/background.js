@@ -79,6 +79,12 @@ function sendRunTimeMessage(message) {
   });
 }
 
+async function getCurrentTab() {
+  let queryOptions = { active: true, currentWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+}
+
 let injectIntoTab = function (tab) {
   let scripts = chrome.manifest.content_scripts[0].js;
   let i = 0, s = scripts.length;
