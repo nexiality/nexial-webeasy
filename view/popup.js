@@ -1,4 +1,11 @@
 let inspectElementList = [];
+let height = "98px";
+
+function resizePopupWindow() {
+  if(window.innerHeight < 150) {
+    document.getElementById("nexial-container").style.height = "350px";
+  }
+}
 
 function openDocLink(url) {
   chrome.runtime.getBackgroundPage((background) => {
@@ -184,6 +191,7 @@ clearInspection.addEventListener("mouseout", () => setClasses("clearInfo", "badg
 
 
 document.getElementById("startInspectInfo").addEventListener("click", function () {
+  resizePopupWindow();
   info('Inspect',
        'Enter a valid URL and click on this button to start the WebEZ inspection ' +
        'process on the specified URL . WebEZ will capture and inspect your mouse ' +
@@ -198,6 +206,7 @@ document.getElementById("startInspectInfo").addEventListener("click", function (
 }, false);
 
 document.getElementById("nowInspectInfo").addEventListener("click", function () {
+  resizePopupWindow();
   info('Inspect Current Page',
        'Click this button to start the WebEZ inspection process on the current ' +
        'web page. WebEZ will capture and inspect your mouse clicks and keyboard ' +
@@ -218,6 +227,7 @@ document.getElementById("clearInfo").addEventListener("click", function () {
 }, false);
 
 document.getElementById("copyToNexialInfo").addEventListener("click", function () {
+  resizePopupWindow();
   info('Copy to Nexial script',
        'Use this button to copy the current steps and commands to clipboard. ' +
        'Open up the test scenario of your choosing, then perform Paste (' +

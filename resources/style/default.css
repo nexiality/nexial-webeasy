@@ -249,9 +249,12 @@ footer {
     color:            white;
     padding:          15px;
 }
-
+.modal {
+    top: 43px !important;
+}
 #infoModal .modal-dialog {
     max-width: 90% !important;
+    margin: 0 auto;
 }
 .command {
     display: inline-block;
