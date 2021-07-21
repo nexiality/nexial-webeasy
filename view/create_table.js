@@ -146,7 +146,7 @@ function createAddNewButton(step) {
       param:   {},
       actions: {}
     }
-    addRow(payload, indexAt + 1);
+    addRow(payload);
     updateTableRow();
   };
   return button;
