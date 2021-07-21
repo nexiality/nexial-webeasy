@@ -1,6 +1,5 @@
 /***************** popup to show locator list ********************/
 function copyLocator(str) {
-  // console.log(str);
   let dummy = document.getElementById("nexial-selected-locator");
   dummy.focus();
   dummy.select();
@@ -24,7 +23,7 @@ function createUI(locator) {
     document.body.innerHTML += `
     <div id="nexial-show-locator-sideNav" class="sidenavR">
     <div id="nexial-show-locator-header">
-      Nexial WebEZ
+      Nexial Show Locator
       <ul class="nav float-right headerOption">
         <li id="nexial-showHelp" title="Click to here more about Nexial WebEZ"> ? </li>
         <li id="nexial-closebtn" title="Hide Nexial WebEZ"> x </li>

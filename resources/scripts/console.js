@@ -1,9 +1,9 @@
 function sendConsole(level, logging, data = null) {
   const payload = {
-    cmd : 'console',
-    msg : logging,
+    cmd: "console",
+    msg: logging,
     data: data,
-    type: level
+    type: level,
   };
   if (APP_ENV === "development") {
     printLog(level, logging, data);
@@ -14,32 +14,32 @@ function sendConsole(level, logging, data = null) {
 
 function printLog(level, logging, data = null) {
   switch (level) {
-    case 'group':
-      console.group(logging)
+    case "group":
+      console.group(logging);
       break;
-    case 'groupEnd':
-      console.groupEnd(logging)
+    case "groupEnd":
+      console.groupEnd(logging);
       break;
-    case 'time':
-      console.time(logging)
+    case "time":
+      console.time(logging);
       break;
-    case 'timeEnd':
-      console.timeEnd(logging)
+    case "timeEnd":
+      console.timeEnd(logging);
       break;
-    case 'log':
-      console.log(logging, data)
+    case "log":
+      console.log(logging, data);
       break;
-    case 'info':
-      console.info(logging)
+    case "info":
+      console.info(logging);
       break;
-    case 'warn':
-      console.warn(logging)
+    case "warn":
+      console.warn(logging);
       break;
-    case 'error':
-      console.error(logging)
+    case "error":
+      console.error(logging);
       break;
-    case 'table':
-      console.table(logging)
+    case "table":
+      console.table(logging);
       break;
   }
 }
