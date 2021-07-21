@@ -262,5 +262,5 @@ footer {
 }
 .command-link {
     display: inline-block;
-    padding: 3px;
+    padding: 3px 0px 3px 5px;
 }

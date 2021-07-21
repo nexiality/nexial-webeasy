@@ -290,7 +290,7 @@ function createDocLink(searchString, step) {
   const docLink = document.createElement("A");
   docLink.setAttribute("class", "command-link");
   docLink.setAttribute('id', ('command_link_' + step));
-  docLink.innerHTML = `<i class="fa fa-external-link" aria-hidden="true"></i>`;
+  docLink.innerHTML = `<i class="fas fa-external-link-alt"></i>`;
   
   docLink.onclick = function () {
     openDocLink(`${APP_DOC_URL}/${searchString}`);
