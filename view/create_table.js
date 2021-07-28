@@ -145,8 +145,8 @@ function createAddNewButton(step) {
       command: '',
       param:   {},
       actions: {}
-    }
-    addRow(payload);
+    };
+    addRow(payload, indexAt);
     updateTableRow();
   };
   return button;
@@ -159,9 +159,10 @@ function createDuplicateButton(step) {
   button.setAttribute('title', 'Duplicate');
   button.innerHTML = '<i class="fas fa-clone"></i>';
   button.onclick = function (e) {
+    const indexAt = document.getElementById('step_' + step).rowIndex;
     let payload = Object.assign({}, getInspectListObject(step));
     payload.step = '';
-    addRow(payload);
+    addRow(payload, indexAt);
     updateTableRow();
     updateBackground();
   };
