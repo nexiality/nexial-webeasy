@@ -385,6 +385,10 @@ chrome.runtime.onMessage.addListener(function (request) {
   switch (request.action) {
     case "getContextMenuElement":
       selectionText = request.selectionText;
+      if(!clickedElement) {
+        console.error('No element found');
+        break;
+      }
       sendInspectInfo(request.command, clickedElement);
       clickedElement = null;
       break;
@@ -401,6 +405,10 @@ chrome.runtime.onMessage.addListener(function (request) {
       stop();
       break;
     case "findLocator":
+      if(!clickedElement) {
+        console.error('No element found');
+        break;
+      }
       findLocator(clickedElement);
       clickedElement = null;
       break;
