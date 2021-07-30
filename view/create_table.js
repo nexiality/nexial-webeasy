@@ -49,20 +49,21 @@ function createSubTableRow(param_table, key, data, step, editable) {
   let tr = param_table.insertRow(-1);
   let td = tr.insertCell(-1);
   let element = "";
+  const id = key + "_" + step;
   td.setAttribute("title", key);
 
   if (key === "locator" && data) {
-    element = createSelectElement(data, editable);
+    element = createSelectElement(data, id, editable);
     const inspectListObject = getInspectListObject(step);
     if(inspectListObject.actions['selectedLocator'])
       element.value = inspectListObject.actions['selectedLocator'];
-    element.onchange = function (e) {
-      // ToDO:
-    };
+      element.onchange = function (e) {
+        // ToDO:
+      };
   } else if (key === "locator" && !data) element = createInspectElement(key, step);
-  else element = createInputBox(data, editable); // param is other than locator
+  else element = createInputBox(data, id, editable); // param is other than locator
 
-  element.setAttribute("id", key + "_" + step);
+  // element.setAttribute("id", key + "_" + step);
   td.appendChild(element);
 }
 
@@ -109,7 +110,7 @@ function saveRow(step) {
   let objIndex = inspectElementList.findIndex((obj) => obj.step === step);
   inspectElementList[objIndex] = getCurrentInspectObject(step);
   updateBackground();
-  console.log("AFTER SAVE : ", inspectElementList);
+  // console.log("AFTER SAVE : ", inspectElementList);
 }
 
 function toggleEditable(step, enable) {
@@ -117,6 +118,7 @@ function toggleEditable(step, enable) {
   toggleElement(document.getElementById("command_" + step), enable);
   toggleActions(step, !enable);
   for (let index = 0; index < paramArr.length; index++) {
+    console.log(document.getElementById(paramArr[index] + "_" + step))
     toggleElement(document.getElementById(paramArr[index] + "_" + step), enable);
   }
 }
@@ -257,13 +259,13 @@ function createUpDownButton(step, direction) {
   return button;
 }
 
-function createInspectElement(inspectFor, step) {
+function createInspectElement(key, step) {
   let inspectElement = document.createElement("div"),
       subDiv = document.createElement("div"),
       button = document.createElement('button');
 
   inspectElement.setAttribute('class', 'input-group');
-  inspectElement.appendChild(createInputBox(''));
+  inspectElement.appendChild(createInputBox('', key + "_" + step));
 
   subDiv.setAttribute('class', 'input-group-append');
 
@@ -271,17 +273,18 @@ function createInspectElement(inspectFor, step) {
   button.setAttribute('id', ('inspectBtn_' + step));
   button.innerHTML = '<i class="fas fa-search-plus"></i>';
   button.onclick = function (e) {
-    console.log('INSPECT ELEMENT CLICK')
+    // console.log('INSPECT ELEMENT CLICK')
   };
   subDiv.appendChild(button);
   inspectElement.appendChild(subDiv);
   return inspectElement;
 }
 
-function createInputBox(data, editable = true) {
+function createInputBox(data, id, editable = true) {
   let input = document.createElement("INPUT");
   input.setAttribute("type", "text");
   input.setAttribute("class", "form-control");
+  input.setAttribute("id", id);
   input.setAttribute("value", data ? data: '');
   if (!editable) input.setAttribute('disabled', 'true')
   return input;
@@ -348,8 +351,8 @@ function addRow(data, indexAt = -1) {
       const sub_table = createSubTable(data['param'], currentStep);
       cell.appendChild(sub_table);
     } else if (key === "command") {
-      const cmdDropdown = createSelectElement(cmd, false);
-      cmdDropdown.setAttribute('id', (key + '_' + currentStep));
+      const id = key + '_' + currentStep;
+      const cmdDropdown = createSelectElement(cmd, id, false);
       cmdDropdown.setAttribute("class", "form-control command");
       cmdDropdown.value = data[key];
 

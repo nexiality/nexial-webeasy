@@ -9,7 +9,7 @@ function copyLocator(str) {
 function createSelectLocator(locator) {
   let div = document.getElementById("nexial-locator-list");
   let selectedLocatorElement = document.getElementById("nexial-selected-locator");
-  const locatorDropdown = createSelectElement(locator);
+  const locatorDropdown = createSelectElement(locator, 'nexial-locator-select');
   locatorDropdown.onchange = function (event) {
     selectedLocatorElement.value = '';
     selectedLocatorElement.value = event.target.value;
