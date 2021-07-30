@@ -20,7 +20,7 @@ function getCurrentInspectObject(step) {
     if(paramArr[index] === 'locator') {
       inspectObj.param[paramArr[index]] = getInspectListObject(step).param.locator;
       inspectObj.actions['selectedLocator'] = document.getElementById(paramArr[index] + "_" + step).value;
-    } else inspectObj.param[paramArr[index]] = document.getElementById(paramArr[index] + "_" + step).value
+    } else inspectObj.param[paramArr[index]] = document.getElementById(paramArr[index] + "_" + step).value;
   }
   return inspectObj;
 }
@@ -56,11 +56,10 @@ function createSubTableRow(param_table, key, data, step, editable) {
   if (key === "locator" && data) {
     element = createSelectElement(data, id, editable);
     const inspectListObject = getInspectListObject(step);
-    if(inspectListObject.actions['selectedLocator'])
-      element.value = inspectListObject.actions['selectedLocator'];
-      element.onchange = function (e) {
-        // ToDO:
-      };
+    if(inspectListObject.actions['selectedLocator']) element.value = inspectListObject.actions['selectedLocator'];
+    element.onchange = function (e) {
+      // ToDO:
+    };
   } else if (key === "locator" && !data) element = createInspectElement(key, step);
   else element = createInputBox(data, id, editable); // param is other than locator
 
@@ -120,7 +119,7 @@ function toggleEditable(step, enable) {
   toggleActions(step, !enable);
   for (let index = 0; index < paramArr.length; index++) {
     const paramElement = document.getElementById(paramArr[index] + "_" + step);
-    if(!paramArr.value) paramElement.value = '<MISSING>';
+    if(!paramElement.value && !enable) paramElement.value = '<MISSING>';
     toggleElement(paramElement, enable);
   }
 }
