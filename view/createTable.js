@@ -1,3 +1,4 @@
+// 'use strict';
 let table = null,  currentStep = 0,  editMode = false;
 
 function updateBackground() {

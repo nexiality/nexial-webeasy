@@ -21,7 +21,7 @@
         "env.js",
         "resources/scripts/console.js",
         "view/general.js",
-        "view/dialogInjector.js",
+        "view/showLocator.js",
         "inspection/contentScript.js"
       ],
       "matches": [ "http://*/*", "https://*/*" ]
