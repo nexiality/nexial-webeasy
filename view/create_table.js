@@ -118,8 +118,9 @@ function toggleEditable(step, enable) {
   toggleElement(document.getElementById("command_" + step), enable);
   toggleActions(step, !enable);
   for (let index = 0; index < paramArr.length; index++) {
-    console.log(document.getElementById(paramArr[index] + "_" + step))
-    toggleElement(document.getElementById(paramArr[index] + "_" + step), enable);
+    const paramElement = document.getElementById(paramArr[index] + "_" + step);
+    if(!paramArr.value) paramElement.value = '<MISSING>';
+    toggleElement(paramElement, enable);
   }
 }
 
