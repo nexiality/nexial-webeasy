@@ -126,7 +126,7 @@ pauseInspect.addEventListener("click", function () {
 }, false);
 
 startInspect.addEventListener("click", function () {
-  let url = document.getElementById("url").value;
+  let url = document.getElementById("url").value.trim();
   if (!validURL(url)) {
     let validFeedback = document.getElementsByClassName('valid-feedback')[0];
     validFeedback.classList.add("d-block");
