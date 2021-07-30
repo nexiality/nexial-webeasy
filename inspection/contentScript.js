@@ -9,6 +9,7 @@ const INNER_TEXT_LENGTH = 100;
 const NODE_LIST = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
 const INPUT_TYPE_ELEMENT = ["text", "number", "email", "password", "search", "tel", "url"];
 const INPUT_CLICK_ELEMENT = ["radio", "checkbox"];
+const HAS_PARENT = ["a", "button"];
 
 // Append Style on hover get element
 let style = document.createElement("link");
@@ -234,14 +235,19 @@ function getDomPath(el) {
   return stack;
 }
 
-function filterDomPath(el, command) {
+function filterDomPath(el) {
   let domPathList = getDomPath(el);
   let domFilterList = [];
-  if (command === "click(locator)") {
-    const index = domPathList.findIndex((x) => x.node === "button");
-    if(index !== -1) domPathList.length = index + 1;
+
+  for (let i = 0; i < HAS_PARENT.length; i++) {
+    const index = domPathList.findIndex((x) => x.node === HAS_PARENT[i]);
+    console.log(HAS_PARENT[i], index);
+    if (index !== -1) {
+      domPathList.length = index + 1;
+      break;
+    }
   }
-  sendConsole("log", "DOM PATH FILTER BUTTON : ", domPathList);
+  sendConsole("log", "DOM PATH FILTER : ", domPathList);
   for (let index = 0; index < domPathList.length; index++) {
     const node = domPathList[index];
     if (FIND_PARENTS.includes(node["node"]) || index === domPathList.length - 1) {
@@ -305,7 +311,7 @@ function getCssPath(el) {
 }
 
 function sendInspectInfo(command, event) {
-  const paths = filterDomPath(event.target, command);
+  const paths = filterDomPath(event.target);
   const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
   let locator = locatorList.locator;
   if (!locator.length) {
