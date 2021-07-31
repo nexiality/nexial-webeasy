@@ -1,163 +1,169 @@
 [nexial-locator-data-tooltip] {
-	position: absolute;
-	z-index: 1000;
+    position: absolute;
+    z-index:  1000;
 }
 
 [nexial-locator-data-tooltip]:before {
-	position: absolute;
-	bottom: 150%;
-	left: 50%;
-	margin-bottom: 5px;
-	margin-left: -10px;
-	padding: 2px 4px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	background-color: #000;
-	background-color: hsla(0, 0%, 20%, 0.9);
-	color: #fff;
-	content: attr(nexial-locator-data-tooltip);
-	text-align: center;
-	font-size: 14px;
-	line-height: 1.2;
+    position:              absolute;
+    bottom:                150%;
+    left:                  50%;
+    margin-bottom:         5px;
+    margin-left:           -10px;
+    padding:               2px 4px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius:    3px;
+    border-radius:         3px;
+    background-color:      #000;
+    background-color:      hsla(0, 0%, 20%, 0.9);
+    color:                 #fff;
+    content:               attr(nexial-locator-data-tooltip);
+    text-align:            center;
+    font-size:             14px;
+    line-height:           1.2;
 }
 
 [nexial-locator-data-tooltip]:after {
-	position: absolute;
-	bottom: 150%;
-	left: 50%;
-	margin-left: -5px;
-	width: 0;
-	border-top: 5px solid #000;
-	border-top: 5px solid hsla(0, 0%, 20%, 0.9);
-	border-right: 5px solid transparent;
-	border-left: 5px solid transparent;
-	content: " ";
-	font-size: 0;
-	line-height: 0;
+    position:     absolute;
+    bottom:       150%;
+    left:         50%;
+    margin-left:  -5px;
+    width:        0;
+    border-top:   5px solid #000;
+    border-top:   5px solid hsla(0, 0%, 20%, 0.9);
+    border-right: 5px solid transparent;
+    border-left:  5px solid transparent;
+    content:      " ";
+    font-size:    0;
+    line-height:  0;
 }
 
 .nexial-hover {
-	background: rgb(196, 196, 196);
+    background: rgb(196, 196, 196);
 }
 
 #nexial-show-locator-sideNav {
-	background-color: rgba(245,255,245,0.5);
-	width: 300px;
-	height: 100%;
-	overflow-x: hidden;
-	position: fixed;
-	right: 0;
-	top: 0;
-	transition: .5s;
-	z-index: 9999999;
-	border-left: 2px solid rgba(0,0,0,0.5);
-	box-shadow: -6px 0px 10px rgb(0 0 0 / 25%);
+    background-color: rgba(85, 115, 85, 0.5);
+    width:            315px;
+    height:           100%;
+    overflow-x:       hidden;
+    position:         fixed;
+    right:            0;
+    top:              0;
+    transition:       .5s;
+    z-index:          9999999;
+    border-left:      2px solid rgba(0, 0, 0, 0.5);
+    box-shadow:       -6px 0 10px rgb(0 0 0 / 25%);
+    line-height:      2.0em;
 }
 
 #nexial-show-locator-header {
-	height: 42px;
-	padding: 6px !important;
-	font-size: 12pt;
-	font-weight: bold;
-	background: #555555 url(https://nexiality.github.io/documentation/image/nexial-64.png) no-repeat 4px 3px;
-	background-size: 48px;
-	padding: 6px 0 6px 55px !important;
-	color: #eeeeee;
-	text-shadow: -1px -1px 5px black;
-	box-shadow: 0 2px 6px rgb(0 0 0 / 75%);
+    height:          30px;
+    font-size:       14pt;
+    font-weight:     bold;
+    background:      #555 url(https://nexiality.github.io/documentation/image/nexial-64.png) no-repeat 4px 3px;
+    background-size: 48px;
+    padding:         6px 0 6px 55px !important;
+    color:           #eee;
+    text-shadow:     -1px -1px 5px black;
+    box-shadow:      0 2px 6px rgb(0 0 0 / 75%);
 }
 
-.headerOption {
-	text-shadow: none;
-	margin-top: -4px;
-	overflow: hidden;
-	float: right;
+#nexial-show-locator-header .headerOption {
+    text-shadow: none;
+    margin-top:  -4px;
+    float:       right;
+    font-size:   6pt;
+    line-height: 1em;
+    padding:     0 !important;
 }
 
-.nav li {
-	color:         rgba(255, 255, 255, 0.5) !important;
-	padding-right: 10px;
-	cursor:        pointer;
-	font-size:     18px;
+#nexial-show-locator-header .nav li {
+    color:     rgba(255, 255, 255, 0.5) !important;
+    cursor:    pointer;
+    font-size: 18px;
 }
 
-.nav li:hover {
-	color:       #ffffff !important;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.50);
+#nexial-show-locator-header .nav li:hover {
+    color:       #fff !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.50);
 }
 
 #nexial-show-locator-sideNav #nexial-locator-list {
-	margin: 0 auto;
-	padding: 10px 0;
-	width: 272px;
+    margin:  0 auto;
+    padding: 10px 0;
+    width:   272px;
 }
 
 #nexial-show-locator-sideNav li {
-	background: gray;
-	padding: 6px 10px;
-	border: 1px lightgray solid;
-	word-wrap: break-word;
-	overflow: auto;
-	margin-bottom: 5px;
-	display: inline-block;
+    background:  gray;
+    padding:     6px;
+    border:      1px lightgray solid;
+    word-wrap:   break-word;
+    overflow:    auto;
+    margin:      1px 3px 5px 0;
+    display:     inline-block;
+    font-weight: normal;
 }
 
 #nexial-show-locator-sideNav button {
-	float: right;
-	/* font-style: italic; */
-	padding: 5px;
-	border: 1px solid #7a8188;
-	margin: 10px 15px;
-	border-radius: 5px;
+    float:            right;
+    padding:          5px;
+    border:           1px solid #355138;
+    margin:           10px 15px;
+    border-radius:    5px;
+    background-color: rgba(85, 115, 85, 0.8);
+    color:            #ffffff;
+    font-weight:      bold;
 }
 
 #nexial-show-locator-sideNav a {
-	color: #818181;
-	display: block;
-	font-size: 25px;
-	padding: 8px 8px 8px 32px;
-	text-decoration: none;
-	transition: .3s;
+    color:           #818181;
+    display:         block;
+    font-size:       25px;
+    padding:         8px 8px 8px 32px;
+    text-decoration: none;
+    transition:      .3s;
 }
 
-#nexial-show-locator-sideNav a:hover,.offcanvas a:focus {
-	color: #f1f1f1;
+#nexial-show-locator-sideNav a:hover, .offcanvas a:focus {
+    color: #f1f1f1;
 }
 
 #nexial-show-locator-sideNav .closebtn {
-	float: right;
-	font-size: 20px;
-    /* margin-left: 50px; */
-	position: absolute;
-	right: 15px;
-	top: 20px;
-  
-  background: lightgray;
-  padding: 3px 5px;
-  line-height: 1;
+    float:       right;
+    font-size:   20px;
+    position:    absolute;
+    right:       15px;
+    top:         20px;
+
+    background:  lightgray;
+    padding:     3px 5px;
+    line-height: 1;
 }
+
 #nexial-show-locator-sideNav .copybtn {
-	margin-top: 10px;
-	margin-right: 10px;
+    margin-top:   10px;
+    margin-right: 10px;
 }
+
 #nexial-show-locator-sideNav select {
-	display: block;
-	width: 100%;
-	padding: .375rem 2.25rem .375rem .75rem;
-	font-size: 1rem;
-	border: 1px solid #7a8188;
-	border-radius: 5px;
+    display:       block;
+    width:         100%;
+    padding:       .3rem;
+    border:        1px solid #7a8188;
+    border-radius: 5px;
+    font-family:   "Consolas", monospace;
+    font-size:     10pt;
 }
+
 #nexial-selected-locator {
-	margin: 0 auto;
-	width: 270px;
-	height: 122px;
-	display: block;
-	border: 1px solid #7a8188;
-	border-radius: 5px;
+    margin:        0 auto;
+    width:         253px;
+    height:        125px;
+    display:       block;
+    border:        1px solid #7a8188;
+    border-radius: 5px;
+    padding:       .5rem;
+    font-family:   "Consolas", monospace;
+    font-size:     10pt;
 }
-/* @media screen and max-height 450px {
-.sidenav,#nexial-show-locator-sideNav{padding-top:15px;}
-.sidenav a,#nexial-show-locator-sideNav a{font-size:18px;}
-} */

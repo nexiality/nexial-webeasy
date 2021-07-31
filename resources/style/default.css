@@ -1,268 +1,272 @@
 header {
-  padding: 6px 0 6px 55px !important;
-  font-size: 16pt;
-  font-weight: bold;
-  background: #555555 url(../img/nexial-128.png) no-repeat 4px 3px;
-  background-size: 48px;
-  color: #eeeeee;
-  text-shadow: -1px -1px 5px black;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
+    padding:         6px 0 6px 55px !important;
+    font-size:       16pt;
+    font-weight:     bold;
+    background:      #555555 url(../img/nexial-128.png) no-repeat 4px 3px;
+    background-size: 48px;
+    color:           #eeeeee;
+    text-shadow:     -1px -1px 5px black;
+    box-shadow:      0 2px 6px rgba(0, 0, 0, 0.75);
 }
 
 .headerOption {
-  text-shadow: none;
-  margin-top: -4px;
+    text-shadow: none;
+    margin-top:  -4px;
 }
 
 .nav li {
-  color: rgba(255, 255, 255, 0.5) !important;
-  padding-right: 10px;
-  cursor: pointer;
-  font-size: 18px;
+    color:         rgba(255, 255, 255, 0.5) !important;
+    padding-right: 10px;
+    cursor:        pointer;
+    font-size:     18px;
 }
 
 .nav li:hover {
-  color: #ffffff !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    color:       #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .badge#startInspectInfo {
-  right: 0;
-  top: -10px;
+    right: 0;
+    top:   -10px;
 }
 
 .badge#nowInspectInfo {
-  top: -10px;
-  right: 0;
+    top:   -10px;
+    right: 0;
 }
 
 .badge {
-  position: relative;
-  top: -8px;
-  margin-left: -30px;
-  color: #d8d8d8;
-  opacity: 0.25;
-  font-size: 20px;
-  text-shadow: -1px 1px 1px #333333;
-  caret-color: transparent;
-  cursor: pointer;
+    position:    relative;
+    top:         -8px;
+    margin-left: -30px;
+    color:       #d8d8d8;
+    opacity:     0.25;
+    font-size:   20px;
+    text-shadow: -1px 1px 1px #333333;
+    caret-color: transparent;
+    cursor:      pointer;
 }
 
 .badge:hover {
-  color: #ffffff;
-  text-shadow: 0 0 1px #000000;
-  opacity: 1;
+    color:       #ffffff;
+    text-shadow: 0 0 1px #000000;
+    opacity:     1;
 }
 
 .badge-focus {
-  opacity: 1;
+    opacity: 1;
 }
 
 .container-fluid {
-  width: 790px;
-  padding: 10px;
+    width:   790px;
+    padding: 10px;
 }
 
 /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
 /* .row.content {height: 150px} */
 .mt-2 {
-  margin-top: 10px !important;
+    margin-top: 10px !important;
 }
 
 #startOption #url {
-  margin-right: 5px;
+    margin-right: 5px;
 }
 
 /* Set gray background color and 100% height */
 .sidenav {
-  background-color: #f1f1f1;
-  height: 100%;
+    background-color: #f1f1f1;
+    height:           100%;
 }
 
 select {
-  width: 250px;
-  font-size: 11pt;
+    width:     250px;
+    font-size: 11pt;
 }
 
 #stopOption {
-  display: none;
-  margin: 0 auto;
-  width: 100%;
-  text-align: center;
+    display:    none;
+    margin:     0 auto;
+    width:      100%;
+    text-align: center;
 }
 
 #showData {
-  max-height: 360px;
-  overflow-y: auto;
-  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    max-height: 360px;
+    overflow-y: auto;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
 @media screen and (min-height: 601px) {
-  #showData {
-    max-height: min-content;
-  }
+    #showData {
+        max-height: min-content;
+    }
 }
 
 @media screen and (min-width: 801px) {
-  .container-fluid {
-    width: 99%;
-  }
+    .container-fluid {
+        width: 99%;
+    }
 }
 
 /* On small screens, set height to 'auto' for the grid */
 @media screen and (max-width: 767px) {
-  .row.content {
-    height: auto;
-  }
+    .row.content {
+        height: auto;
+    }
 }
 
 /* inspection table display */
 #inspect_table {
-  position: relative; /* table header fix */
-  max-height: 400px !important;
-  border-collapse: separate;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  font-size: 11pt;
+    position:        relative; /* table header fix */
+    max-height:      400px !important;
+    border-collapse: separate;
+    width:           100%;
+    margin:          0;
+    padding:         0;
+    font-size:       11pt;
 }
 
 #inspect_table th {
-  position: sticky;
-  top: 0; /* Don't forget this, required for the stickiness */
-  padding: 7px;
-  text-align: center;
-  color: #f9f9f9;
-  background-color: rgba(83, 83, 83, 0.9) !important;
-  text-shadow: 1px 1px 3px #000000;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-  border: 2px solid #777777;
+    position:         sticky;
+    top:              0; /* Don't forget this, required for the stickiness */
+    padding:          7px;
+    text-align:       center;
+    color:            #f9f9f9;
+    background-color: rgba(83, 83, 83, 0.9) !important;
+    text-shadow:      1px 1px 3px #000000;
+    box-shadow:       0 2px 5px rgba(0, 0, 0, 0.5);
+    border:           2px solid #777777;
 }
 
 #inspect_table tbody {
-  overflow-y: auto; /* Trigger vertical scroll    */
-  overflow-x: hidden; /* Hide the horizontal scroll */
+    overflow-y: auto; /* Trigger vertical scroll    */
+    overflow-x: hidden; /* Hide the horizontal scroll */
 }
 
 #inspect_table td {
-  padding: 5px;
-  border-bottom: solid 1px #dddddd;
-  border-top: none;
+    padding:       5px;
+    border-bottom: solid 1px #dddddd;
+    border-top:    none;
 }
 
 /* nth-child(1) = the first td in each tr */
 #inspect_table td:nth-child(1) {
-  width: 3%;
-  text-align: center;
+    width:      3%;
+    text-align: center;
 }
 
 /* the second */
 #inspect_table td:nth-child(2) {
-  width: 40%;
+    width: 40%;
 }
 
 /* the third */
 #inspect_table td:nth-child(3) {
-  width: 40%;
-  padding: 0;
+    width:   40%;
+    padding: 0;
 }
 
 #inspect_table td:nth-child(4) .btn {
-  /* padding: 3px;
-    margin-right: 3px; */
+    /* padding: 3px;
+      margin-right: 3px; */
 }
 
 .sub-table {
-  width: 100%;
-  font-size: 11pt;
+    width:     100%;
+    font-size: 11pt;
 }
 
 .sub-table td,
 .sub-table th {
-  border: none !important;
+    border: none !important;
 }
 
 .sub-table .param-idx {
-  background-color: rgba(150, 150, 150, 0.25);
-  padding: 1px 6px;
-  cursor: default;
-  border-radius: 15px;
-  font-size: 9pt;
-  color: #777777;
-  vertical-align: middle;
+    background-color: rgba(150, 150, 150, 0.25);
+    padding:          1px 6px;
+    cursor:           default;
+    border-radius:    15px;
+    font-size:        9pt;
+    color:            #777777;
+    vertical-align:   middle;
 }
 
 #inspectFeature,
 #showStatus {
-  display: none;
+    display: none;
 }
 
 #showStatus {
-  width: 50%;
-  text-align: center;
-  padding: 60px;
-  /* border:      1px #dddddd dashed; */
-  margin: 0 auto 10px;
-  font-weight: bold;
+    width:       50%;
+    text-align:  center;
+    padding:     60px;
+    /* border:      1px #dddddd dashed; */
+    margin:      0 auto 10px;
+    font-weight: bold;
 }
 
 .loader {
-  margin: -6px 10px;
-  /* border: 4px dashed #f0f0f3; */
-  border-radius: 50%;
-  border-top: 5px solid #3498db;
-  width: 30px;
-  height: 30px;
-  -webkit-animation: spin 2s linear infinite; /* Safari */
-  animation: spin 2s linear infinite;
-  display: inline-block;
+    margin:            -6px 10px;
+    /* border: 4px dashed #f0f0f3; */
+    border-radius:     50%;
+    border-top:        5px solid #3498db;
+    width:             30px;
+    height:            30px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation:         spin 2s linear infinite;
+    display:           inline-block;
 }
 
 /* Safari */
 @-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 #addNew {
-  float: right;
-  position: relative;
-  top: -22px;
-  border-radius: 50%;
-  right: -8px;
-  display: none;
+    float:         right;
+    position:      relative;
+    top:           -22px;
+    border-radius: 50%;
+    right:         -8px;
+    display:       none;
 }
 
 footer {
-  background-color: #555555;
-  color: white;
-  padding: 15px;
+    background-color: #555555;
+    color:            white;
+    padding:          15px;
 }
+
 .modal {
-  top: 43px !important;
+    top: 43px !important;
 }
+
 #infoModal .modal-dialog {
-  max-width: 90% !important;
-  margin: 0 auto;
+    max-width: 90% !important;
+    margin:    0 auto;
 }
+
 .command {
-  display: inline-block;
-  width: 93%;
+    display: inline-block;
+    width:   93%;
 }
+
 .command-link {
-  display: inline-block;
-  padding: 3px 0px 3px 5px;
+    display: inline-block;
+    padding: 3px 0 3px 5px;
 }

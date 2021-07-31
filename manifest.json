@@ -1,42 +1,42 @@
 {
-  "background": {
+  "background":               {
     "persistent": false,
-    "scripts": [
+    "scripts":    [
       "env.js",
       "resources/scripts/console.js",
       "inspection/background.js",
       "inspection/contextMenu.js"
     ]
   },
-  "browser_action": {
-    "default_icon": {
+  "browser_action":           {
+    "default_icon":  {
       "64": "resources/img/nexial-64.png"
     },
     "default_popup": "NexialWebEZ.html",
     "default_title": "Nexial WebEZ - Kick Your Web Automation into High Gear!"
   },
-  "content_scripts": [
+  "content_scripts":          [
     {
-      "js": [
+      "js":      [
         "env.js",
         "resources/scripts/console.js",
         "view/general.js",
         "view/showLocator.js",
         "inspection/contentScript.js"
       ],
-      "matches": [ "http://*/*", "https://*/*" ]
+      "matches": ["http://*/*", "https://*/*"]
     }
   ],
-  "description": "Kick your web automation into high gear with Nexial WebEZ!",
-  "icons": {
-    "16": "resources/img/nexial-16.png",
-    "32": "resources/img/nexial-32.png",
-    "64": "resources/img/nexial-64.png",
+  "description":              "Kick your web automation into high gear with Nexial WebEZ!",
+  "icons":                    {
+    "16":  "resources/img/nexial-16.png",
+    "32":  "resources/img/nexial-32.png",
+    "64":  "resources/img/nexial-64.png",
     "128": "resources/img/nexial-128.png"
   },
-  "manifest_version": 2,
-  "name": "Nexial WebEZ",
-  "version": "1.0.0",
-  "permissions": [ "storage", "activeTab", "contextMenus", "management" ],
-  "web_accessible_resources": [ "resources/style/nexial.css", "view/dialogInjector.js" ]
+  "manifest_version":         2,
+  "name":                     "Nexial WebEZ",
+  "version":                  "1.0.0",
+  "permissions":              ["storage", "activeTab", "contextMenus", "management"],
+  "web_accessible_resources": ["resources/style/nexial.css", "view/dialogInjector.js"]
 }

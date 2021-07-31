@@ -19,42 +19,49 @@ function createSelectLocator(locator) {
 
 function createUI(locator) {
   const ui = document.getElementById("nexial-show-locator-sideNav");
-  if(!ui) {
+  if (!ui) {
     document.body.innerHTML += `
-    <div id="nexial-show-locator-sideNav" class="sidenavR">
+    <div id="nexial-show-locator-sideNav">
     <div id="nexial-show-locator-header">
-      Nexial Show Locator
+      Nexial WebEZ Locator
       <ul class="nav float-right headerOption">
-        <li id="nexial-showHelp" title="Click to here more about Nexial WebEZ"> ? </li>
-        <li id="nexial-closebtn" title="Hide Nexial WebEZ"> x </li>
+        <li id="nexial-showHelp" title="Click to here more about Nexial WebEZ Locator"> ? </li>
+        <li id="nexial-closebtn" title="Hide Nexial WebEZ Locator"> x </li>
       </ul>
     </div>
-      <!-- <button type="button" class="nexial-closebtn"> x </button> -->
-      <div id="nexial-locator-list">
-      </div>
+      <div id="nexial-locator-list"></div>
       <div id="nexial-copy-container">
         <textarea id="nexial-selected-locator" spellcheck="false"> </textarea>
         <button id="nexial-copybtn"> copy </button>
       </div>
     </div>
     `;
-    document.getElementById("nexial-copybtn").addEventListener("click", function() {
+
+    document.getElementById("nexial-copybtn").addEventListener("click", function () {
       copyLocator(document.getElementById("nexial-selected-locator").value);
     });
+
+    createSelectLocator(locator);
+    showHelp();
+    closeNavR();
   } else {
     document.getElementById("nexial-locator-list").innerHTML = '';
   }
-  createSelectLocator(locator);
-  closeNavR();
+}
+
+function showHelp() {
+  document.getElementById("nexial-showHelp").addEventListener("click", function () {
+    window.open("https://nexiality.github.io/documentation/webez/ShowLocator.html", "_nexial_link");
+  });
 }
 
 function closeNavR() {
-  document.getElementById("nexial-closebtn").addEventListener("click", function() {
+  document.getElementById("nexial-closebtn").addEventListener("click", function () {
     document.getElementById("nexial-show-locator-sideNav").remove();
-  })
+  });
 }
 
-function createRightPannel(locator) {
+function createRightPanel(locator) {
   createUI(locator);
 }
 
@@ -65,5 +72,5 @@ function findLocator(clickedElement) {
   if (!locator.length) {
     locator = ["css=" + getCssPath(clickedElement.target), "xpath=" + getXPath(clickedElement.target)];
   }
-  createRightPannel(locator);
+  createRightPanel(locator);
 }
