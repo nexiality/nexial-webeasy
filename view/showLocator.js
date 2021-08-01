@@ -18,24 +18,24 @@ function createSelectLocator(locator) {
 }
 
 function createUI(locator) {
-  const ui = document.getElementById("nexial-show-locator-sideNav");
+  const ui = document.getElementsByTagName('nexial-webez-show-locator')[0];
   if (!ui) {
-    document.body.innerHTML += `
-    <div id="nexial-show-locator-sideNav">
-    <div id="nexial-show-locator-header">
-      Nexial WebEZ Locator
-      <ul class="nav float-right headerOption">
-        <li id="nexial-showHelp" title="Click to here more about Nexial WebEZ Locator"> ? </li>
-        <li id="nexial-closebtn" title="Hide Nexial WebEZ Locator"> x </li>
-      </ul>
-    </div>
-      <div id="nexial-locator-list"></div>
-      <div id="nexial-copy-container">
-        <textarea id="nexial-selected-locator" spellcheck="false"> </textarea>
-        <button id="nexial-copybtn"> copy </button>
-      </div>
-    </div>
+    let showLocator = document.createElement('nexial-webez-show-locator');
+    showLocator.innerHTML = `
+        <div id="nexial-show-locator-header">
+            Nexial WebEZ Locator
+            <ul class="nav float-right headerOption">
+                <li id="nexial-showHelp" title="Click to here more about Nexial WebEZ Locator"> ? </li>
+                <li id="nexial-closebtn" title="Hide Nexial WebEZ Locator"> x </li>
+            </ul>
+        </div>
+        <div id="nexial-locator-list"></div>
+        <div id="nexial-copy-container">
+            <textarea id="nexial-selected-locator" spellcheck="false"></textarea>
+            <button id="nexial-copybtn"> copy </button>
+        </div>
     `;
+    document.body.appendChild(showLocator);
 
     document.getElementById("nexial-copybtn").addEventListener("click", function () {
       copyLocator(document.getElementById("nexial-selected-locator").value);
@@ -57,7 +57,7 @@ function showHelp() {
 
 function closeNavR() {
   document.getElementById("nexial-closebtn").addEventListener("click", function () {
-    document.getElementById("nexial-show-locator-sideNav").remove();
+    document.getElementsByTagName('nexial-webez-show-locator')[0].remove();
   });
 }
 
