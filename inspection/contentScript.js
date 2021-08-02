@@ -9,7 +9,7 @@ const INNER_TEXT_LENGTH = 100;
 const NODE_LIST = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
 const INPUT_TYPE_ELEMENT = ["text", "number", "email", "password", "search", "tel", "url"];
 const INPUT_CLICK_ELEMENT = ["radio", "checkbox"];
-const HAS_PARENT = ["a", "button"];
+const HAS_PARENT = ["i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button"];
 
 // Append Style on hover get element
 let style = document.createElement("link");
