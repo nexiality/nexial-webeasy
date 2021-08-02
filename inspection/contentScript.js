@@ -188,7 +188,7 @@ function getLocator(e, paths, isFiltered) {
           selectedLocator =
             "xpath=//" +
             el.node +
-            `[normalize-space(string(.))=normalize-space('${el.innerText}')]`;
+            `[normalize-space(string(.))=normalize-space('${updatingText(el.innerText)}')]`;
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
@@ -241,7 +241,7 @@ function filterDomPath(el) {
 
   for (let i = 0; i < HAS_PARENT.length; i++) {
     const index = domPathList.findIndex((x) => x.node === HAS_PARENT[i]);
-    console.log(HAS_PARENT[i], index);
+    // console.log(HAS_PARENT[i], index);
     if (index !== -1) {
       domPathList.length = index + 1;
       break;
