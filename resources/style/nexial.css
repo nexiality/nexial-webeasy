@@ -43,13 +43,13 @@
 
 nexial-webez-show-locator {
   background-color: rgba(40, 60, 40, 0.5);
-  width:            315px;
+  width:            300px;
   height:           100%;
   overflow-x:       hidden;
   position:         fixed;
   right:            0;
   top:              0;
-  transition:       .5s;
+  transition:       1s;
   z-index:          9999999;
   border-left:      2px solid rgba(0, 0, 0, 0.5);
   box-shadow:       -6px 0 10px rgb(0 0 0 / 25%);
@@ -99,19 +99,13 @@ nexial-webez-show-locator #nexial-show-locator-header .nav li:hover {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.50);
 }
 
-nexial-webez-show-locator #nexial-locator-list {
-  margin:  0 auto;
-  padding: 10px 0;
-  width:   290px;
-}
-
 nexial-webez-show-locator button {
   float:            right;
-  padding:          5px;
+  padding:          5px 8px;
   border:           1px solid #355138;
-  margin:           10px;
+  margin:           10px 0;
   border-radius:    5px;
-  background-color: rgba(85, 115, 85, 0.8);
+  background-color: rgba(95, 130, 65, 0.8);
   color:            #fff;
   font-weight:      bold;
 }
@@ -141,32 +135,42 @@ nexial-webez-show-locator .closebtn {
   line-height: 1;
 }
 
+nexial-webez-show-locator .locator_options {
+  margin:      15px auto;
+  width:       280px;
+  line-height: 1.35em;
+  font-size:   11pt;
+  font-family: "Calibri", Arial, sans-serif;
+  color:       #eee;
+}
+
 nexial-webez-show-locator .copybtn {
   margin-top:   10px;
   margin-right: 10px;
 }
 
 nexial-webez-show-locator select {
-  width:            100% !important;
-  padding:          .3rem !important;
+  width:            280px !important;
+  padding:          4px;
   border:           1px solid #7a8188 !important;
   border-radius:    5px;
   font-family:      "Consolas", monospace;
   font-size:        10pt;
+  color:            #333;
   background-color: rgba(255, 255, 255, 0.9);
 }
 
 nexial-webez-show-locator #nexial-selected-locator {
-  margin:                0 auto;
-  width:                 268px;
+  width:                 270px !important;
   height:                125px;
   display:               block;
   border:                1px solid #7a8188;
   border-radius:         5px;
-  padding:               .65rem;
+  padding:               4px;
   font-family:           "Consolas", monospace;
   font-size:             10pt;
   background:            rgba(255, 255, 255, 0.9);
   background-blend-mode: color-burn;
   box-sizing:            content-box !important;
+  color:                 #333;
 }

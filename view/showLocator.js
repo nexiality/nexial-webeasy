@@ -1,74 +1,75 @@
 /***************** popup to show locator list ********************/
+const SHOW_LOCATOR_TAG = 'nexial-webez-show-locator';
+const SELECTED_LOCATOR = "nexial-selected-locator";
+const LOCATOR_LIST = "nexial-locator-list";
+const COPY_BUTTON = "nexial-copybtn";
+const CLOSE_BUTTON = "nexial-closebtn";
+const HELP_BUTTON = "nexial-showHelp";
+
 function copyLocator(str) {
-  let dummy = document.getElementById("nexial-selected-locator");
+  let dummy = document.getElementById(SELECTED_LOCATOR);
   dummy.focus();
   dummy.select();
   document.execCommand('copy');
 }
 
 function createSelectLocator(locator) {
-  let div = document.getElementById("nexial-locator-list");
-  let selectedLocatorElement = document.getElementById("nexial-selected-locator");
   const locatorDropdown = createSelectElement(locator, 'nexial-locator-select');
-  locatorDropdown.onchange = function (event) {
-    selectedLocatorElement.value = '';
-    selectedLocatorElement.value = event.target.value;
-  }
+  locatorDropdown.onchange = function (event) { document.getElementById(SELECTED_LOCATOR).value = event.target.value; }
+
+  let div = document.getElementById(LOCATOR_LIST);
   div.appendChild(locatorDropdown);
+
+  document.getElementById(SELECTED_LOCATOR).value = locatorDropdown.selectedOptions[0].value;
 }
 
 function createUI(locator) {
-  const ui = document.getElementsByTagName('nexial-webez-show-locator')[0];
+  const ui = document.getElementsByTagName(SHOW_LOCATOR_TAG)[0];
   if (ui) { ui.remove(); }
 
-  let showLocator = document.createElement('nexial-webez-show-locator');
+  let showLocator = document.createElement(SHOW_LOCATOR_TAG);
   showLocator.innerHTML = `
       <div id="nexial-show-locator-header">
           Nexial WebEZ Locator
           <ul class="nav float-right headerOption">
-              <li id="nexial-showHelp" title="Click to here more about Nexial WebEZ Locator"> ? </li>
-              <li id="nexial-closebtn" title="Hide Nexial WebEZ Locator"> x </li>
+              <li id="${HELP_BUTTON}" title="Click to here more about Nexial WebEZ Locator"> ? </li>
+              <li id="${CLOSE_BUTTON}" title="Hide Nexial WebEZ Locator"> x </li>
           </ul>
       </div>
-      <div id="nexial-locator-list"></div>
-      <div id="nexial-copy-container">
-          <textarea id="nexial-selected-locator" spellcheck="false"></textarea>
-          <button id="nexial-copybtn"> copy </button>
+      <div class="locator_options">
+        Locators derived for the selected element:<br/>
+        <div id="${LOCATOR_LIST}"></div>
+        <br/>
+        Currently selected locator (editable):<br/>
+        <textarea id="${SELECTED_LOCATOR}" spellcheck="false"></textarea>
+        <button id="${COPY_BUTTON}" title="click to copy the above locator to clipboard">copy to clipboard</button>
       </div>
     `;
   document.body.appendChild(showLocator);
 
-  document.getElementById("nexial-copybtn").addEventListener("click", function () {
-    copyLocator(document.getElementById("nexial-selected-locator").value);
-  });
-
   createSelectLocator(locator);
-  showHelp();
-  closeNavR();
+  createUIEvents();
 }
 
-function showHelp() {
-  document.getElementById("nexial-showHelp").addEventListener("click", function () {
+function createUIEvents() {
+  document.getElementById(HELP_BUTTON).addEventListener("click", function () {
     window.open("https://nexiality.github.io/documentation/webez/ShowLocator.html", "_nexial_link");
   });
-}
 
-function closeNavR() {
-  document.getElementById("nexial-closebtn").addEventListener("click", function () {
-    document.getElementsByTagName('nexial-webez-show-locator')[0].remove();
+  document.getElementById(CLOSE_BUTTON).addEventListener("click", function () {
+    document.getElementsByTagName(SHOW_LOCATOR_TAG)[0].remove();
   });
-}
 
-function createRightPanel(locator) {
-  createUI(locator);
+  document.getElementById(COPY_BUTTON).addEventListener("click", function () {
+    copyLocator(document.getElementById(SELECTED_LOCATOR).value);
+  });
 }
 
 function findLocator(clickedElement) {
   const paths = filterDomPath(clickedElement.target, '');
-  const locatorList = getLocator(clickedElement.target, paths.domPaths, paths.isFiltered);
-  let locator = locatorList.locator;
+  let locator = getLocator(clickedElement.target, paths.domPaths, paths.isFiltered).locator;
   if (!locator.length) {
     locator = ["css=" + getCssPath(clickedElement.target), "xpath=" + getXPath(clickedElement.target)];
   }
-  createRightPanel(locator);
+  createUI(locator);
 }
