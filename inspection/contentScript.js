@@ -214,7 +214,7 @@ function getDomPath(el) {
   while (el.parentNode != null) {
     let node = {};
     node["node"] = el.nodeName.toLowerCase();
-    node["innerText"] = el.innerText;
+    node["innerText"] = el.textContent || el.text || el.innerText ;
     node["attribute"] = [];
 
     if (["html", "body"].includes(node["node"])) {
