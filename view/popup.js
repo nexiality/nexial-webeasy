@@ -64,7 +64,7 @@ function validURL(myURL) {
 }
 
 function start() {
-  console.log('start')
+  // console.log('start')
   document.getElementById("stopOption").style.display = "block";
   document.getElementById("showStatus").style.display = "block";
   document.getElementById("startOption").style.display = "none";
@@ -80,7 +80,7 @@ function stop() {
   document.getElementById("showStatus").style.display = "none";
   chrome.runtime.getBackgroundPage((background) => {
     inspectElementList = background.inspectElementList;
-    console.log('STOP STATUS : ', inspectElementList)
+    // console.log('STOP STATUS : ', inspectElementList)
     if (inspectElementList.length) {
       document.getElementById("showData").style.display = "block";
       document.getElementById("inspectDataOption").style.display = "block";
@@ -166,7 +166,7 @@ showHelp.addEventListener("click", function () {
 maximizePopup.addEventListener("click", async () => {
   let url = chrome.runtime.getURL("NexialWebEZ.html");
   let tab = await chrome.tabs.create({ url });
-  console.log(`Created tab ${tab}`);
+  // console.log(`Created tab ${tab}`);
 })
 
 closePopup.addEventListener("click", function () {
@@ -243,11 +243,11 @@ document.getElementById("copyToNexialInfo").addEventListener("click", function (
 
 
 window.onload = function () {
-  console.log("popup loaded");
+  // console.log("popup loaded");
   chrome.runtime.getBackgroundPage((background) => {
-    console.log(background)
+    // console.log(background)
     const inspectStatus = background.inspectStatus;
-    console.log("current status", inspectStatus)
+    // console.log("current status", inspectStatus)
     if (inspectStatus === 'start') start();
     else if (inspectStatus === 'paused') pause();
     else if (inspectStatus === 'stop') stop();

@@ -70,9 +70,9 @@ function createOpenURLEntry(url) {
 }
 
 function sendRunTimeMessage(message) {
-  console.log(' SEND  MESSAGE - ', message )
+  // console.log(' SEND  MESSAGE - ', message )
   chrome.tabs.query({ active: !0, currentWindow: !0 }, function (tabs) {
-    console.log('tab ', tabs[0])
+    // console.log('tab ', tabs[0])
     if (tabs[0]) {
       chrome.tabs.sendMessage(tabs[0].id, message);
     }
