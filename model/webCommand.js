@@ -14,7 +14,7 @@ const cmd = [
   "assertElementCount(locator,count)",
   "assertElementDisabled(locator)",
   "assertElementEnabled(locator)",
-  "assertElementNotPresent(locator)",
+  "assertElementNotPresent(locator,maxWaitMs)",
   "assertElementPresent(locator)",
   "assertElementsPresent(prefix)",
   "assertFocus(locator)",
@@ -143,5 +143,6 @@ const cmd = [
   "waitUntilDisabled(locator,waitMs)",
   "waitUntilEnabled(locator,waitMs)",
   "waitUntilHidden(locator,waitMs)",
-  "waitUntilVisible(locator,waitMs)"
+  "waitUntilVisible(locator,waitMs)",
+  "waitWhileElementNotPresent(locator,waitMs)"
 ];
