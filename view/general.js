@@ -13,13 +13,19 @@ function createSelectElement(items, id, editable = true) {
       optgroup = document.createElement("optgroup");
       optgroup.setAttribute('label', optgroupLabel.toUpperCase())
     }
+
+    let optionText = items[index];
     let option = document.createElement("option");
-    option.value = items[index];
-    option.text = items[index];
     if (optgroup) {
+      if (optionText && optionText.startsWith('xpath=')) { optionText = optionText.substring(6); }
+      option.value = items[index];
+      option.text = optionText;
+
       optgroup.appendChild(option);
       selectList.appendChild(optgroup);
     } else {
+      option.value = optionText;
+      option.text = optionText;
       selectList.appendChild(option);
     }
   }

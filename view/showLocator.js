@@ -15,12 +15,14 @@ function copyLocator(str) {
 
 function createSelectLocator(locator) {
   const locatorDropdown = createSelectElement(locator, 'nexial-locator-select');
-  locatorDropdown.onchange = function (event) { document.getElementById(SELECTED_LOCATOR).value = event.target.value; }
+  locatorDropdown.onchange = function (event) {
+    document.getElementById(SELECTED_LOCATOR).value = event.target.selectedOptions[0].text;
+  }
 
   let div = document.getElementById(LOCATOR_LIST);
   div.appendChild(locatorDropdown);
 
-  document.getElementById(SELECTED_LOCATOR).value = locatorDropdown.selectedOptions[0].value;
+  document.getElementById(SELECTED_LOCATOR).value = locatorDropdown.selectedOptions[0].text;
 }
 
 function createUI(locator) {

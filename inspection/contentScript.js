@@ -107,12 +107,6 @@ function hasOnlyAlphabet(str) {
   return regex.test(str);
 }
 
-function isUniqueID(id) {
-  // document.getElementById
-  // const el = document.getElementById(id);
-  // if (el.length)
-}
-
 function getElementByCss(cssPath) {
   return document.querySelectorAll(cssPath);
 }
@@ -123,9 +117,11 @@ function getElementByXpath(path) {
     .singleNodeValue;
 }
 
+/**
+ * trim extra space and replace new line with \n
+ */
 function updatingText(txt) {
-  txt = txt.replace(/\n/g, "'\\n'");   // replace new line with \n
-  return txt.trim();  // trim extra space
+  return "'" + txt.trim().replace(/\n/g, "'\\n'") + "'";
 }
 
 function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
@@ -181,19 +177,14 @@ function getLocator(e, paths, isFiltered) {
         css = path.css;
       }
       if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
-        xpath.push(
-          "xpath=//" + el.node + `[normalize-space(string(.))=normalize-space('${updatingText(el.innerText)}')]`
-        );
-        if (NODE_LIST.includes(el.node))
-          selectedLocator =
-            "xpath=//" +
-            el.node +
-            `[normalize-space(string(.))=normalize-space('${updatingText(el.innerText)}')]`;
+        let xpathViaText = "xpath=//" + el.node + `[normalize-space(string(.))=${updatingText(el.innerText)}]`;
+        xpath.push(xpathViaText);
+        if (NODE_LIST.includes(el.node)) selectedLocator = xpathViaText;
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
-      let activeElxpath = xpath[0] ? xpath[0] : "xpath=//" + activeElnode,
-        activeElcss = css[0] ? css[0] : "css=" + activeElnode;
+      let activeElxpath = xpath[0] ? xpath[0] : "xpath=//" + activeElnode;
+      let activeElcss = css[0] ? css[0] : "css=" + activeElnode;
 
       const relativePaths = createPaths(el, activeElxpath, activeElcss, isFiltered);
       if (relativePaths) {

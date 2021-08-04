@@ -46,7 +46,11 @@ function createScript() {
     script += 'web' + delim + inspectElementList[i].command + delim;
     for (let parameter in inspectElementList[i].param) {
       const el = document.getElementById(parameter + '_' + inspectElementList[i].step);
-      script += (el.value ? el.value : '<MISSING>') + delim
+      if (el.tagName === 'SELECT') {
+        script += (el.selectedOptions ? el.selectedOptions[0].text : el.options[0].text) + delim;
+      } else {
+        script += (el.value ? el.value : '<MISSING>') + delim
+      }
     }
     script += '\n';
   }
