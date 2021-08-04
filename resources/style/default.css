@@ -137,6 +137,7 @@ select {
   text-shadow:      1px 1px 3px #000;
   box-shadow:       0 2px 5px rgba(0, 0, 0, 0.5);
   border:           2px solid #777;
+  user-select:      none;
 }
 
 #inspect_table tbody {
@@ -148,6 +149,11 @@ select {
   padding:       5px;
   border-bottom: solid 1px #ddd;
   border-top:    none;
+}
+
+#inspect_table > tbody > tr:hover {
+  box-shadow:       0 1px 1px rgb(120 150 110 / 75%);
+  background-image: linear-gradient(180deg, rgba(120, 150, 110, 0.25) -15px, rgba(255, 255, 255, 0.75) 40px, rgba(120, 150, 110, 0.35) 80px);
 }
 
 #inspect_table > tbody > tr > td:nth-child(1) {
@@ -167,9 +173,9 @@ select {
 }
 
 #inspect_table > tbody > tr > td:nth-child(4) .btn {
-  padding: 1px 5px;
-  margin:  0 !important;
-  width:   30px;
+  padding:     1px 5px;
+  margin:      0 !important;
+  width:       30px;
   user-select: none;
 }
 
@@ -206,7 +212,7 @@ select {
   vertical-align:   middle;
 }
 
-#inspectFeature,showStatus {
+#inspectFeature, #showStatus {
   display: none;
 }
 
@@ -214,7 +220,6 @@ select {
   width:       50%;
   text-align:  center;
   padding:     60px;
-  /* border:      1px #dddddd dashed; */
   margin:      0 auto 10px;
   font-weight: bold;
 }
@@ -280,7 +285,10 @@ footer {
 }
 
 .command-link {
-  display: inline-block;
-  padding: 0 0 0 5px;
-  color: #333;
+  display:       inline-block;
+  padding:       6px 0 0 0;
+  color:         #333;
+  border-radius: 5px;
+  font-size:     10pt !important;
+  float:         right;
 }
