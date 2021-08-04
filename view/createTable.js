@@ -295,7 +295,7 @@ function createDocLink(searchString, step) {
   const docLink = document.createElement("A");
   docLink.setAttribute("class", "command-link");
   docLink.setAttribute('id', 'command_link_' + step);
-  docLink.setAttribute('title', "documentation for ${searchString}");
+  docLink.setAttribute('title', `documentation for ${searchString}`);
   docLink.innerHTML = `<i class="fas fa-external-link-alt"></i>`;
   
   docLink.onclick = function () {
