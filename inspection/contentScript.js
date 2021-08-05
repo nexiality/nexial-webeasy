@@ -6,7 +6,7 @@ const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1"
 const FIND_CLICKED_ELEMENT_PARENT = ["path", "svg", "i", "span"];
 const FIND_PARENTS = ["form", "header", "main", "section", "footer"];
 const INNER_TEXT_LENGTH = 100;
-const NODE_LIST = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
+const NODE_LIST_HAS_TEXT = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
 const INPUT_TYPE_ELEMENT = ["text", "number", "email", "password", "search", "tel", "url"];
 const INPUT_CLICK_ELEMENT = ["radio", "checkbox"];
 const HAS_PARENT = ["i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button"];
@@ -179,7 +179,7 @@ function getLocator(e, paths, isFiltered) {
       if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
         let xpathViaText = "xpath=//" + el.node + `[normalize-space(string(.))=${updatingText(el.innerText)}]`;
         xpath.push(xpathViaText);
-        if (NODE_LIST.includes(el.node)) selectedLocator = xpathViaText;
+        if (NODE_LIST_HAS_TEXT.includes(el.node)) selectedLocator = xpathViaText;
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
