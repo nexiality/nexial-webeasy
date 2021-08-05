@@ -47,7 +47,7 @@ function handleFocus(event) {
   target.addEventListener("keyup", function (event) {
     // Number 13 is the "Enter" key on the keyboard
     // console.log(event, event.keyCode);
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13 && focusedInput) {
       event.preventDefault();
       focusedInput.target.value += "{ENTER}";
       sendConsole("log", "INPUT ENTER PRESS :", focusedInput.target.value);
