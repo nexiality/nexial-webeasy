@@ -161,16 +161,10 @@ stopInspect.addEventListener("click", function () {
   });
 });
 
-showHelp.addEventListener("click", function () {
-  // if (!chrome || !chrome.tabs) return;
-  // chrome.tabs.create({url: 'https://nexiality.github.io/documentation/'});
-  openDocLink(`${APP_DOC_URL}`);
-}, false);
+showHelp.addEventListener("click", function () { openDocLink(`${HELP_URL}`); }, false);
 
 maximizePopup.addEventListener("click", async () => {
-  let url = chrome.runtime.getURL("NexialWebEZ.html");
-  let tab = await chrome.tabs.create({ url });
-  // console.log(`Created tab ${tab}`);
+  await chrome.tabs.create({ url: chrome.runtime.getURL("NexialWebEZ.html") });
 })
 
 closePopup.addEventListener("click", function () {

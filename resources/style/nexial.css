@@ -108,6 +108,7 @@ nexial-webez-show-locator button {
   background-color: rgba(95, 130, 65, 0.8);
   color:            #fff;
   font-weight:      bold;
+  cursor:           pointer;
 }
 
 nexial-webez-show-locator a {
