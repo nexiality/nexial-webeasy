@@ -96,43 +96,36 @@ function handleChange(event) {
   }
 }
 
-function hasNumbers(str) {
-  let regex = /\d/g;
-  return regex.test(str);
-}
+function hasNumbers(str) { return /\d/g.test(str); }
 
-function hasOnlyAlphabet(str) {
-  // No special character and number i.e only alphabet
-  let regex = /^[A-Za-z]+$/;
-  return regex.test(str);
-}
+/** check that there's no special character and number i.e only alphabet */
+function hasOnlyAlphabet(str) { return /^[A-Za-z]+$/.test(str); }
 
-function getElementByCss(cssPath) {
-  return document.querySelectorAll(cssPath);
-}
+function getElementByCss(cssPath) { return document.querySelectorAll(cssPath); }
 
 function getElementByXpath(path) {
   // check id, name and xpath selector
-  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-    .singleNodeValue;
+  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 }
 
-/**
- * trim extra space and replace new line with \n
- */
-function updatingText(txt) {
-  return "'" + txt.trim().replace(/\n/g, "'\\n'") + "'";
-}
+/** trim extra space and replace new line with \n */
+// todo: need to handle single and double quotes in `txt`
+function updatingText(txt) { return "'" + txt.trim().replace(/\n/g, "") + "'"; }
 
 function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   let res = {
     xpath: [],
     css: [],
   };
+
   if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
-  if (baseCssPath && !isFiltered) {
-    baseCssPath = baseCssPath.replace("css=", " > ");
-  } else baseCssPath = baseCssPath.replace("css=", " ");
+
+  // TODO: not sure what this does...
+  // if (baseCssPath && !isFiltered) {
+  //   baseCssPath = baseCssPath.replace("css=", " > ");
+  // } else baseCssPath = baseCssPath.replace("css=", " ");
+  if (baseCssPath) { baseCssPath = baseCssPath.replace("css=", " "); }
+
   for (const attr in el.attribute) {
     let value = el.attribute[attr];
     if (attr === "class") {
@@ -258,22 +251,16 @@ function filterDomPath(el) {
 
 function getXPath(element) {
   //Todo: sort in simple form
-  if (element.id !== "") {
-    let xpathWithId = '//*[@id="' + element.id + '"]';
-    return xpathWithId;
-  }
+  if (element.id !== "") return '//*[@id="' + element.id + '"]';
   if (element === document.body) return element.tagName.toLowerCase();
+
   let ix = 0;
   let siblings = element.parentNode.childNodes;
   for (let i = 0; i < siblings.length; i++) {
     let sibling = siblings[i];
     if (sibling === element)
-      return (
-        getXPath(element.parentNode) + "/" + element.tagName.toLowerCase() + "[" + (ix + 1) + "]"
-      );
-    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
-      ix++;
-    }
+      return getXPath(element.parentNode) + "/" + element.tagName.toLowerCase() + "[" + (ix + 1) + "]";
+    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) { ix++; }
   }
 }
 
@@ -298,7 +285,7 @@ function getCssPath(el) {
     path.unshift(selector);
     el = el.parentNode;
   }
-  return path.join(" > ");
+  return path.join(" ");
 }
 
 function sendInspectInfo(command, event) {

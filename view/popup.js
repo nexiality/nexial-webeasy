@@ -2,16 +2,16 @@ let inspectElementList = [];
 let height = "98px";
 
 function resizePopupWindow() {
-  if(window.innerHeight < 150) {
+  if (window.innerHeight < 150) {
     document.getElementById("nexial-container").style.height = "350px";
   }
 }
 
 function openDocLink(url) {
   chrome.runtime.getBackgroundPage((background) => {
-    if(background.docTab) {
-        const docTab = background.docTab;
-        chrome.tabs.update(docTab.id, {url: url,'active': true}, (tab) => { });
+    if (background.docTab) {
+      const docTab = background.docTab;
+      chrome.tabs.update(docTab.id, {url: url, 'active': true}, (tab) => { });
     } else {
       chrome.tabs.create({"url": url}, function (tab) {
         background.docTab = JSON.parse(JSON.stringify(tab));
@@ -46,7 +46,7 @@ function createScript() {
     script += 'web' + delim + inspectElementList[i].command + delim;
     for (let parameter in inspectElementList[i].param) {
       const el = document.getElementById(parameter + '_' + inspectElementList[i].step);
-      if (el.tagName === 'SELECT') {
+      if (el && el.tagName && el.tagName === 'SELECT') {
         script += (el.selectedOptions ? el.selectedOptions[0].text : el.options[0].text) + delim;
       } else {
         script += (el.value ? el.value : '<MISSING>') + delim
@@ -251,4 +251,3 @@ window.onload = function () {
     else if (inspectStatus === 'stop') stop();
   });
 }
-
