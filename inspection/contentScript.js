@@ -2,7 +2,7 @@ let clickedElement = null, selectionText = null;
 let focusedInput = null;
 let step = null;
 const HAS_ATTRIBUTES = ["name", "id", "aria-label", "placeholder", "title", "alt", "class"]; //Order priority wise
-const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5"];
+const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5", "label"];
 const FIND_CLICKED_ELEMENT_PARENT = ["path", "svg", "i", "span"];
 const FIND_PARENTS = ["form", "header", "main", "section", "footer"];
 const INNER_TEXT_LENGTH = 100;
@@ -73,16 +73,17 @@ function onClickElement(event) {
     focusedInput = null;
   }
 
-  if (
-    (target.tagName === "INPUT" && target.type === "submit") ||
-    (target.tagName === "DIV" && target.innerText) ||
-    CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())
-  ) {
+  if ((target.tagName === "INPUT" && target.type === "submit") ||
+      (target.tagName === "DIV" && target.innerText) ||
+      CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())) {
     sendConsole("log", "CLICK: ", target.tagName);
     sendInspectInfo("click(locator)", event);
   } else if (target.tagName === "INPUT" && INPUT_CLICK_ELEMENT.includes(target.type)) {
-    if (target.value === "true") sendInspectInfo("assertNotChecked(locator)", event);
-    else if (target.value === "false") sendInspectInfo("assertChecked(locator)", event);
+    if (target.checked) {
+      sendInspectInfo("checkAll(locator,waitMs)", event);
+    } else {
+      sendInspectInfo("uncheckAll(locator,waitMs)", event);
+    }
   }
 }
 
@@ -170,7 +171,13 @@ function getLocator(e, paths, isFiltered) {
         css = path.css;
       }
       if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
-        let xpathViaText = "xpath=//" + el.node + `[normalize-space(string(.))=${updatingText(el.innerText)}]`;
+        let xpathViaText = '';
+        // use `text()` when possible for added accuracy
+        if (!el.children || el.children.length < 1) {
+          xpathViaText = "xpath=//" + el.node + `[normalize-space(text())=${updatingText(el.innerText)}]`;
+        } else {
+          xpathViaText = "xpath=//" + el.node + `[normalize-space(string(.))=${updatingText(el.innerText)}]`;
+        }
         xpath.push(xpathViaText);
         if (NODE_LIST_HAS_TEXT.includes(el.node)) selectedLocator = xpathViaText;
       }
@@ -207,8 +214,8 @@ function getDomPath(el) {
     }
     if (el.hasAttributes()) {
       for (let i = 0; i <= HAS_ATTRIBUTES.length - 1; i++) {
-        const attrs = el.attributes[`${HAS_ATTRIBUTES[i]}`];
-        if (attrs) node["attribute"][attrs.name] = attrs.value;
+        const attr = el.attributes[`${HAS_ATTRIBUTES[i]}`];
+        if (attr && attr.name && attr.value) node["attribute"][attr.name] = attr.value;
       }
     }
     stack.unshift(node);
@@ -288,13 +295,54 @@ function getCssPath(el) {
   return path.join(" ");
 }
 
+// special case for label: label often has a target (attribute:for). we can use the target to derive locators
+function resolveLabelTargetAsLocators(event, locator) {
+  if (event.target.tagName.toLowerCase() === "label" && event.target.attributes && event.target.attributes["for"]) {
+    let targetId = event.target.attributes['for'].value;
+    let targetInput = document.getElementById(targetId);
+    if (targetInput) {
+      let targetTag = (targetInput.tagName || "").toLowerCase();
+      let targetType = targetInput.attributes["type"].value;
+      let targetCssPrefix = (targetTag || '') + "#" + targetId + (targetType ? "[type='" + targetType + "']" : "");
+      let targetXpathSuffix = "@id='" + targetId + "']";
+      let targetXpathPrefix = "//" + (targetTag || "*") + "[" + (targetType ? "@type='" + targetType + "' and " : "");
+      locator.push("css=" + targetCssPrefix,
+                   "css=#" + targetId,
+                   "xpath=" + targetXpathPrefix + targetXpathSuffix,
+                   "xpath=//*[" + targetXpathSuffix);
+    }
+  }
+}
+
+// test locators; remove invalid ones
+function validateLocators(locator) {
+  return locator.filter(locator => {
+    if (locator.startsWith('css=')) {
+      let css = locator.substring(4);
+      let matches = document.querySelectorAll(css);
+      // sendConsole("log", "testing css selector " + css, matches);
+      return matches && matches.length === 1;
+    }
+    if (locator.startsWith('xpath=')) {
+      let xpath = locator.substring(6);
+      let matches = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
+      // sendConsole("log", "testing xpath selector " + xpath, matches);
+      return matches && (matches.resultType === 4 || matches.length === 1);
+    }
+    return true;
+  }).sort();
+}
+
 function sendInspectInfo(command, event) {
   const paths = filterDomPath(event.target);
   const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
   let locator = locatorList.locator;
-  if (!locator.length) {
-    locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)];
-  }
+  if (!locator.length) { locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)]; }
+
+  resolveLabelTargetAsLocators(event, locator);
+  locator = validateLocators(locator);
+  locatorList.locator = locator;
+
   sendConsole("log", `COMMAND : ${command}`);
   sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
   sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.domPaths);
@@ -341,6 +389,11 @@ function sendInspectInfo(command, event) {
     case "waitForElementPresent(locator,waitMs)":
     case "waitUntilVisible(locator,waitMs)":
     case "waitUntilEnabled(locator,waitMs)":
+      data.param["locator"] = locator;
+      data.param["waitMs"] = "<MISSING>";
+      break;
+    case "checkAll(locator,waitMs)" :
+    case "uncheckAll(locator,waitMs)" :
       data.param["locator"] = locator;
       data.param["waitMs"] = "<MISSING>";
       break;

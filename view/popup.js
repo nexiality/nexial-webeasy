@@ -49,7 +49,7 @@ function createScript() {
       if (el && el.tagName && el.tagName === 'SELECT') {
         script += (el.selectedOptions ? el.selectedOptions[0].text : el.options[0].text) + delim;
       } else {
-        script += (el.value ? el.value : '<MISSING>') + delim
+        script += (el && el.value ? el.value : '<MISSING>') + delim;
       }
     }
     script += '\n';
