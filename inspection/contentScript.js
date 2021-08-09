@@ -1,7 +1,7 @@
 let clickedElement = null, selectionText = null;
 let focusedInput = null;
 let step = null;
-const HAS_ATTRIBUTES = ["name", "id", "aria-label", "placeholder", "title", "alt", "class"]; //Order priority wise
+const HAS_ATTRIBUTES = ["name", "id", "aria-label", "placeholder", "title", "alt", "class", "value", "type"]; //Order priority wise
 const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5", "label"];
 const FIND_CLICKED_ELEMENT_PARENT = ["path", "svg", "i", "span"];
 const FIND_PARENTS = ["form", "header", "main", "section", "footer"];
@@ -100,7 +100,9 @@ function handleChange(event) {
 function hasNumbers(str) { return /\d/g.test(str); }
 
 /** check that there's no special character and number i.e only alphabet */
-function hasOnlyAlphabet(str) { return /^[A-Za-z]+$/.test(str); }
+function isAcceptableClass(str) {
+  return !str.startsWith('ng_') && !str.startsWith('ng-') && /^[A-Za-z][\w\_\-]+[\w\_\-\d]$/.test(str);
+}
 
 function getElementByCss(cssPath) { return document.querySelectorAll(cssPath); }
 
@@ -133,8 +135,8 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
       if (res["xpath"].length) return res;
       const classList = el.attribute["class"];
       for (let j = 0; j <= classList.length - 1; j++) {
-        if (hasOnlyAlphabet(classList[j])) {
-          res["xpath"].push("xpath=//" + el.node + `[@${attr}='${classList[j]}']` + baseXpathNode);
+        if (isAcceptableClass(classList[j])) {
+          res["xpath"].push("xpath=//" + el.node + `[contains(@class,'${classList[j]}')]` + baseXpathNode);
           res["css"].push("css=" + el.node + `.${classList[j]}` + baseCssPath);
         }
       }
@@ -150,10 +152,10 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
 }
 
 function getLocator(e, paths, isFiltered) {
-  let locator = [],
-    xpath = [],
-    css = [],
-    selectedLocator = null;
+  let locator         = [],
+      xpath           = [],
+      css             = [],
+      selectedLocator = null;
   const activeElnode = paths[paths.length - 1].node;
 
   if (e.id) locator.push("id=" + e.id);
@@ -161,7 +163,7 @@ function getLocator(e, paths, isFiltered) {
 
   for (let i = paths.length - 1; i >= 0; i--) {
     const el = paths[i];
-    if (el.attribute["class"]) el.attribute["class"] = el.attribute["class"].split(" ");
+    if (el.attribute["class"]) { el.attribute["class"] = el.attribute["class"].split(" "); }
     if (i === paths.length - 1) {
       // Main Element with all attribute
       // Xpath=//tagname[@attribute='value']
@@ -170,16 +172,56 @@ function getLocator(e, paths, isFiltered) {
         xpath = path.xpath;
         css = path.css;
       }
+
       if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
-        let xpathViaText = '';
+        let compareText = updatingText(el.innerText);
         // use `text()` when possible for added accuracy
-        if (!el.children || el.children.length < 1) {
-          xpathViaText = "xpath=//" + el.node + `[normalize-space(text())=${updatingText(el.innerText)}]`;
-        } else {
-          xpathViaText = "xpath=//" + el.node + `[normalize-space(string(.))=${updatingText(el.innerText)}]`;
-        }
+        let xpathViaText = "xpath=//" + el.node +
+                           (!el.children || el.children.length < 1 ?
+                            `[normalize-space(text())=${compareText}]` :
+                            `[normalize-space(string(.))=${compareText}]`);
         xpath.push(xpathViaText);
-        if (NODE_LIST_HAS_TEXT.includes(el.node)) selectedLocator = xpathViaText;
+        if (NODE_LIST_HAS_TEXT.includes(el.node)) { selectedLocator = xpathViaText; }
+      }
+
+      // special treatment for input element
+      if (el.node && el.node === "input" && el.attribute["type"]) {
+        let inputType = el.attribute["type"];
+        let inputName = el.attribute["name"];
+        let inputId = el.attribute["id"];
+
+        let cssFragment = "[type='" + inputType + "']";
+        let xpathFragment = "[@type='" + inputType + "'";
+        // for input element, prefer name over id
+        if (inputName) {
+          cssFragment += "[name='" + inputName + "']";
+          xpathFragment += " and @name='" + inputName + "'";
+        } else if (inputId) {
+          cssFragment = "#" + inputId + cssFragment;
+          xpathFragment += " and @id='" + inputId + "'";
+        }
+
+        const ATTRIB_HUMAN_READABLE = ["aria-label", "placeholder", "title", "alt"];
+        for (let j = 0; j < ATTRIB_HUMAN_READABLE; j++) {
+          let attribName = ATTRIB_HUMAN_READABLE[j];
+          let attribValue = el.attribute[attribName];
+          if (attribValue) {
+            cssFragment += "[" + attribName + "='" + attribValue + "']";
+            xpathFragment += " and @" + attribName + "='" + attribValue + "'";
+            break;
+          }
+        }
+
+        if (INPUT_CLICK_ELEMENT.includes(inputType)) {
+          let inputValue = el.attribute["value"];
+          if (inputValue) {
+            cssFragment += "[value='" + inputValue + "']";
+            xpathFragment += " and @value='" + inputValue + "'";
+          }
+        }
+
+        xpath.push("xpath=//input" + xpathFragment + "]");
+        css.push("css=input" + cssFragment);
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
@@ -193,6 +235,7 @@ function getLocator(e, paths, isFiltered) {
       }
     }
   }
+
   return {
     locator: locator.concat(css, xpath),
     selectedLocator: selectedLocator,
@@ -303,9 +346,17 @@ function resolveLabelTargetAsLocators(event, locator) {
     if (targetInput) {
       let targetTag = (targetInput.tagName || "").toLowerCase();
       let targetType = targetInput.attributes["type"].value;
-      let targetCssPrefix = (targetTag || '') + "#" + targetId + (targetType ? "[type='" + targetType + "']" : "");
+      let targetValue = targetInput.attributes["value"].value;
+
+      let targetCssPrefix = (targetTag || '') + "#" + targetId +
+                            (targetType ? "[type='" + targetType + "']" : "") +
+                            (targetValue ? "[value='" + targetValue + "']" : "");
+
       let targetXpathSuffix = "@id='" + targetId + "']";
-      let targetXpathPrefix = "//" + (targetTag || "*") + "[" + (targetType ? "@type='" + targetType + "' and " : "");
+      let targetXpathPrefix = "//" + (targetTag || "*") + "[" +
+                              (targetType ? "@type='" + targetType + "' and " : "") +
+                              (targetValue ? "@value='" + targetValue + "' and " : "");
+
       locator.push("css=" + targetCssPrefix,
                    "css=#" + targetId,
                    "xpath=" + targetXpathPrefix + targetXpathSuffix,
@@ -317,30 +368,42 @@ function resolveLabelTargetAsLocators(event, locator) {
 // test locators; remove invalid ones
 function validateLocators(locator) {
   return locator.filter(locator => {
-    if (locator.startsWith('css=')) {
+    if (locator.startsWith("css=")) {
       let css = locator.substring(4);
       let matches = document.querySelectorAll(css);
       // sendConsole("log", "testing css selector " + css, matches);
       return matches && matches.length === 1;
     }
-    if (locator.startsWith('xpath=')) {
+    if (locator.startsWith("xpath=")) {
       let xpath = locator.substring(6);
       let matches = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
       // sendConsole("log", "testing xpath selector " + xpath, matches);
-      return matches && (matches.resultType === 4 || matches.length === 1);
+      // must return exactly 1 result
+      if (matches && matches.resultType === 4) {
+        if (!matches.iterateNext()) return false;
+        return !matches.iterateNext();
+      } else {
+        return false;
+      }
     }
+    if (locator.startsWith("name=")) {
+      let name = locator.substring(5);
+      let matches = document.getElementsByName(name);
+      return matches && matches.length === 1;
+    }
+    if (locator.startsWith("id=")) { return document.getElementById(locator.substring(3)); }
     return true;
-  }).sort();
+  });
 }
 
 function sendInspectInfo(command, event) {
   const paths = filterDomPath(event.target);
   const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
   let locator = locatorList.locator;
-  if (!locator.length) { locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)]; }
 
   resolveLabelTargetAsLocators(event, locator);
   locator = validateLocators(locator);
+  if (!locator.length) { locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)]; }
   locatorList.locator = locator;
 
   sendConsole("log", `COMMAND : ${command}`);

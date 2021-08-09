@@ -49,8 +49,8 @@ function createUI(locator) {
     `;
   document.body.appendChild(showLocator);
 
-  createSelectLocator(locator);
   createUIEvents();
+  createSelectLocator(locator);
 }
 
 function createUIEvents() {
@@ -70,8 +70,11 @@ function createUIEvents() {
 function findLocator(clickedElement) {
   const paths = filterDomPath(clickedElement.target, '');
   let locator = getLocator(clickedElement.target, paths.domPaths, paths.isFiltered).locator;
+
+  locator = validateLocators(locator);
   if (!locator.length) {
     locator = ["css=" + getCssPath(clickedElement.target), "xpath=" + getXPath(clickedElement.target)];
   }
+
   createUI(locator);
 }

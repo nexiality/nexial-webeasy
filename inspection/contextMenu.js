@@ -83,7 +83,7 @@ function callbackContextmenu(info, tab, command) {
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
   let command = null;
   sendConsole('log', `CONTEXTMENU`);
-  // Todo: text value presnet in Img
+  // Todo: text value present in Img
   switch (info.menuItemId) {
     case 'assertElementPresent':
       command = 'assertElementPresent(locator)';
