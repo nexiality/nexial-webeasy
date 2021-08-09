@@ -16,18 +16,14 @@ function createSelectElement(items, id, editable = true) {
 
     let optionText = items[index];
     let option = document.createElement("option");
+    
+    if (optionText && optionText.startsWith('xpath=')) { optionText = optionText.substring(6); }
+    option.value = optionText;
+    option.text = optionText;
     if (optgroup) {
-      if (optionText && optionText.startsWith('xpath=')) { optionText = optionText.substring(6); }
-      option.value = items[index];
-      option.text = optionText;
-
       optgroup.appendChild(option);
       selectList.appendChild(optgroup);
-    } else {
-      option.value = optionText;
-      option.text = optionText;
-      selectList.appendChild(option);
-    }
+    } else selectList.appendChild(option);
   }
   return selectList;
 }
