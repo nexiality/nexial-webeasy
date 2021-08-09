@@ -157,7 +157,7 @@ function createAddNewButton(step) {
 
 function createDuplicateButton(step) {
   let button = document.createElement('button');
-  button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
+  button.setAttribute('class', 'btn text-dark')
   button.setAttribute('id',('duplicate_' + step));
   button.setAttribute('title', 'Duplicate');
   button.innerHTML = '<i class="fas fa-clone"></i>';
