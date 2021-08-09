@@ -180,7 +180,7 @@ function createDeleteButton(step) {
   button.innerHTML = '<i class="fa fa-trash"></i>';
   button.onclick = function (e) {
     document.getElementById("step_" + step).remove();
-    let index = inspectElementList.findIndex(stepIndex => stepIndex === step)
+    let index = inspectElementList.findIndex(item => item.step === step);
     if (index !== -1) inspectElementList.splice(index, 1);
     updateTableRow();
     updateBackground();
