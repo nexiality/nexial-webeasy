@@ -396,27 +396,34 @@ function validateLocators(locator) {
   });
 }
 
-function sendInspectInfo(command, event) {
+function getLocatorList(event) {
   const paths = filterDomPath(event.target);
   const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
-  let locator = locatorList.locator;
 
-  resolveLabelTargetAsLocators(event, locator);
-  locator = validateLocators(locator);
-  if (!locator.length) { locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)]; }
-  locatorList.locator = locator;
-
-  sendConsole("log", `COMMAND : ${command}`);
   sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
   sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.domPaths);
-  sendConsole("log", "LOCATOR LIST : ", locatorList);
+  sendConsole("log", "LOCATOR LIST : ", locator);
+
+  resolveLabelTargetAsLocators(event, locatorList.locator);
+  locatorList.locator = validateLocators(locatorList.locator);
+  if (!locatorList.locator.length) {
+    locatorList.locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)];
+  }
+  return locatorList;
+}
+
+function sendInspectInfo(command, event) {
+  const {
+    locator: locator,
+    selectedLocator: selectedLocator,
+  } = getLocatorList(event);
 
   let data = {
     step: step++,
     command: command,
     param: {},
     actions: {
-      selectedLocator: locatorList.selectedLocator,
+      selectedLocator: selectedLocator,
     },
   };
   switch (command) {
@@ -509,7 +516,7 @@ chrome.runtime.onMessage.addListener(function (request) {
         console.error('No element found');
         break;
       }
-      findLocator(clickedElement);
+      createUI(getLocatorList(clickedElement).locator);
       clickedElement = null;
       break;
   }

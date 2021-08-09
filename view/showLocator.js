@@ -66,15 +66,3 @@ function createUIEvents() {
     copyLocator(document.getElementById(SELECTED_LOCATOR).value);
   });
 }
-
-function findLocator(clickedElement) {
-  const paths = filterDomPath(clickedElement.target, '');
-  let locator = getLocator(clickedElement.target, paths.domPaths, paths.isFiltered).locator;
-
-  locator = validateLocators(locator);
-  if (!locator.length) {
-    locator = ["css=" + getCssPath(clickedElement.target), "xpath=" + getXPath(clickedElement.target)];
-  }
-
-  createUI(locator);
-}
