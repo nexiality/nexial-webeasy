@@ -135,7 +135,7 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   if (baseCssPath && !isFiltered) {
     baseCssPath = baseCssPath.replace("css=", " > ");
   } else baseCssPath = baseCssPath.replace("css=", " ");
-  if (baseCssPath) { baseCssPath = baseCssPath.replace("css=", " "); }
+  // if (baseCssPath) { baseCssPath = baseCssPath.replace("css=", " "); }
 
   for (const attr in el.attribute) {
     let value = el.attribute[attr];
