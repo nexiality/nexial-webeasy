@@ -2,7 +2,7 @@ let clickedElement = null, selectionText = null;
 let focusedInput = null;
 let step = null;
 const HAS_ATTRIBUTES = ["name", "id", "aria-label", "placeholder", "title", "alt", "class", "value", "type"]; //Order priority wise
-const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5", "label"];
+const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5", "h6", "label"];
 const FIND_CLICKED_ELEMENT_PARENT = ["path", "svg", "i", "span"];
 const FIND_PARENTS = ["form", "header", "main", "section", "footer"];
 const INNER_TEXT_LENGTH = 100;
