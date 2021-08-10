@@ -131,10 +131,10 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
 
   if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
 
-  // TODO: not sure what this does...
-  // if (baseCssPath && !isFiltered) {
-  //   baseCssPath = baseCssPath.replace("css=", " > ");
-  // } else baseCssPath = baseCssPath.replace("css=", " ");
+  // TODO: not sure what this If does...this code putting '>' in between immediate parent and child else space
+  if (baseCssPath && !isFiltered) {
+    baseCssPath = baseCssPath.replace("css=", " > ");
+  } else baseCssPath = baseCssPath.replace("css=", " ");
   if (baseCssPath) { baseCssPath = baseCssPath.replace("css=", " "); }
 
   for (const attr in el.attribute) {
