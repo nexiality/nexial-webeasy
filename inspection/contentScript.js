@@ -4,7 +4,7 @@ let step = null;
 const HAS_ATTRIBUTES = ["name", "id", "aria-label", "placeholder", "title", "alt", "class", "value", "type"]; //Order priority wise
 const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5", "h6", "label"];
 const FIND_CLICKED_ELEMENT_PARENT = ["path", "svg", "i", "span"];
-const FIND_PARENTS = ["form", "header", "main", "section", "footer"];
+const FIND_PARENTS = ["form", "header", "main", "section", "footer", "div"];
 const INNER_TEXT_LENGTH = 100;
 const NODE_LIST_HAS_TEXT = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
 const INPUT_TAGS = ["INPUT", "TEXTAREA"];
@@ -301,7 +301,11 @@ function filterDomPath(el) {
   for (let index = 0; index < domPathList.length; index++) {
     const node = domPathList[index];
     if (FIND_PARENTS.includes(node["node"]) || index === domPathList.length - 1) {
-      domFilterList.push(node);
+      if (node["node"] === "div") {
+        if (node["attribute"] && node["attribute"]["id"]) {
+          domFilterList.push(node);
+        }
+      } else domFilterList.push(node);
     }
   }
   if (domFilterList.length > 1)
