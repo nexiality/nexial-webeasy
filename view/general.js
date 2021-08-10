@@ -16,7 +16,7 @@ function createSelectElement(items, id, editable = true) {
 
     let optionText = items[index];
     let option = document.createElement("option");
-    // todo: is this even possible?
+    // remove `xpath=` here so that we can copy a more efficient/shorter locator to Nexial script
     if (optionText && optionText.startsWith('xpath=')) { optionText = optionText.substring(6); }
     option.value = optionText;
     option.text = optionText;

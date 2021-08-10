@@ -12,6 +12,7 @@ const INPUT_TYPE_ELEMENT = ["text", "number", "email", "password", "search", "te
 const INPUT_CLICKABLE_TYPES = ["submit", "reset", "image", "button"];
 const INPUT_TOGGLE_TYPES = ["radio", "checkbox"];
 const HAS_PARENT = ["i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button"];
+const ATTRIB_HUMAN_READABLE = ["aria-label", "placeholder", "title", "alt"];
 
 // Append Style on hover get element
 let style = document.createElement("link");
@@ -120,7 +121,7 @@ function getElementByXpath(path) {
 
 /** trim extra space and replace new line with \n */
 // todo: need to handle single and double quotes in `txt`
-function updatingText(txt) { return "'" + txt.trim().replace(/\n/g, "") + "'"; }
+function updatingText(txt) { return "'" + txt.trim().replace(/\s+/g, " ") + "'"; }
 
 function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   let res = {
@@ -188,7 +189,10 @@ function getLocator(e, paths, isFiltered) {
                             `[normalize-space(text())=${compareText}]` :
                             `[normalize-space(string(.))=${compareText}]`);
         xpath.push(xpathViaText);
-        if (NODE_LIST_HAS_TEXT.includes(el.node)) { selectedLocator = xpathViaText; }
+        // if (NODE_LIST_HAS_TEXT.includes(el.node)) { selectedLocator = xpathViaText; }
+        if (!selectedLocator || (selectedLocator.length > xpathViaText.length && !selectedLocator.startsWith("css="))) {
+          selectedLocator = xpathViaText;
+        }
       }
 
       // special treatment for input element
@@ -208,7 +212,6 @@ function getLocator(e, paths, isFiltered) {
           xpathFragment += " and @id='" + inputId + "'";
         }
 
-        const ATTRIB_HUMAN_READABLE = ["aria-label", "placeholder", "title", "alt"];
         for (let j = 0; j < ATTRIB_HUMAN_READABLE; j++) {
           let attribName = ATTRIB_HUMAN_READABLE[j];
           let attribValue = el.attribute[attribName];
@@ -224,6 +227,9 @@ function getLocator(e, paths, isFiltered) {
           if (inputValue) {
             cssFragment += "[value='" + inputValue + "']";
             xpathFragment += " and @value='" + inputValue + "'";
+
+            // for <input type='checkbox' ...> or <input type='radio' ...> we'd prefer the selector with `value`
+            selectedLocator = "css=input" + cssFragment;
           }
         }
 
@@ -243,8 +249,11 @@ function getLocator(e, paths, isFiltered) {
     }
   }
 
+  locator = locator.concat(css, xpath);
+  if (!selectedLocator) { selectedLocator = locator[0]; }
+
   return {
-    locator: locator.concat(css, xpath),
+    locator: locator,
     selectedLocator: selectedLocator,
   };
 }
@@ -346,7 +355,7 @@ function getCssPath(el) {
 }
 
 // special case for label: label often has a target (attribute:for). we can use the target to derive locators
-function resolveLabelTargetAsLocators(event, locator) {
+function resolveLabelTargetAsLocators(event, locatorList) {
   if (event.target.tagName.toLowerCase() === "label" && event.target.attributes && event.target.attributes["for"]) {
     let targetId = event.target.attributes['for'].value;
     let targetInput = document.getElementById(targetId);
@@ -364,17 +373,18 @@ function resolveLabelTargetAsLocators(event, locator) {
                               (targetType ? "@type='" + targetType + "' and " : "") +
                               (targetValue ? "@value='" + targetValue + "' and " : "");
 
-      locator.push("css=" + targetCssPrefix,
-                   "css=#" + targetId,
-                   "xpath=" + targetXpathPrefix + targetXpathSuffix,
-                   "xpath=//*[" + targetXpathSuffix);
+      locatorList.selectedLocator = "css=" + targetCssPrefix;
+      locatorList.locator.push("css=" + targetCssPrefix,
+                               "css=#" + targetId,
+                               "xpath=" + targetXpathPrefix + targetXpathSuffix,
+                               "xpath=//*[" + targetXpathSuffix);
     }
   }
 }
 
 // test locators; remove invalid ones
-function validateLocators(locator) {
-  return locator.filter(locator => {
+function validateLocators(locatorList) {
+  let filtered = locatorList.locator.filter(locator => {
     if (locator.startsWith("css=")) {
       let css = locator.substring(4);
       let matches = document.querySelectorAll(css);
@@ -401,6 +411,11 @@ function validateLocators(locator) {
     if (locator.startsWith("id=")) { return document.getElementById(locator.substring(3)); }
     return true;
   });
+
+  locatorList.locator = filtered;
+  if (filtered && (!locatorList.selectedLocator || !filtered.includes(locatorList.selectedLocator))) {
+    locatorList.selectedLocator = filtered[0];
+  }
 }
 
 function getLocatorList(event) {
@@ -408,11 +423,11 @@ function getLocatorList(event) {
   const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
 
   sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
-  sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.domPaths);
+  sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
   sendConsole("log", "LOCATOR LIST : ", locatorList);
 
-  resolveLabelTargetAsLocators(event, locatorList.locator);
-  locatorList.locator = validateLocators(locatorList.locator);
+  resolveLabelTargetAsLocators(event, locatorList);
+  validateLocators(locatorList);
   if (!locatorList.locator.length) {
     locatorList.locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)];
     locatorList.selectedLocator = null;
