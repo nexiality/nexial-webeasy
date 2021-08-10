@@ -11,7 +11,7 @@ const INPUT_TAGS = ["INPUT", "TEXTAREA"];
 const INPUT_TYPE_ELEMENT = ["text", "number", "email", "password", "search", "tel", "url"];
 const INPUT_CLICKABLE_TYPES = ["submit", "reset", "image", "button"];
 const INPUT_TOGGLE_TYPES = ["radio", "checkbox"];
-const HAS_PARENT = ["i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button"];
+const HAS_PARENT = ["label", "i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button", "div", "span"]; // placed Orderwise
 const ATTRIB_HUMAN_READABLE = ["aria-label", "placeholder", "title", "alt"];
 
 // Append Style on hover get element
