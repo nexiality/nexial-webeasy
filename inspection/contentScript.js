@@ -27,7 +27,7 @@ function start(stepValue) {
   focusedInput = null;
   clickedElement = null;
   document.addEventListener("focus", handleFocus, true);
-  document.addEventListener("mousedown", onClickElement);
+  document.addEventListener("mousedown", onClickElement); 
   document.addEventListener("change", handleChange);
 }
 
