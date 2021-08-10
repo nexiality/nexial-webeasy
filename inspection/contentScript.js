@@ -415,6 +415,7 @@ function getLocatorList(event) {
   locatorList.locator = validateLocators(locatorList.locator);
   if (!locatorList.locator.length) {
     locatorList.locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)];
+    locatorList.selectedLocator = null;
   }
   return locatorList;
 }
