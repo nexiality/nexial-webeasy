@@ -7,8 +7,10 @@ const FIND_CLICKED_ELEMENT_PARENT = ["path", "svg", "i", "span"];
 const FIND_PARENTS = ["form", "header", "main", "section", "footer"];
 const INNER_TEXT_LENGTH = 100;
 const NODE_LIST_HAS_TEXT = ["a", "h1", "h2", "h3", "h4", "h5", "h6"];
+const INPUT_TAGS = ["INPUT", "TEXTAREA"];
 const INPUT_TYPE_ELEMENT = ["text", "number", "email", "password", "search", "tel", "url"];
-const INPUT_CLICK_ELEMENT = ["radio", "checkbox"];
+const INPUT_CLICKABLE_TYPES = ["submit", "reset", "image", "button"];
+const INPUT_TOGGLE_TYPES = ["radio", "checkbox"];
 const HAS_PARENT = ["i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button"];
 
 // Append Style on hover get element
@@ -38,16 +40,17 @@ function handleFocus(event) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
 
-  if (target.tagName !== "INPUT") return;
-  //Todo:  Input TYpe Image, reset
-  if (INPUT_TYPE_ELEMENT.includes(target.type)) {
+  if (!INPUT_TAGS.includes(target.tagName)) return;
+
+  if (INPUT_TYPE_ELEMENT.includes(target.type) || target.tagName === "TEXTAREA") {
     focusedInput = event;
-    sendConsole("log", "INPUT FOCUS :", event.target.value);
+    sendConsole("log", "INPUT FOCUS:", target);
   }
+
   target.addEventListener("keyup", function (event) {
     // Number 13 is the "Enter" key on the keyboard
     // console.log(event, event.keyCode);
-    if (event.keyCode === 13 && focusedInput) {
+    if (event.keyCode === 13 && focusedInput && target.tagName !== "TEXTAREA") {
       event.preventDefault();
       focusedInput.target.value += "{ENTER}";
       sendConsole("log", "INPUT ENTER PRESS :", focusedInput.target.value);
@@ -68,21 +71,25 @@ function onClickElement(event) {
   }
 
   if (focusedInput && focusedInput.target.value) {
+    sendConsole("log", "INPUT FOCUSOUT: ", focusedInput.target);
     sendInspectInfo("type(locator,value)", focusedInput);
-    sendConsole("log", "INPUT FOCUSOUT: ", focusedInput.target.value);
     focusedInput = null;
   }
 
-  if ((target.tagName === "INPUT" && target.type === "submit") ||
-      (target.tagName === "DIV" && target.innerText) ||
-      CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())) {
+  if ((target.tagName === "DIV" && target.innerText) || CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())) {
     sendConsole("log", "CLICK: ", target.tagName);
     sendInspectInfo("click(locator)", event);
-  } else if (target.tagName === "INPUT" && INPUT_CLICK_ELEMENT.includes(target.type)) {
-    if (target.checked) {
-      sendInspectInfo("checkAll(locator,waitMs)", event);
-    } else {
-      sendInspectInfo("uncheckAll(locator,waitMs)", event);
+    return;
+  }
+
+  if (target.tagName === "INPUT") {
+    if (INPUT_CLICKABLE_TYPES.includes(target.type)) {
+      sendInspectInfo("click(locator)", event);
+      return;
+    }
+    if (INPUT_TOGGLE_TYPES.includes(target.type)) {
+      sendInspectInfo(target.checked ? "checkAll(locator,waitMs)" : "uncheckAll(locator,waitMs)", event);
+      return;
     }
   }
 }
@@ -212,7 +219,7 @@ function getLocator(e, paths, isFiltered) {
           }
         }
 
-        if (INPUT_CLICK_ELEMENT.includes(inputType)) {
+        if (INPUT_TOGGLE_TYPES.includes(inputType)) {
           let inputValue = el.attribute["value"];
           if (inputValue) {
             cssFragment += "[value='" + inputValue + "']";
@@ -317,6 +324,7 @@ function getXPath(element) {
 function getCssPath(el) {
   //Todo: sort in simple form
   if (!(el instanceof Element)) return;
+
   let path = [];
   while (el.nodeType === Node.ELEMENT_NODE) {
     let selector = el.nodeName.toLowerCase();
@@ -325,12 +333,11 @@ function getCssPath(el) {
       path.unshift(selector);
       break;
     } else {
-      let sib = el,
-        nth = 1;
+      let sib = el, nth = 1;
       while ((sib = sib.previousElementSibling)) {
-        if (sib.nodeName.toLowerCase() == selector) nth++;
+        if (sib.nodeName.toLowerCase() === selector) nth++;
       }
-      if (nth != 1) selector += ':eq(' + nth + ')';
+      selector += ':nth-of-type(' + nth + ')';
     }
     path.unshift(selector);
     el = el.parentNode;
@@ -402,7 +409,7 @@ function getLocatorList(event) {
 
   sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
   sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.domPaths);
-  sendConsole("log", "LOCATOR LIST : ", locator);
+  sendConsole("log", "LOCATOR LIST : ", locatorList);
 
   resolveLabelTargetAsLocators(event, locatorList.locator);
   locatorList.locator = validateLocators(locatorList.locator);
@@ -413,19 +420,18 @@ function getLocatorList(event) {
 }
 
 function sendInspectInfo(command, event) {
-  const {
-    locator: locator,
-    selectedLocator: selectedLocator,
-  } = getLocatorList(event);
-
+  let locatorList = getLocatorList(event);
+  let locator = locatorList.locator;
+  let selectedLocator = locatorList.selectedLocator;
   let data = {
-    step: step++,
+    step:    step++,
     command: command,
-    param: {},
+    param:   {},
     actions: {
       selectedLocator: selectedLocator,
     },
   };
+
   switch (command) {
     case "click(locator)":
     case "assertElementPresent(locator)":

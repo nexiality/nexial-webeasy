@@ -16,14 +16,15 @@ function createSelectElement(items, id, editable = true) {
 
     let optionText = items[index];
     let option = document.createElement("option");
-    
+    // todo: is this even possible?
     if (optionText && optionText.startsWith('xpath=')) { optionText = optionText.substring(6); }
     option.value = optionText;
     option.text = optionText;
     if (optgroup) {
       optgroup.appendChild(option);
       selectList.appendChild(optgroup);
-    } else selectList.appendChild(option);
+    } else
+      selectList.appendChild(option);
   }
   return selectList;
 }

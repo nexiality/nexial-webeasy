@@ -56,12 +56,15 @@ function createSubTableRow(param_table, key, data, step, editable) {
   if (key === "locator" && data) {
     element = createSelectElement(data, id, editable);
     const inspectListObject = getInspectListObject(step);
-    if(inspectListObject.actions['selectedLocator']) element.value = inspectListObject.actions['selectedLocator'];
+    if (inspectListObject.actions['selectedLocator']) { element.value = inspectListObject.actions['selectedLocator']; }
     element.onchange = function (e) {
       // ToDO:
     };
-  } else if (key === "locator" && !data) element = createInspectElement(key, step);
-  else element = createInputBox(data, id, editable); // param is other than locator
+  } else if (key === "locator" && !data) {
+    element = createInspectElement(key, step);
+  } else {
+    element = createInputBox(data, id, editable);
+  } // param is other than locator
 
   // element.setAttribute("id", key + "_" + step);
   td.appendChild(element);
@@ -281,12 +284,16 @@ function createInspectElement(key, step) {
   return inspectElement;
 }
 
+function handleMultiline(/*String*/inputValue) {
+  return !inputValue ? '' : inputValue.replace("\r", "").replace("\n", "(eol)");
+}
+
 function createInputBox(data, id, editable = true) {
   let input = document.createElement("INPUT");
   input.setAttribute("type", "text");
   input.setAttribute("class", "form-control");
   input.setAttribute("id", id);
-  input.setAttribute("value", data ? data: '');
+  input.setAttribute("value", data ? handleMultiline(data): '');
   if (!editable) input.setAttribute('disabled', 'true')
   return input;
 }
