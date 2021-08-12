@@ -153,9 +153,19 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
     } else if (attr === "id") {
       res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}']` + baseXpathNode);
       res["css"].push("css=" + el.node + `#${value}` + baseCssPath);
+
+      if (el.node === "input" && el.attribute.hasOwnProperty('type')) {
+        res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}' and @type='${el.attribute["type"]}']` + baseXpathNode);
+        res["css"].push("css=" + el.node + `#${value}` + `[type='${el.attribute["type"]}']` + baseCssPath);
+      }
     } else {
       res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}']` + baseXpathNode);
       res["css"].push("css=" + el.node + `[${attr}='${value}']` + baseCssPath);
+
+      if (el.node === "input" && attr !== "type" && el.attribute.hasOwnProperty('type')) {
+        res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}' and @type='${el.attribute["type"]}']` + baseXpathNode);
+        res["css"].push("css=" + el.node + `[${attr}='${value}'][type='${el.attribute["type"]}']` + baseCssPath);
+      }
     }
   }
   return res;
@@ -199,44 +209,45 @@ function getLocator(e, paths, isFiltered) {
 
       // special treatment for input element
       if (el.node && el.node === "input" && el.attribute["type"]) {
-        let inputType = el.attribute["type"];
-        let inputName = el.attribute["name"];
-        let inputId = el.attribute["id"];
+        // let inputType = el.attribute["type"];
+        // let inputName = el.attribute["name"];
+        // let inputId = el.attribute["id"];
 
-        let cssFragment = "[type='" + inputType + "']";
-        let xpathFragment = "[@type='" + inputType + "'";
+        // let cssFragment = "[type='" + inputType + "']";
+        // let xpathFragment = "[@type='" + inputType + "'";
         // for input element, prefer name over id
-        if (inputName) {
-          cssFragment += "[name='" + inputName + "']";
-          xpathFragment += " and @name='" + inputName + "'";
-        } else if (inputId) {
-          cssFragment = "#" + inputId + cssFragment;
-          xpathFragment += " and @id='" + inputId + "'";
-        }
+        // if (inputName) {
+        //   cssFragment += "[name='" + inputName + "']";
+        //   xpathFragment += " and @name='" + inputName + "'";
+        // } else if (inputId) {
+        //   cssFragment = "#" + inputId + cssFragment;
+        //   xpathFragment += " and @id='" + inputId + "'";
+        // }
 
-        for (let j = 0; j < ATTRIB_HUMAN_READABLE; j++) {
-          let attribName = ATTRIB_HUMAN_READABLE[j];
-          let attribValue = el.attribute[attribName];
-          if (attribValue) {
-            cssFragment += "[" + attribName + "='" + attribValue + "']";
-            xpathFragment += " and @" + attribName + "='" + attribValue + "'";
-            break;
-          }
-        }
+        // for (let j = 0; j < ATTRIB_HUMAN_READABLE; j++) {
+        //   let attribName = ATTRIB_HUMAN_READABLE[j];
+        //   let attribValue = el.attribute[attribName];
+        //   if (attribValue) {
+        //     cssFragment += "[" + attribName + "='" + attribValue + "']";
+        //     xpathFragment += " and @" + attribName + "='" + attribValue + "'";
+        //     break;
+        //   }
+        // }
 
-        if (INPUT_TOGGLE_TYPES.includes(inputType)) {
-          let inputValue = el.attribute["value"];
-          if (inputValue) {
-            cssFragment += "[value='" + inputValue + "']";
-            xpathFragment += " and @value='" + inputValue + "'";
+        // if (INPUT_TOGGLE_TYPES.includes(inputType)) {
+        //   let inputValue = el.attribute["value"];
+        //   if (inputValue) {
+        //     cssFragment += "[value='" + inputValue + "']";
+        //     xpathFragment += " and @value='" + inputValue + "'";
 
-            // for <input type='checkbox' ...> or <input type='radio' ...> we'd prefer the selector with `value`
-            selectedLocator = "css=input" + cssFragment;
-          }
-        }
+        //     // for <input type='checkbox' ...> or <input type='radio' ...> we'd prefer the selector with `value`
+        //     selectedLocator = "css=input" + cssFragment;
+        //   }
+        // }
 
-        xpath.push("xpath=//input" + xpathFragment + "]");
-        css.push("css=input" + cssFragment);
+        // xpath.push("xpath=//input" + xpathFragment + "]");
+        // css.push("css=input" + cssFragment);
+        // console.log("xpath=//input" + xpathFragment + "]", "css=input" + cssFragment, "####################################")
       }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
