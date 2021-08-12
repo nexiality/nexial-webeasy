@@ -150,21 +150,21 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
           res["css"].push("css=" + el.node + `.${classList[j]}` + baseCssPath);
         }
       }
-    } else if (attr === "id") {
-      res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}']` + baseXpathNode);
-      res["css"].push("css=" + el.node + `#${value}` + baseCssPath);
-
-      if (el.node === "input" && el.attribute.hasOwnProperty('type')) {
-        res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}' and @type='${el.attribute["type"]}']` + baseXpathNode);
-        res["css"].push("css=" + el.node + `#${value}` + `[type='${el.attribute["type"]}']` + baseCssPath);
-      }
     } else {
       res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}']` + baseXpathNode);
-      res["css"].push("css=" + el.node + `[${attr}='${value}']` + baseCssPath);
+      if (attr === "id") {
+        res["css"].push("css=" + el.node + `#${value}` + baseCssPath);
+      } else {
+        res["css"].push("css=" + el.node + `[${attr}='${value}']` + baseCssPath);
+      }
 
       if (el.node === "input" && attr !== "type" && el.attribute.hasOwnProperty('type')) {
         res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}' and @type='${el.attribute["type"]}']` + baseXpathNode);
-        res["css"].push("css=" + el.node + `[${attr}='${value}'][type='${el.attribute["type"]}']` + baseCssPath);
+        if (attr === "id") {
+          res["css"].push("css=" + el.node + `#${value}` + `[type='${el.attribute["type"]}']` + baseCssPath);
+        } else {
+          res["css"].push("css=" + el.node + `[${attr}='${value}'][type='${el.attribute["type"]}']` + baseCssPath);
+        }
       }
     }
   }
