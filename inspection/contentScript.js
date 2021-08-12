@@ -357,7 +357,7 @@ function getCssPath(el) {
     path.unshift(selector);
     el = el.parentNode;
   }
-  return path.join(" ");
+  return path.join(" > ");
 }
 
 // special case for label: label often has a target (attribute:for). we can use the target to derive locators
