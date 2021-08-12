@@ -272,16 +272,16 @@ function getLocator(e, paths, isFiltered) {
 }
 
 function createNode(el) {
-    let node = {};
-    node["node"] = el.nodeName.toLowerCase();
-    node["innerText"] = el.textContent || el.text || el.innerText ;
-    node["attribute"] = [];
-    if (el.hasAttributes()) {
-      for (let i = 0; i <= HAS_ATTRIBUTES.length - 1; i++) {
-        const attr = el.attributes[`${HAS_ATTRIBUTES[i]}`];
-        if (attr && attr.name && attr.value) node["attribute"][attr.name] = attr.value;
-      }
+  let node = {};
+  node["node"] = el.nodeName.toLowerCase();
+  node["innerText"] = el.textContent || el.text || el.innerText ;
+  node["attribute"] = [];
+  if (el.hasAttributes()) {
+    for (let i = 0; i <= HAS_ATTRIBUTES.length - 1; i++) {
+      const attr = el.attributes[`${HAS_ATTRIBUTES[i]}`];
+      if (attr && attr.name && attr.value) node["attribute"][attr.name] = attr.value;
     }
+  }
   return node;
 }
 
