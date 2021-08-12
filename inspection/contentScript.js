@@ -157,7 +157,7 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
       } else {
         res["css"].push("css=" + el.node + `[${attr}='${value}']` + baseCssPath);
       }
-
+      // special treatment for input element
       if (el.node === "input" && attr !== "type" && el.attribute.hasOwnProperty('type')) {
         res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}' and @type='${el.attribute["type"]}']` + baseXpathNode);
         if (attr === "id") {
@@ -208,7 +208,7 @@ function getLocator(e, paths, isFiltered) {
       }
 
       // special treatment for input element
-      if (el.node && el.node === "input" && el.attribute["type"]) {
+      // if (el.node && el.node === "input" && el.attribute["type"]) {
         // let inputType = el.attribute["type"];
         // let inputName = el.attribute["name"];
         // let inputId = el.attribute["id"];
@@ -248,7 +248,7 @@ function getLocator(e, paths, isFiltered) {
         // xpath.push("xpath=//input" + xpathFragment + "]");
         // css.push("css=input" + cssFragment);
         // console.log("xpath=//input" + xpathFragment + "]", "css=input" + cssFragment, "####################################")
-      }
+      // }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
       let activeElxpath = xpath[0] ? xpath[0] : "xpath=//" + activeElnode;
