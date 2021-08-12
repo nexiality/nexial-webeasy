@@ -271,30 +271,40 @@ function getLocator(e, paths, isFiltered) {
   };
 }
 
-function getDomPath(el) {
-  // sendConsole("group", "DOM PATH LIST");
-  let stack = [];
-  while (el.parentNode != null) {
+function createNode(el) {
     let node = {};
     node["node"] = el.nodeName.toLowerCase();
     node["innerText"] = el.textContent || el.text || el.innerText ;
     node["attribute"] = [];
-
-    if (["html", "body"].includes(node["node"])) {
-      el = el.parentNode;
-      continue;
-    }
     if (el.hasAttributes()) {
       for (let i = 0; i <= HAS_ATTRIBUTES.length - 1; i++) {
         const attr = el.attributes[`${HAS_ATTRIBUTES[i]}`];
         if (attr && attr.name && attr.value) node["attribute"][attr.name] = attr.value;
       }
     }
+  return node;
+}
+
+function getDomPath(el) {
+  // sendConsole("group", "DOM PATH LIST");
+  let stack = [];
+  while (el.parentNode != null) {
+    if (["html", "body"].includes(el.nodeName.toLowerCase())) {
+      el = el.parentNode;
+      continue;
+    }
+    let node = createNode(el);
+    // special case for label: label often has a target (attribute:for). we can use the target to derive locators
+    if (node["node"] === "label" && el.attributes && el.attributes["for"]) {
+      const labelFor = el.attributes['for'].value;
+      const labelEl = document.getElementById(labelFor);
+      node["attribute"]["for"] = createNode(labelEl);
+    }
     stack.unshift(node);
     // sendConsole("log", "ENTRY NODE : ", node["node"]);
     el = el.parentNode;
   }
-  sendConsole("groupEnd", "");
+  // sendConsole("groupEnd", "");
   return stack;
 }
 
