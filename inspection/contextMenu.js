@@ -68,7 +68,7 @@ chrome.runtime.onInstalled.addListener(function () {
                         contexts: ["selection"]
                       });
   contextMenus.create({
-    title:    "Show locator",
+    title:    "Show Locator",
     id:       "findLocator",
     contexts: ["all"]
   });

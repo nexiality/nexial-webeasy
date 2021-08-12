@@ -2,7 +2,7 @@ let clickedElement = null, selectionText = null;
 let focusedInput = null;
 let step = null;
 const HAS_ATTRIBUTES = ["name", "id", "aria-label", "placeholder", "title", "alt", "class", "value", "type"]; //Order priority wise
-const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5", "h6", "label"];
+const CLICKABLE_ELEMENT = ["button", "a", "li", "path", "svg", "i", "span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "img"];
 const FIND_CLICKED_ELEMENT_PARENT = ["path", "svg", "i", "span"];
 const FIND_PARENTS = ["form", "header", "main", "section", "footer", "div"];
 const INNER_TEXT_LENGTH = 100;
@@ -11,7 +11,7 @@ const INPUT_TAGS = ["INPUT", "TEXTAREA"];
 const INPUT_TYPE_ELEMENT = ["text", "number", "email", "password", "search", "tel", "url"];
 const INPUT_CLICKABLE_TYPES = ["submit", "reset", "image", "button"];
 const INPUT_TOGGLE_TYPES = ["radio", "checkbox"];
-const HAS_PARENT = ["label", "i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button", "div", "span"]; // placed Orderwise
+const HAS_PARENT = ["label", "i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button"]; //, "div", "span"]; // placed Orderwise
 const ATTRIB_HUMAN_READABLE = ["aria-label", "placeholder", "title", "alt"];
 
 // Append Style on hover get element
@@ -44,6 +44,8 @@ function handleFocus(event) {
   if (!INPUT_TAGS.includes(target.tagName)) return;
 
   if (INPUT_TYPE_ELEMENT.includes(target.type) || target.tagName === "TEXTAREA") {
+    // any previously trapped focusedInput?
+    if (focusedInput) { sendInspectInfo("type(locator,value)", focusedInput); }
     focusedInput = event;
     sendConsole("log", "INPUT FOCUS:", target);
   }
@@ -67,7 +69,7 @@ function onClickElement(event) {
 
   sendConsole("log", "MOUSE CLICK : ", event.button);
   if (event.button === 2) {
-    sendConsole("log", "RIGHT CLICK RETURN FROM onClickElement : ", event.button);
+    // sendConsole("log", "RIGHT CLICK RETURN FROM onClickElement : ", event.button);
     return;
   }
 
@@ -109,7 +111,7 @@ function hasNumbers(str) { return /\d/g.test(str); }
 
 /** check that there's no special character and number i.e only alphabet */
 function isAcceptableClass(str) {
-  return !str.startsWith('ng_') && !str.startsWith('ng-') && /^[A-Za-z][\w\_\-]+[\w\_\-\d]$/.test(str);
+  return !str.startsWith('ng_') && !str.startsWith('ng-') && /^[A-Za-z][A-Za-z\_\-]+[0-9A-Za-z\_\-]$/.test(str);
 }
 
 function getElementByCss(cssPath) { return document.querySelectorAll(cssPath); }
@@ -259,7 +261,7 @@ function getLocator(e, paths, isFiltered) {
 }
 
 function getDomPath(el) {
-  sendConsole("group", "DOM PATH LIST");
+  // sendConsole("group", "DOM PATH LIST");
   let stack = [];
   while (el.parentNode != null) {
     let node = {};
@@ -278,7 +280,7 @@ function getDomPath(el) {
       }
     }
     stack.unshift(node);
-    sendConsole("log", "ENTRY NODE : ", node["node"]);
+    // sendConsole("log", "ENTRY NODE : ", node["node"]);
     el = el.parentNode;
   }
   sendConsole("groupEnd", "");
@@ -297,7 +299,7 @@ function filterDomPath(el) {
       break;
     }
   }
-  sendConsole("log", "DOM PATH FILTER : ", domPathList);
+  // sendConsole("log", "DOM PATH FILTER : ", domPathList);
   for (let index = 0; index < domPathList.length; index++) {
     const node = domPathList[index];
     if (FIND_PARENTS.includes(node["node"]) || index === domPathList.length - 1) {
@@ -426,9 +428,9 @@ function getLocatorList(event) {
   const paths = filterDomPath(event.target);
   const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
 
-  sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
-  sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
-  sendConsole("log", "LOCATOR LIST : ", locatorList);
+  // sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
+  // sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
+  sendConsole("log", "LOCATOR LIST (filtered? " + paths.isFiltered + "): ", locatorList);
 
   resolveLabelTargetAsLocators(event, locatorList);
   validateLocators(locatorList);
@@ -518,7 +520,7 @@ chrome.runtime.onMessage.addListener(function (request) {
   switch (request.action) {
     case "getContextMenuElement":
       selectionText = request.selectionText;
-      if(!clickedElement) {
+      if (!clickedElement) {
         console.error('No element found');
         break;
       }
@@ -538,7 +540,7 @@ chrome.runtime.onMessage.addListener(function (request) {
       stop();
       break;
     case "findLocator":
-      if(!clickedElement) {
+      if (!clickedElement) {
         console.error('No element found');
         break;
       }
