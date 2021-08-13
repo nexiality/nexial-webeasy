@@ -115,22 +115,40 @@ function isAcceptableClass(str) {
 }
 
 /** trim extra space and replace new line with \n */
-// todo: need to handle single and double quotes in `txt`
-function updatingText(txt) { return "'" + txt.trim().replace(/\s+/g, " ") + "'"; }
+function updatingText(txt) {
+  let replaced = txt.trim().replace(/\s+/g, " ");
+  if (replaced.indexOf("'") === -1) { return "'" + replaced + "'"; }
+  return "concat('" + replaced.replace(/'/g, '\',\"\'\",\'') + "')";
+}
+
+function cssAttrSelector(name, value) {
+  if (!name || !value) { return ''; }
+
+  // remove \r, escape single quotes
+  let replaced = value.replace(/\r/g, "").replace(/'/g, "\\\\'");
+
+  // simple case: no newline chars
+  if (replaced.indexOf('\n') === -1) { return "[" + name + "='" + replaced + "']"; }
+
+  // complex case: found newline chars
+  // split by newline and transform them into groups of [name='line']
+  let parts = replaced.split('\n');
+  return parts.map(part => "[" + name + "='" + part + "']").join('');
+}
 
 function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   let res = {
     xpath: [],
-    css: [],
+    css:   [],
   };
 
   if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
 
-  // TODO: not sure what this If does...this code putting '>' in between immediate parent and child else space
   if (baseCssPath && !isFiltered) {
     baseCssPath = baseCssPath.replace("css=", " > ");
-  } else baseCssPath = baseCssPath.replace("css=", " ");
-  // if (baseCssPath) { baseCssPath = baseCssPath.replace("css=", " "); }
+  } else {
+    baseCssPath = baseCssPath.replace("css=", " ");
+  }
 
   for (const attr in el.attribute) {
     let value = el.attribute[attr];
@@ -146,19 +164,14 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
     } else {
       if(attr === "for") break;
       res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}']` + baseXpathNode);
-      if (attr === "id") {
-        res["css"].push("css=" + el.node + `#${value}` + baseCssPath);
-      } else {
-        res["css"].push("css=" + el.node + `[${attr}='${value}']` + baseCssPath);
-      }
+      res["css"].push("css=" + el.node + (attr === "id" ?  `#${value}` : `[${attr}='${value}']`) + baseCssPath);
+
       // special treatment for input element
       if (el.node === "input" && attr !== "type" && el.attribute.hasOwnProperty('type')) {
         res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}' and @type='${el.attribute["type"]}']` + baseXpathNode);
-        if (attr === "id") {
-          res["css"].push("css=" + el.node + `#${value}` + `[type='${el.attribute["type"]}']` + baseCssPath);
-        } else {
-          res["css"].push("css=" + el.node + `[${attr}='${value}'][type='${el.attribute["type"]}']` + baseCssPath);
-        }
+        res["css"].push("css=" + el.node +
+                        (attr === "id" ? `#${value}` : `[${attr}='${value}']`) +
+                        `[type='${el.attribute["type"]}']` + baseCssPath);
       }
     }
   }
