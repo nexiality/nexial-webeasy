@@ -144,6 +144,7 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
         }
       }
     } else {
+      if(attr === "for") break;
       res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}']` + baseXpathNode);
       if (attr === "id") {
         res["css"].push("css=" + el.node + `#${value}` + baseCssPath);
