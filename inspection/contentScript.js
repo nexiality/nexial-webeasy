@@ -189,8 +189,8 @@ function getLocator(e, paths, isFiltered) {
 
       if (el.node === "label" && el.attribute && el.attribute["for"]) {
         path = createPaths(el.attribute["for"], "", "", isFiltered);
-        xpath.push(path.xpath);
-        css.push(path.css);
+        xpath.concat(path.xpath);
+        css.concat(path.css);
       }
 
       if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
