@@ -282,6 +282,12 @@ function createNode(el) {
       if (attr && attr.name && attr.value) node["attribute"][attr.name] = attr.value;
     }
   }
+  // special case for label: label often has a target (attribute:for). we can use the target to derive locators
+  if (node["node"] === "label" && el.attributes && el.attributes["for"]) {
+    const labelFor = el.attributes['for'].value;
+    const labelEl = document.getElementById(labelFor);
+    node["attribute"]["for"] = createNode(labelEl);
+  }
   return node;
 }
 
@@ -293,14 +299,7 @@ function getDomPath(el) {
       el = el.parentNode;
       continue;
     }
-    let node = createNode(el);
-    // special case for label: label often has a target (attribute:for). we can use the target to derive locators
-    if (node["node"] === "label" && el.attributes && el.attributes["for"]) {
-      const labelFor = el.attributes['for'].value;
-      const labelEl = document.getElementById(labelFor);
-      node["attribute"]["for"] = createNode(labelEl);
-    }
-    stack.unshift(node);
+    stack.unshift(createNode(el));
     // sendConsole("log", "ENTRY NODE : ", node["node"]);
     el = el.parentNode;
   }
