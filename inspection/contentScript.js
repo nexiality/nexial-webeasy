@@ -114,13 +114,6 @@ function isAcceptableClass(str) {
   return !str.startsWith('ng_') && !str.startsWith('ng-') && /^[A-Za-z][A-Za-z\_\-]+[0-9A-Za-z\_\-]$/.test(str);
 }
 
-function getElementByCss(cssPath) { return document.querySelectorAll(cssPath); }
-
-function getElementByXpath(path) {
-  // check id, name and xpath selector
-  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-}
-
 /** trim extra space and replace new line with \n */
 // todo: need to handle single and double quotes in `txt`
 function updatingText(txt) { return "'" + txt.trim().replace(/\s+/g, " ") + "'"; }
