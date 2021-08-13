@@ -187,10 +187,16 @@ function getLocator(e, paths, isFiltered) {
     if (i === paths.length - 1) {
       // Main Element with all attribute
       // Xpath=//tagname[@attribute='value']
-      const path = createPaths(el, "", "", isFiltered);
+      let path = createPaths(el, "", "", isFiltered);
       if (path) {
         xpath = path.xpath;
         css = path.css;
+      }
+
+      if (el.node === "label" && el.attribute && el.attribute["for"]) {
+        path = createPaths(el.attribute["for"], "", "", isFiltered);
+        xpath.push(path.xpath);
+        css.push(path.css);
       }
 
       if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
@@ -382,30 +388,30 @@ function getCssPath(el) {
 
 // special case for label: label often has a target (attribute:for). we can use the target to derive locators
 function resolveLabelTargetAsLocators(event, locatorList) {
-  if (event.target.tagName.toLowerCase() === "label" && event.target.attributes && event.target.attributes["for"]) {
-    let targetId = event.target.attributes['for'].value;
-    let targetInput = document.getElementById(targetId);
-    if (targetInput) {
-      let targetTag = (targetInput.tagName || "").toLowerCase();
-      let targetType = targetInput.attributes["type"].value;
-      let targetValue = targetInput.attributes["value"].value;
+  // if (event.target.tagName.toLowerCase() === "label" && event.target.attributes && event.target.attributes["for"]) {
+  //   let targetId = event.target.attributes['for'].value;
+  //   let targetInput = document.getElementById(targetId);
+  //   if (targetInput) {
+  //     let targetTag = (targetInput.tagName || "").toLowerCase();
+  //     let targetType = targetInput.attributes["type"].value;
+  //     let targetValue = targetInput.attributes["value"].value;
 
-      let targetCssPrefix = (targetTag || '') + "#" + targetId +
-                            (targetType ? "[type='" + targetType + "']" : "") +
-                            (targetValue ? "[value='" + targetValue + "']" : "");
+  //     let targetCssPrefix = (targetTag || '') + "#" + targetId +
+  //                           (targetType ? "[type='" + targetType + "']" : "") +
+  //                           (targetValue ? "[value='" + targetValue + "']" : "");
 
-      let targetXpathSuffix = "@id='" + targetId + "']";
-      let targetXpathPrefix = "//" + (targetTag || "*") + "[" +
-                              (targetType ? "@type='" + targetType + "' and " : "") +
-                              (targetValue ? "@value='" + targetValue + "' and " : "");
+  //     let targetXpathSuffix = "@id='" + targetId + "']";
+  //     let targetXpathPrefix = "//" + (targetTag || "*") + "[" +
+  //                             (targetType ? "@type='" + targetType + "' and " : "") +
+  //                             (targetValue ? "@value='" + targetValue + "' and " : "");
 
-      locatorList.selectedLocator = "css=" + targetCssPrefix;
-      locatorList.locator.push("css=" + targetCssPrefix,
-                               "css=#" + targetId,
-                               "xpath=" + targetXpathPrefix + targetXpathSuffix,
-                               "xpath=//*[" + targetXpathSuffix);
-    }
-  }
+  //     locatorList.selectedLocator = "css=" + targetCssPrefix;
+  //     locatorList.locator.push("css=" + targetCssPrefix,
+  //                              "css=#" + targetId,
+  //                              "xpath=" + targetXpathPrefix + targetXpathSuffix,
+  //                              "xpath=//*[" + targetXpathSuffix);
+  //   }
+  // }
 }
 
 // test locators; remove invalid ones
@@ -452,7 +458,7 @@ function getLocatorList(event) {
   // sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
   sendConsole("log", "LOCATOR LIST (filtered? " + paths.isFiltered + "): ", locatorList);
 
-  resolveLabelTargetAsLocators(event, locatorList);
+  // resolveLabelTargetAsLocators(event, locatorList);
   validateLocators(locatorList);
   if (!locatorList.locator.length) {
     locatorList.locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)];
