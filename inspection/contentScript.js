@@ -21,6 +21,10 @@ style.type = "text/css";
 style.href = chrome.extension.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
+/**
+ * To start inspecting
+ * @param {*} stepValue
+ */
 function start(stepValue) {
   sendConsole("log", "BROWSER RECEIVED: START INSPECTING");
   step = stepValue + 1;
@@ -31,12 +35,20 @@ function start(stepValue) {
   document.addEventListener("change", handleChange);
 }
 
+/**
+ * To stop inspecting
+ */
 function stop() {
   document.removeEventListener("focus", handleFocus, true);
   document.removeEventListener("mousedown", onClickElement);
   document.removeEventListener("change", handleChange);
 }
 
+/**
+ * Focus event Handler
+ * @param {*} event
+ * @returns
+ */
 function handleFocus(event) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
@@ -63,6 +75,11 @@ function handleFocus(event) {
   });
 }
 
+/**
+ * click event handler
+ * @param {*} event
+ * @returns
+ */
 function onClickElement(event) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
@@ -97,6 +114,10 @@ function onClickElement(event) {
   }
 }
 
+/**
+ * Select element changeEvent handler
+ * @param {*} event
+ */
 function handleChange(event) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
@@ -136,6 +157,14 @@ function cssAttrSelector(name, value) {
   return parts.map(part => "[" + name + "='" + part + "']").join('');
 }
 
+/**
+ * creating base and relative path of css and xpath selectors
+ * @param {*} el
+ * @param {*} baseXpathNode
+ * @param {*} baseCssPath
+ * @param {*} isFiltered
+ * @returns
+ */
 function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   let res = {
     xpath: [],
@@ -178,6 +207,13 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   return res;
 }
 
+/**
+ * Take three parameter and to find locator of active element
+ * @param {*} e
+ * @param {*} paths
+ * @param {*} isFiltered
+ * @returns
+ */
 function getLocator(e, paths, isFiltered) {
   let locator         = [],
       xpath           = [],
@@ -237,7 +273,7 @@ function getLocator(e, paths, isFiltered) {
         //   xpathFragment += " and @id='" + inputId + "'";
         // }
 
-        // for (let j = 0; j < ATTRIB_HUMAN_READABLE; j++) {
+        // for (let j = 0; j < ATTRIB_HUMAN_READABLE.length; j++) {
         //   let attribName = ATTRIB_HUMAN_READABLE[j];
         //   let attribValue = el.attribute[attribName];
         //   if (attribValue) {
@@ -284,6 +320,11 @@ function getLocator(e, paths, isFiltered) {
   };
 }
 
+/**
+ * create object having element properties
+ * @param {*} el
+ * @returns
+ */
 function createNode(el) {
   let node = {};
   node["node"] = el.nodeName.toLowerCase();
@@ -304,6 +345,11 @@ function createNode(el) {
   return node;
 }
 
+/**
+ * collecting dom path of active element
+ * @param {*} el
+ * @returns
+ */
 function getDomPath(el) {
   // sendConsole("group", "DOM PATH LIST");
   let stack = [];
@@ -320,6 +366,11 @@ function getDomPath(el) {
   return stack;
 }
 
+/**
+ * filtering dom path's to find main parent and ansestor
+ * @param {*} el
+ * @returns
+ */
 function filterDomPath(el) {
   let domPathList = getDomPath(el);
   let domFilterList = [];
@@ -354,6 +405,11 @@ function filterDomPath(el) {
   };
 }
 
+/**
+ * finding xpath selector after validation if no locator left
+ * @param {*} element
+ * @returns
+ */
 function getXPath(element) {
   //Todo: sort in simple form
   if (element.id !== "") return '//*[@id="' + element.id + '"]';
@@ -369,6 +425,11 @@ function getXPath(element) {
   }
 }
 
+/**
+ * finding css selector after validation if no locator left
+ * @param {*} el
+ * @returns
+ */
 function getCssPath(el) {
   //Todo: sort in simple form
   if (!(el instanceof Element)) return;
@@ -457,6 +518,11 @@ function validateLocators(locatorList) {
   }
 }
 
+/**
+ * creating locator(css and xpath) list
+ * @param {*} event
+ * @returns
+ */
 function getLocatorList(event) {
   const paths = filterDomPath(event.target);
   const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
@@ -474,6 +540,12 @@ function getLocatorList(event) {
   return locatorList;
 }
 
+/**
+ * get command and event and send payload to background
+ * @param {*} command
+ * @param {*} event
+ * @returns
+ */
 function sendInspectInfo(command, event) {
   let locatorList = getLocatorList(event);
   let locator = locatorList.locator;
@@ -549,6 +621,10 @@ document.addEventListener(
   true
 );
 
+/**
+ * Chrome Extension API
+ * here used to communicate with background
+ */
 chrome.runtime.onMessage.addListener(function (request) {
   switch (request.action) {
     case "getContextMenuElement":
