@@ -73,7 +73,7 @@ function onClickElement(event) {
     return;
   }
 
-  if (focusedInput && focusedInput.target.value) {
+  if (focusedInput?.target.value) {
     sendConsole("log", "INPUT FOCUSOUT: ", focusedInput.target);
     sendInspectInfo("type(locator,value)", focusedInput);
     focusedInput = null;
@@ -200,13 +200,13 @@ function getLocator(e, paths, isFiltered) {
         css = path.css;
       }
 
-      if (el.node === "label" && el.attribute && el.attribute["for"]) {
+      if (el.node === "label" && el.attribute?.for) {
         path = createPaths(el.attribute["for"], "", "", isFiltered);
         xpath.concat(path.xpath);
         css.concat(path.css);
       }
 
-      if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
+      if (el.innerText?.length <= INNER_TEXT_LENGTH) {
         let compareText = updatingText(el.innerText);
         // use `text()` when possible for added accuracy
         let xpathViaText = "xpath=//" + el.node +
@@ -292,11 +292,11 @@ function createNode(el) {
   if (el.hasAttributes()) {
     for (let i = 0; i <= HAS_ATTRIBUTES.length - 1; i++) {
       const attr = el.attributes[`${HAS_ATTRIBUTES[i]}`];
-      if (attr && attr.name && attr.value) node["attribute"][attr.name] = attr.value;
+      if (attr?.name && attr.value) node["attribute"][attr.name] = attr.value;
     }
   }
   // special case for label: label often has a target (attribute:for). we can use the target to derive locators
-  if (node["node"] === "label" && el.attributes && el.attributes["for"]) {
+  if (node["node"] === "label" && el.attributes?.for) {
     const labelFor = el.attributes['for'].value;
     const labelEl = document.getElementById(labelFor);
     node["attribute"]["for"] = createNode(labelEl);
@@ -337,7 +337,7 @@ function filterDomPath(el) {
     const node = domPathList[index];
     if (FIND_PARENTS.includes(node["node"]) || index === domPathList.length - 1) {
       if (node["node"] === "div") {
-        if (node["attribute"] && node["attribute"]["id"]) {
+        if (node.attribute?.id) {
           domFilterList.push(node);
         }
       } else domFilterList.push(node);
@@ -428,14 +428,14 @@ function validateLocators(locatorList) {
       let css = locator.substring(4);
       let matches = document.querySelectorAll(css);
       // sendConsole("log", "testing css selector " + css, matches);
-      return matches && matches.length === 1;
+      return matches?.length === 1;
     }
     if (locator.startsWith("xpath=")) {
       let xpath = locator.substring(6);
       let matches = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
       // sendConsole("log", "testing xpath selector " + xpath, matches);
       // must return exactly 1 result
-      if (matches && matches.resultType === 4) {
+      if (matches?.resultType === 4) {
         if (!matches.iterateNext()) return false;
         return !matches.iterateNext();
       } else {
@@ -445,7 +445,7 @@ function validateLocators(locatorList) {
     if (locator.startsWith("name=")) {
       let name = locator.substring(5);
       let matches = document.getElementsByName(name);
-      return matches && matches.length === 1;
+      return matches?.length === 1;
     }
     if (locator.startsWith("id=")) { return document.getElementById(locator.substring(3)); }
     return true;
