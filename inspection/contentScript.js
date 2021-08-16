@@ -14,7 +14,7 @@ const INPUT_TOGGLE_TYPES = ["radio", "checkbox"];
 const HAS_PARENT = ["label", "i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button"]; //, "div", "span"]; // placed Orderwise
 const ATTRIB_HUMAN_READABLE = ["aria-label", "placeholder", "title", "alt"];
 
-// Append Style on hover get element
+// Append Style on hover get element and show locator window
 let style = document.createElement("link");
 style.rel = "stylesheet";
 style.type = "text/css";
@@ -255,49 +255,6 @@ function getLocator(e, paths, isFiltered) {
           selectedLocator = xpathViaText;
         }
       }
-
-      // special treatment for input element
-      // if (el.node && el.node === "input" && el.attribute["type"]) {
-        // let inputType = el.attribute["type"];
-        // let inputName = el.attribute["name"];
-        // let inputId = el.attribute["id"];
-
-        // let cssFragment = "[type='" + inputType + "']";
-        // let xpathFragment = "[@type='" + inputType + "'";
-        // for input element, prefer name over id
-        // if (inputName) {
-        //   cssFragment += "[name='" + inputName + "']";
-        //   xpathFragment += " and @name='" + inputName + "'";
-        // } else if (inputId) {
-        //   cssFragment = "#" + inputId + cssFragment;
-        //   xpathFragment += " and @id='" + inputId + "'";
-        // }
-
-        // for (let j = 0; j < ATTRIB_HUMAN_READABLE.length; j++) {
-        //   let attribName = ATTRIB_HUMAN_READABLE[j];
-        //   let attribValue = el.attribute[attribName];
-        //   if (attribValue) {
-        //     cssFragment += "[" + attribName + "='" + attribValue + "']";
-        //     xpathFragment += " and @" + attribName + "='" + attribValue + "'";
-        //     break;
-        //   }
-        // }
-
-        // if (INPUT_TOGGLE_TYPES.includes(inputType)) {
-        //   let inputValue = el.attribute["value"];
-        //   if (inputValue) {
-        //     cssFragment += "[value='" + inputValue + "']";
-        //     xpathFragment += " and @value='" + inputValue + "'";
-
-        //     // for <input type='checkbox' ...> or <input type='radio' ...> we'd prefer the selector with `value`
-        //     selectedLocator = "css=input" + cssFragment;
-        //   }
-        // }
-
-        // xpath.push("xpath=//input" + xpathFragment + "]");
-        // css.push("css=input" + cssFragment);
-        // console.log("xpath=//input" + xpathFragment + "]", "css=input" + cssFragment, "####################################")
-      // }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
       let activeElxpath = xpath[0] ? xpath[0] : "xpath=//" + activeElnode;
@@ -454,34 +411,6 @@ function getCssPath(el) {
   return path.join(" > ");
 }
 
-// special case for label: label often has a target (attribute:for). we can use the target to derive locators
-function resolveLabelTargetAsLocators(event, locatorList) {
-  // if (event.target.tagName.toLowerCase() === "label" && event.target.attributes && event.target.attributes["for"]) {
-  //   let targetId = event.target.attributes['for'].value;
-  //   let targetInput = document.getElementById(targetId);
-  //   if (targetInput) {
-  //     let targetTag = (targetInput.tagName || "").toLowerCase();
-  //     let targetType = targetInput.attributes["type"].value;
-  //     let targetValue = targetInput.attributes["value"].value;
-
-  //     let targetCssPrefix = (targetTag || '') + "#" + targetId +
-  //                           (targetType ? "[type='" + targetType + "']" : "") +
-  //                           (targetValue ? "[value='" + targetValue + "']" : "");
-
-  //     let targetXpathSuffix = "@id='" + targetId + "']";
-  //     let targetXpathPrefix = "//" + (targetTag || "*") + "[" +
-  //                             (targetType ? "@type='" + targetType + "' and " : "") +
-  //                             (targetValue ? "@value='" + targetValue + "' and " : "");
-
-  //     locatorList.selectedLocator = "css=" + targetCssPrefix;
-  //     locatorList.locator.push("css=" + targetCssPrefix,
-  //                              "css=#" + targetId,
-  //                              "xpath=" + targetXpathPrefix + targetXpathSuffix,
-  //                              "xpath=//*[" + targetXpathSuffix);
-  //   }
-  // }
-}
-
 // test locators; remove invalid ones
 function validateLocators(locatorList) {
   let filtered = locatorList.locator.filter(locator => {
@@ -531,7 +460,6 @@ function getLocatorList(event) {
   // sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
   sendConsole("log", "LOCATOR LIST (filtered? " + paths.isFiltered + "): ", locatorList);
 
-  // resolveLabelTargetAsLocators(event, locatorList);
   validateLocators(locatorList);
   if (!locatorList.locator.length) {
     locatorList.locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)];
