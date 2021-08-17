@@ -46,7 +46,7 @@ function stop() {
 
 /**
  * Focus event Handler
- * @param {*} event
+ * @param {*} event its holding focus event value
  * @returns
  */
 function handleFocus(event) {
@@ -77,7 +77,7 @@ function handleFocus(event) {
 
 /**
  * click event handler
- * @param {*} event
+ * @param {*} event its holding click event value
  * @returns
  */
 function onClickElement(event) {
@@ -116,7 +116,7 @@ function onClickElement(event) {
 
 /**
  * Select element changeEvent handler
- * @param {*} event
+ * @param {*} event its change event value
  */
 function handleChange(event) {
   if (event === undefined) event = window.event;
@@ -158,12 +158,12 @@ function cssAttrSelector(name, value) {
 }
 
 /**
- * creating base and relative path of css and xpath selectors
- * @param {*} el
- * @param {*} baseXpathNode
- * @param {*} baseCssPath
- * @param {*} isFiltered
- * @returns
+ * creating list of base and relative path of css and xpath selectors
+ * @param {*} el its element's target
+ * @param {*} baseXpathNode base xpath of element
+ * @param {*} baseCssPath base css path of element
+ * @param {*} isFiltered its having boolean to inform path is filteres or not
+ * @returns create path list
  */
 function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   let res = {
@@ -209,9 +209,9 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
 
 /**
  * Take three parameter and to find locator of active element
- * @param {*} e
- * @param {*} paths
- * @param {*} isFiltered
+ * @param {*} e its refer event.target
+ * @param {*} paths its a active element's dom path lsit 
+ * @param {*} isFiltered its having boolean value is path is filtered or not
  * @returns
  */
 function getLocator(e, paths, isFiltered) {
@@ -278,9 +278,9 @@ function getLocator(e, paths, isFiltered) {
 }
 
 /**
- * create object having element properties
- * @param {*} el
- * @returns
+ * create and return object having element properties(i.e id, class, and so on)
+ * @param {*} el its element value
+ * @returns created object
  */
 function createNode(el) {
   let node = {};
@@ -304,8 +304,8 @@ function createNode(el) {
 
 /**
  * collecting dom path of active element
- * @param {*} el
- * @returns
+ * @param {*} el collecting path of el
+ * @returns path of el
  */
 function getDomPath(el) {
   // sendConsole("group", "DOM PATH LIST");
@@ -326,7 +326,7 @@ function getDomPath(el) {
 /**
  * filtering dom path's to find main parent and ansestor
  * @param {*} el
- * @returns
+ * @returns filter dom path list
  */
 function filterDomPath(el) {
   let domPathList = getDomPath(el);
@@ -364,8 +364,8 @@ function filterDomPath(el) {
 
 /**
  * finding xpath selector after validation if no locator left
- * @param {*} element
- * @returns
+ * @param {*} element el is element
+ * @returns return xpath of provided element
  */
 function getXPath(element) {
   //Todo: sort in simple form
@@ -384,8 +384,8 @@ function getXPath(element) {
 
 /**
  * finding css selector after validation if no locator left
- * @param {*} el
- * @returns
+ * @param {*} el its element
+ * @returns css path of provided element
  */
 function getCssPath(el) {
   //Todo: sort in simple form
@@ -412,6 +412,10 @@ function getCssPath(el) {
 }
 
 // test locators; remove invalid ones
+/**
+ * Its validate Locator list, on base of css, xpath, id and name and return validated ones
+ * @param {*} locatorList  its locator list
+ */
 function validateLocators(locatorList) {
   let filtered = locatorList.locator.filter(locator => {
     if (locator.startsWith("css=")) {
@@ -448,9 +452,9 @@ function validateLocators(locatorList) {
 }
 
 /**
- * creating locator(css and xpath) list
- * @param {*} event
- * @returns
+ * creating all possible locator's list
+ * @param {*} event its element value
+ * @returns created locator list
  */
 function getLocatorList(event) {
   const paths = filterDomPath(event.target);
@@ -469,10 +473,10 @@ function getLocatorList(event) {
 }
 
 /**
- * get command and event and send payload to background
- * @param {*} command
- * @param {*} event
- * @returns
+ * get command and event and send payload to background (chrome Extension file)
+ * Its creating locator(css and xpath) list
+ * @param {*} command its a nexial web command
+ * @param {*} event event is target value of element
  */
 function sendInspectInfo(command, event) {
   let locatorList = getLocatorList(event);
