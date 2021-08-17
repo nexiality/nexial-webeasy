@@ -29,9 +29,7 @@ function openDocLink(url) {
 }
 
 function info(title, text) {
-  document.getElementById('infoModalLabel').innerHTML = ''
   document.getElementById('infoModalLabel').innerHTML = title;
-  document.getElementById('infoModelBody').innerHTML = ''
   document.getElementById('infoModelBody').innerHTML = text;
 }
 
