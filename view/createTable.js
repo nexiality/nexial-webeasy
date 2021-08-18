@@ -1,12 +1,18 @@
-// 'use strict';
 let table = null,  currentStep = 0,  editMode = false;
 
+/**
+ * Update changes to background
+ */
 function updateBackground() {
   chrome.runtime.getBackgroundPage((background) => {
     background.inspectElementList = inspectElementList;
   });
 }
 
+/**
+ * @param {*} step its take step value as input
+ * @returns Its returns inspected object from inspected table.
+ */
 function getCurrentInspectObject(step) {
   let inspectObj = {
     step   : step,
@@ -25,10 +31,20 @@ function getCurrentInspectObject(step) {
   return inspectObj;
 }
 
+/**
+ * Its find array of objects, which property matches step value
+ * @param {*} step Its a property of inspect object
+ * @returns the value of the object in the inspectElementList array, otherwise undefined is returned
+ */
 function getInspectListObject(step) {
   return inspectElementList.find((obj) => obj.step === step);
 }
 
+/**
+ * Toggle element enable and disable
+ * @param {*} element Its element on which toggle performed
+ * @param {*} enable Its contain boolean value to toggle element
+ */
 function toggleElement(element, enable) {
   if (enable) {
     element.removeAttribute("disabled");
@@ -37,15 +53,36 @@ function toggleElement(element, enable) {
   }
 }
 
+/**
+ * delete sub table whose index is passed as parameter
+ * @param {*} tableIndex Its a sub table index
+ */
 function deleteSubTable(tableIndex) {
   let inspectTable = document.getElementById('table_' + tableIndex);
   while (inspectTable.hasChildNodes()) { inspectTable.removeChild(inspectTable.firstChild); }
 }
 
+/**
+ * delete sub table's row whose table and row indexs are passed as parameter
+ * @param {*} tableIndex Its a sub table index
+ * @param {*} rowIndex Its a sub table's row index
+ */
 function deleteSubTableRow(tableIndex, rowIndex) { document.getElementById('table_' + tableIndex).deleteRow(rowIndex); }
 
+/**
+ * Delete table from from main inspect table
+ * @param {*} rowIndex Its a main table's row index
+ */
 function deleteParentTableRow(rowIndex) { table.deleteRow(rowIndex); }
 
+/**
+ * create row in sub table
+ * @param {*} param_table Its sub table's target
+ * @param {*} key Its a command param value
+ * @param {*} data Its row data
+ * @param {*} step Its a number of inspected action
+ * @param {*} editable Its a boolean value to make row's enable and disable
+ */
 function createSubTableRow(param_table, key, data, step, editable) {
   let tr = param_table.insertRow(-1);
   let td = tr.insertCell(-1);
@@ -71,6 +108,11 @@ function createSubTableRow(param_table, key, data, step, editable) {
   td.appendChild(element);
 }
 
+/**
+ * To fetch command's param
+ * @param {*} str its a command string
+ * @returns Its return commands's param in array 
+ */
 function getCommandParam(str) {
   if (!str || str === '') return [];
 
@@ -85,6 +127,7 @@ function getCommandParam(str) {
   if (arr[0] === '') return [];
   return arr;
 }
+
 
 function updateParamRow(step) {
   const paramArr = getCommandParam(document.getElementById("command_" + step).value);

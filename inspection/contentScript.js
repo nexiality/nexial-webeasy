@@ -23,7 +23,7 @@ style.href = chrome.extension.getURL("resources/style/nexial.css");
 
 /**
  * To start inspecting
- * @param {*} stepValue
+ * @param {*} stepValue Its a number of inspect
  */
 function start(stepValue) {
   sendConsole("log", "BROWSER RECEIVED: START INSPECTING");
@@ -46,8 +46,7 @@ function stop() {
 
 /**
  * Focus event Handler
- * @param {*} event its holding focus event value
- * @returns
+ * @param {*} event its a event object contains a number of properties that describe the focus event
  */
 function handleFocus(event) {
   if (event === undefined) event = window.event;
@@ -77,8 +76,7 @@ function handleFocus(event) {
 
 /**
  * click event handler
- * @param {*} event its holding click event value
- * @returns
+ * @param {*} event its a event object contains a number of properties that describe the click event
  */
 function onClickElement(event) {
   if (event === undefined) event = window.event;
@@ -116,7 +114,7 @@ function onClickElement(event) {
 
 /**
  * Select element changeEvent handler
- * @param {*} event its change event value
+ * @param {*} event its a event object contains a number of properties that describe the change event
  */
 function handleChange(event) {
   if (event === undefined) event = window.event;
@@ -280,7 +278,7 @@ function getLocator(e, paths, isFiltered) {
 /**
  * create and return object having element properties(i.e id, class, and so on)
  * @param {*} el its element value
- * @returns created object
+ * @returns created element property object
  */
 function createNode(el) {
   let node = {};
@@ -453,8 +451,8 @@ function validateLocators(locatorList) {
 
 /**
  * creating all possible locator's list
- * @param {*} event its element value
- * @returns created locator list
+ * @param {*} event its a event object contains a number of properties that describe the event that passed to this function on its occurrence
+ * @returns created locator list after filter
  */
 function getLocatorList(event) {
   const paths = filterDomPath(event.target);
@@ -476,7 +474,7 @@ function getLocatorList(event) {
  * get command and event and send payload to background (chrome Extension file)
  * Its creating locator(css and xpath) list
  * @param {*} command its a nexial web command
- * @param {*} event event is target value of element
+ * @param {*} event its a event object contains a number of properties that describe the event that passed to this function on its occurrence
  */
 function sendInspectInfo(command, event) {
   let locatorList = getLocatorList(event);
