@@ -208,7 +208,7 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
 /**
  * Take three parameter and to find locator of active element
  * @param {*} e its refer event.target
- * @param {*} paths its a active element's dom path lsit 
+ * @param {*} paths its a active element's dom path lsit
  * @param {*} isFiltered its having boolean value is path is filtered or not
  * @returns
  */
