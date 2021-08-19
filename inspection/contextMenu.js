@@ -1,6 +1,8 @@
 let contextMenus = chrome.contextMenus;
 
-
+/**
+ * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
+ */
 chrome.runtime.onInstalled.addListener(function () {
   contextMenus.create({
                         title:    "Assert that...",
@@ -74,12 +76,21 @@ chrome.runtime.onInstalled.addListener(function () {
   });
 });
 
+/**
+ * Send message to contentscript
+ * @param {*} info Its hold selected text's value
+ * @param {*} tab Its hold tab info
+ * @param {*} command Its key tells describe current action
+ */
 function callbackContextmenu(info, tab, command) {
   if(command === 'findLocator') {
     sendRunTimeMessage({action: "findLocator"})
   } else sendRunTimeMessage({action: "getContextMenuElement", command: command, selectionText: info.selectionText})
 }
 
+/**
+ * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/contextMenus/
+ */
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
   let command = null;
   sendConsole('log', `CONTEXTMENU`);

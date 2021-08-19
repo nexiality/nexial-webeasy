@@ -1,12 +1,18 @@
-// 'use strict';
 let table = null,  currentStep = 0,  editMode = false;
 
+/**
+ * Update changes to background
+ */
 function updateBackground() {
   chrome.runtime.getBackgroundPage((background) => {
     background.inspectElementList = inspectElementList;
   });
 }
 
+/**
+ * @param {*} step its take step value as input
+ * @returns Its returns inspected object from inspected table.
+ */
 function getCurrentInspectObject(step) {
   let inspectObj = {
     step   : step,
@@ -25,10 +31,20 @@ function getCurrentInspectObject(step) {
   return inspectObj;
 }
 
+/**
+ * Its find array of objects, which property matches step value
+ * @param {*} step Its a property of inspect object
+ * @returns the value of the object in the inspectElementList array, otherwise undefined is returned
+ */
 function getInspectListObject(step) {
   return inspectElementList.find((obj) => obj.step === step);
 }
 
+/**
+ * Toggle element enable and disable
+ * @param {*} element Its element on which toggle performed
+ * @param {*} enable Its contain boolean value to toggle element
+ */
 function toggleElement(element, enable) {
   if (enable) {
     element.removeAttribute("disabled");
@@ -37,15 +53,36 @@ function toggleElement(element, enable) {
   }
 }
 
+/**
+ * delete sub table whose index is passed as parameter
+ * @param {*} tableIndex Its a sub table index
+ */
 function deleteSubTable(tableIndex) {
   let inspectTable = document.getElementById('table_' + tableIndex);
   while (inspectTable.hasChildNodes()) { inspectTable.removeChild(inspectTable.firstChild); }
 }
 
+/**
+ * delete sub table's row whose table and row indexs are passed as parameter
+ * @param {*} tableIndex Its a sub table index
+ * @param {*} rowIndex Its a sub table's row index
+ */
 function deleteSubTableRow(tableIndex, rowIndex) { document.getElementById('table_' + tableIndex).deleteRow(rowIndex); }
 
+/**
+ * Delete table from from main inspect table
+ * @param {*} rowIndex Its a main table's row index
+ */
 function deleteParentTableRow(rowIndex) { table.deleteRow(rowIndex); }
 
+/**
+ * create row in sub table
+ * @param {*} param_table Its sub table's target
+ * @param {*} key Its a command param value
+ * @param {*} data Its row data
+ * @param {*} step Its a number of inspected action
+ * @param {*} editable Its a boolean value to make row's enable and disable
+ */
 function createSubTableRow(param_table, key, data, step, editable) {
   let tr = param_table.insertRow(-1);
   let td = tr.insertCell(-1);
@@ -71,6 +108,11 @@ function createSubTableRow(param_table, key, data, step, editable) {
   td.appendChild(element);
 }
 
+/**
+ * To fetch command's param
+ * @param {*} str its a command string
+ * @returns Its return commands's param in array
+ */
 function getCommandParam(str) {
   if (!str || str === '') return [];
 
@@ -86,7 +128,11 @@ function getCommandParam(str) {
   return arr;
 }
 
-function updateParamRow(step) {
+/**
+ * Update parameter cell of active row
+ * @param {*} step its a inspectObject key to find object from inspectElementList
+ */
+function updateParamCell(step) {
   const paramArr = getCommandParam(document.getElementById("command_" + step).value);
   const inspectListObj = getInspectListObject(step).param;
   for (let index = 0; index < paramArr.length; index++) {
@@ -100,15 +146,23 @@ function updateParamRow(step) {
   }
 }
 
+/**
+ * its allow to edit inspect's table row
+ * @param {*} step its a inspected object key that refer object on which edit action is performed in inspectElementList
+ */
 function editRow(step) {
   toggleEditable(step, true);
   document.getElementById("command_" + step).onchange = function (e) {
     document.getElementById("command_link_" + step).href = `${APP_DOC_URL}/${e.target.value}`;
     deleteSubTable(step);
-    updateParamRow(step);
+    updateParamCell(step);
   };
 }
 
+/**
+ * its update current row object in inspectElementList
+ * @param {*} step its a inspect object key that refer object on which save action is performed in inspectElementList
+ */
 function saveRow(step) {
   toggleEditable(step, false);
   let objIndex = inspectElementList.findIndex((obj) => obj.step === step);
@@ -117,6 +171,11 @@ function saveRow(step) {
   // console.log("AFTER SAVE : ", inspectElementList);
 }
 
+/**
+ * Making row editable or disable according to enable parameter value
+ * @param {*} step its a inspect object key
+ * @param {*} enable its a boolean value to perform enable and disable
+ */
 function toggleEditable(step, enable) {
   const paramArr = getCommandParam(document.getElementById("command_" + step).value);
   toggleElement(document.getElementById("command_" + step), enable);
@@ -128,6 +187,11 @@ function toggleEditable(step, enable) {
   }
 }
 
+/**
+ * Its help to enable action field buttons
+ * @param {*} i its a step
+ * @param {*} enable
+ */
 function toggleActions(/*Number*/ i, /*Boolean*/ enable) {
   document.getElementById("delete_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("edit_" + i).style.display = enable ? "inline-block" : "none";
@@ -139,6 +203,11 @@ function toggleActions(/*Number*/ i, /*Boolean*/ enable) {
   document.getElementById("close_" + i).style.display = enable ? "none" : "inline-block";
 }
 
+/**
+ * It create 'Add below' button for action field to add new row below the active row
+ * @param {*} step
+ * @returns
+ */
 function createAddNewButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark');
@@ -159,6 +228,11 @@ function createAddNewButton(step) {
   return button;
 }
 
+/**
+ * It create duplicate button for action field to append duplicate row of active row
+ * @param {*} step
+ * @returns
+ */
 function createDuplicateButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
@@ -176,6 +250,11 @@ function createDuplicateButton(step) {
   return button;
 }
 
+/**
+ * It create delete button for action field to delete active row
+ * @param {*} step
+ * @returns
+ */
 function createDeleteButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
@@ -192,6 +271,11 @@ function createDeleteButton(step) {
   return button;
 }
 
+/**
+ * It create edit button for action field to edit active row
+ * @param {*} step
+ * @returns
+ */
 function createEditButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
@@ -206,6 +290,11 @@ function createEditButton(step) {
   return button;
 }
 
+/**
+ * It create save button for action field
+ * @param {*} step
+ * @returns
+ */
 function createSaveButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
@@ -220,6 +309,11 @@ function createSaveButton(step) {
   return button;
 }
 
+/**
+ * To create close button for action field
+ * @param {*} step
+ * @returns
+ */
 function createCloseButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
@@ -237,6 +331,12 @@ function createCloseButton(step) {
   return button;
 }
 
+/**
+ * To create either up or down button for action field
+ * @param {*} step
+ * @param {*} direction Its conatin number value to indicate buttun property
+ * @returns
+ */
 function createUpDownButton(step, direction) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark')
@@ -264,6 +364,12 @@ function createUpDownButton(step, direction) {
   return button;
 }
 
+/**
+ * Its a combination of input and button to create custom element
+ * @param {*} key Its a command's parameter value
+ * @param {*} step Its hold step value of object in which inspectElement added
+ * @returns
+ */
 function createInspectElement(key, step) {
   let inspectElement = document.createElement("div"),
       subDiv = document.createElement("div"),
@@ -285,12 +391,24 @@ function createInspectElement(key, step) {
   return inspectElement;
 }
 
+/**
+ * Its frame multiple line data form input box value
+ * @param {*} inputValue
+ * @returns
+ */
 function handleMultiline(inputValue) {
   if (!inputValue) { return ''; }
   if (Array.isArray(inputValue)) { return inputValue; }
   return inputValue.replaceAll("\r", "").replaceAll("\n", "(eol)");
 }
 
+/**
+ * create inpuut box for param field in sub table
+ * @param {*} data  Its a value for input box
+ * @param {*} id Its a id attribute value
+ * @param {*} editable Its boolean to set disable value of input box
+ * @returns
+ */
 function createInputBox(data, id, editable = true) {
   let input = document.createElement("INPUT");
   input.setAttribute("type", "text");
@@ -301,6 +419,12 @@ function createInputBox(data, id, editable = true) {
   return input;
 }
 
+/**
+ * create link icon to open web document
+ * @param {*} searchString Its contain url of web command
+ * @param {*} step Its a step key of object in which icon will append
+ * @returns
+ */
 function createDocLink(searchString, step) {
   const docLink = document.createElement("A");
   docLink.setAttribute("class", "command-link");
@@ -314,6 +438,9 @@ function createDocLink(searchString, step) {
   return docLink;
 }
 
+/**
+ * Its is used to upadte row of inspect table
+ */
 function updateTableRow() {
   const rows = table.tBodies[0].rows;
 
@@ -329,6 +456,12 @@ function updateTableRow() {
   }
 }
 
+/**
+ * Create sub Table in param cell of inspect table
+ * @param {*} data Its hold value of row's cell
+ * @param {*} step Its step key of inserted object
+ * @returns
+ */
 function createSubTable(data, step) {
   const param_table = document.createElement("table");
   param_table.setAttribute('class', 'sub-table');
@@ -340,6 +473,11 @@ function createSubTable(data, step) {
   return param_table;
 }
 
+/**
+ * Its add row in inspect table and add different action's button (i.e edit, delete and so on)
+ * @param {*} data Its hold value of row's cell (like step, command, param)
+ * @param {*} indexAt Its a rowIndex property That tell the position of a row in the rows of a inspect table
+ */
 function addRow(data, indexAt = -1) {
   let tr = table.tBodies[0].insertRow(indexAt);
   if (!data['step']) {
@@ -376,6 +514,9 @@ function addRow(data, indexAt = -1) {
   }
 }
 
+/**
+ * Its create table structure from inspectElementList
+ */
 function tableFromJson() {
   let i;
   let col = [];

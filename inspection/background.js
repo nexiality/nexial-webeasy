@@ -5,6 +5,10 @@ let step = 1;
 // Add a `manifest` property to the `chrome` object.
 chrome.manifest = chrome.app.getDetails();
 
+/**
+ * Send message to start Inspection
+ * @param {*} url Its a web address
+ */
 function start(url) {
   printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
   window.inspectElementList = [];
@@ -13,6 +17,9 @@ function start(url) {
   sendRunTimeMessage({action: window.inspectStatus, startStep: step})
 }
 
+/**
+ * Send message to stop inspection
+ */
 function stop() {
   printLog('groupend', `BACKGROUND RECEIVED STOP INSPECTING`);
   window.inspectStatus = 'stop';
@@ -22,6 +29,9 @@ function stop() {
   updateBadge();
 }
 
+/**
+ * Send message to pause inspection
+ */
 function pause() {
   printLog( `BACKGROUND RECEIVED PAUSE INSPECTING`);
   window.inspectStatus = 'paused';
@@ -29,11 +39,17 @@ function pause() {
   updateBadge();
 }
 
+/**
+ * clear inspected list
+ */
 function clear() {
   window.inspectElementList = [];
   updateBadge();
 }
 
+/**
+ * add and remove badge from extension icon
+ */
 function updateBadge() {
   if (window.inspectStatus === 'start' && inspectingTab) {
     chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
@@ -43,11 +59,19 @@ function updateBadge() {
   }
 }
 
+/**
+ * add open url inspection in inspectElementList
+ * @param {*} url Its a web address
+ */
 function loadListener(url) {
   printLog( 'CREATE OPEN URL ENTRY');
   window.inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
 }
 
+/**
+ * Open new tab if url exits and record inspecting tab
+ * @param {*} url Its a web address
+ */
 function createOpenURLEntry(url) {
   if (url) {
     chrome.tabs.create({"url": url}, function (tab) {
@@ -69,6 +93,10 @@ function createOpenURLEntry(url) {
   }
 }
 
+/**
+ * Used to communicated
+ * @param {*} message its a data that we want to pass
+ */
 function sendRunTimeMessage(message) {
   // console.log(' SEND  MESSAGE - ', message )
   chrome.tabs.query({ active: !0, currentWindow: !0 }, function (tabs) {
@@ -79,12 +107,19 @@ function sendRunTimeMessage(message) {
   });
 }
 
+/**
+ * fetch and return current active tab
+ * @returns current tab
+ */
 async function getCurrentTab() {
   let queryOptions = { active: true, currentWindow: true };
   let [tab] = await chrome.tabs.query(queryOptions);
   return tab;
 }
 
+/**
+ * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/mv3/content_scripts/
+ */
 let injectIntoTab = function (tab) {
   let scripts = chrome.manifest.content_scripts[0].js;
   let i = 0, s = scripts.length;
@@ -96,6 +131,9 @@ let injectIntoTab = function (tab) {
 }
 
 // Get all windows
+/**
+ * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/windows/
+ */
 chrome.windows.getAll({
   populate: true
 }, function (windows) {
@@ -113,6 +151,9 @@ chrome.windows.getAll({
   }
 });
 
+/**
+ * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/tabs/
+ */
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (window.inspectStatus === 'start' && changeInfo.status === 'complete') {
     sendRunTimeMessage({action: window.inspectStatus, startStep: step});
@@ -120,6 +161,9 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   }
 })
 
+/**
+ * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
+ */
 chrome.runtime.onMessage.addListener(function (action) {
 
   switch (action.cmd) {

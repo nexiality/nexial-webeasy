@@ -14,13 +14,17 @@ const INPUT_TOGGLE_TYPES = ["radio", "checkbox"];
 const HAS_PARENT = ["label", "i", "h1", "h2", "h3", "h4", "h5", "h6", "a", "button"]; //, "div", "span"]; // placed Orderwise
 const ATTRIB_HUMAN_READABLE = ["aria-label", "placeholder", "title", "alt"];
 
-// Append Style on hover get element
+// Append Style on hover get element and show locator window
 let style = document.createElement("link");
 style.rel = "stylesheet";
 style.type = "text/css";
 style.href = chrome.extension.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
+/**
+ * To start inspecting
+ * @param {*} stepValue Its a number of inspect
+ */
 function start(stepValue) {
   sendConsole("log", "BROWSER RECEIVED: START INSPECTING");
   step = stepValue + 1;
@@ -32,12 +36,19 @@ function start(stepValue) {
   document.addEventListener("change", handleChange);
 }
 
+/**
+ * To stop inspecting
+ */
 function stop() {
   document.removeEventListener("focus", handleFocus, true);
   document.removeEventListener("mousedown", onClickElement);
   document.removeEventListener("change", handleChange);
 }
 
+/**
+ * Focus event Handler
+ * @param {*} event its a event object contains a number of properties that describe the focus event
+ */
 function handleFocus(event) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
@@ -64,6 +75,10 @@ function handleFocus(event) {
   });
 }
 
+/**
+ * click event handler
+ * @param {*} event its a event object contains a number of properties that describe the click event
+ */
 function onClickElement(event) {
   // adding 'mousemove' to track whether something is being highlighted and not clicked
   document.addEventListener("mousemove", onMoveElement);
@@ -86,7 +101,7 @@ function onMouseUp(event) {
     return;
   }
 
-  if (focusedInput && focusedInput.target.value) {
+  if (focusedInput?.target.value) {
     sendConsole("log", "INPUT FOCUSOUT: ", focusedInput.target);
     sendInspectInfo("type(locator,value)", focusedInput);
     focusedInput = null;
@@ -119,6 +134,10 @@ function onMouseUp(event) {
 }
 }
 
+/**
+ * Select element changeEvent handler
+ * @param {*} event its a event object contains a number of properties that describe the change event
+ */
 function handleChange(event) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
@@ -158,6 +177,14 @@ function cssAttrSelector(name, value) {
   return parts.map(part => "[" + name + "='" + part + "']").join('');
 }
 
+/**
+ * creating list of base and relative path of css and xpath selectors
+ * @param {*} el its element's target
+ * @param {*} baseXpathNode base xpath of element
+ * @param {*} baseCssPath base css path of element
+ * @param {*} isFiltered its having boolean to inform path is filteres or not
+ * @returns create path list
+ */
 function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   let res = {
     xpath: [],
@@ -200,6 +227,13 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   return res;
 }
 
+/**
+ * Take three parameter and to find locator of active element
+ * @param {*} e its refer event.target
+ * @param {*} paths its a active element's dom path lsit
+ * @param {*} isFiltered its having boolean value is path is filtered or not
+ * @returns
+ */
 function getLocator(e, paths, isFiltered) {
   let locator         = [],
       xpath           = [],
@@ -222,13 +256,13 @@ function getLocator(e, paths, isFiltered) {
         css = path.css;
       }
 
-      if (el.node === "label" && el.attribute && el.attribute["for"]) {
+      if (el.node === "label" && el.attribute?.for) {
         path = createPaths(el.attribute["for"], "", "", isFiltered);
         xpath.concat(path.xpath);
         css.concat(path.css);
       }
 
-      if (el.innerText && el.innerText.length <= INNER_TEXT_LENGTH) {
+      if (el.innerText?.length <= INNER_TEXT_LENGTH) {
         let compareText = updatingText(el.innerText);
         // use `text()` when possible for added accuracy
         let xpathViaText = "xpath=//" + el.node +
@@ -241,49 +275,6 @@ function getLocator(e, paths, isFiltered) {
           selectedLocator = xpathViaText;
         }
       }
-
-      // special treatment for input element
-      // if (el.node && el.node === "input" && el.attribute["type"]) {
-        // let inputType = el.attribute["type"];
-        // let inputName = el.attribute["name"];
-        // let inputId = el.attribute["id"];
-
-        // let cssFragment = "[type='" + inputType + "']";
-        // let xpathFragment = "[@type='" + inputType + "'";
-        // for input element, prefer name over id
-        // if (inputName) {
-        //   cssFragment += "[name='" + inputName + "']";
-        //   xpathFragment += " and @name='" + inputName + "'";
-        // } else if (inputId) {
-        //   cssFragment = "#" + inputId + cssFragment;
-        //   xpathFragment += " and @id='" + inputId + "'";
-        // }
-
-        // for (let j = 0; j < ATTRIB_HUMAN_READABLE; j++) {
-        //   let attribName = ATTRIB_HUMAN_READABLE[j];
-        //   let attribValue = el.attribute[attribName];
-        //   if (attribValue) {
-        //     cssFragment += "[" + attribName + "='" + attribValue + "']";
-        //     xpathFragment += " and @" + attribName + "='" + attribValue + "'";
-        //     break;
-        //   }
-        // }
-
-        // if (INPUT_TOGGLE_TYPES.includes(inputType)) {
-        //   let inputValue = el.attribute["value"];
-        //   if (inputValue) {
-        //     cssFragment += "[value='" + inputValue + "']";
-        //     xpathFragment += " and @value='" + inputValue + "'";
-
-        //     // for <input type='checkbox' ...> or <input type='radio' ...> we'd prefer the selector with `value`
-        //     selectedLocator = "css=input" + cssFragment;
-        //   }
-        // }
-
-        // xpath.push("xpath=//input" + xpathFragment + "]");
-        // css.push("css=input" + cssFragment);
-        // console.log("xpath=//input" + xpathFragment + "]", "css=input" + cssFragment, "####################################")
-      // }
     } else {
       // Relative XPath: //div[@class='something']//h4[1]//b[1]
       let activeElxpath = xpath[0] ? xpath[0] : "xpath=//" + activeElnode;
@@ -306,6 +297,11 @@ function getLocator(e, paths, isFiltered) {
   };
 }
 
+/**
+ * create and return object having element properties(i.e id, class, and so on)
+ * @param {*} el its element value
+ * @returns created element property object
+ */
 function createNode(el) {
   let node = {};
   node["node"] = el.nodeName.toLowerCase();
@@ -314,11 +310,11 @@ function createNode(el) {
   if (el.hasAttributes()) {
     for (let i = 0; i <= HAS_ATTRIBUTES.length - 1; i++) {
       const attr = el.attributes[`${HAS_ATTRIBUTES[i]}`];
-      if (attr && attr.name && attr.value) node["attribute"][attr.name] = attr.value;
+      if (attr?.name && attr.value) node["attribute"][attr.name] = attr.value;
     }
   }
   // special case for label: label often has a target (attribute:for). we can use the target to derive locators
-  if (node["node"] === "label" && el.attributes && el.attributes["for"]) {
+  if (node["node"] === "label" && el.attributes?.for) {
     const labelFor = el.attributes['for'].value;
     const labelEl = document.getElementById(labelFor);
     node["attribute"]["for"] = createNode(labelEl);
@@ -326,6 +322,11 @@ function createNode(el) {
   return node;
 }
 
+/**
+ * collecting dom path of active element
+ * @param {*} el collecting path of el
+ * @returns path of el
+ */
 function getDomPath(el) {
   // sendConsole("group", "DOM PATH LIST");
   let stack = [];
@@ -342,6 +343,11 @@ function getDomPath(el) {
   return stack;
 }
 
+/**
+ * filtering dom path's to find main parent and ansestor
+ * @param {*} el
+ * @returns filter dom path list
+ */
 function filterDomPath(el) {
   let domPathList = getDomPath(el);
   let domFilterList = [];
@@ -359,7 +365,7 @@ function filterDomPath(el) {
     const node = domPathList[index];
     if (FIND_PARENTS.includes(node["node"]) || index === domPathList.length - 1) {
       if (node["node"] === "div") {
-        if (node["attribute"] && node["attribute"]["id"]) {
+        if (node.attribute?.id) {
           domFilterList.push(node);
         }
       } else domFilterList.push(node);
@@ -376,6 +382,11 @@ function filterDomPath(el) {
   };
 }
 
+/**
+ * finding xpath selector after validation if no locator left
+ * @param {*} element el is element
+ * @returns return xpath of provided element
+ */
 function getXPath(element) {
   //Todo: sort in simple form
   if (element.id !== "") return '//*[@id="' + element.id + '"]';
@@ -391,6 +402,11 @@ function getXPath(element) {
   }
 }
 
+/**
+ * finding css selector after validation if no locator left
+ * @param {*} el its element
+ * @returns css path of provided element
+ */
 function getCssPath(el) {
   //Todo: sort in simple form
   if (!(el instanceof Element)) return;
@@ -415,49 +431,25 @@ function getCssPath(el) {
   return path.join(" > ");
 }
 
-// special case for label: label often has a target (attribute:for). we can use the target to derive locators
-function resolveLabelTargetAsLocators(event, locatorList) {
-  // if (event.target.tagName.toLowerCase() === "label" && event.target.attributes && event.target.attributes["for"]) {
-  //   let targetId = event.target.attributes['for'].value;
-  //   let targetInput = document.getElementById(targetId);
-  //   if (targetInput) {
-  //     let targetTag = (targetInput.tagName || "").toLowerCase();
-  //     let targetType = targetInput.attributes["type"].value;
-  //     let targetValue = targetInput.attributes["value"].value;
-
-  //     let targetCssPrefix = (targetTag || '') + "#" + targetId +
-  //                           (targetType ? "[type='" + targetType + "']" : "") +
-  //                           (targetValue ? "[value='" + targetValue + "']" : "");
-
-  //     let targetXpathSuffix = "@id='" + targetId + "']";
-  //     let targetXpathPrefix = "//" + (targetTag || "*") + "[" +
-  //                             (targetType ? "@type='" + targetType + "' and " : "") +
-  //                             (targetValue ? "@value='" + targetValue + "' and " : "");
-
-  //     locatorList.selectedLocator = "css=" + targetCssPrefix;
-  //     locatorList.locator.push("css=" + targetCssPrefix,
-  //                              "css=#" + targetId,
-  //                              "xpath=" + targetXpathPrefix + targetXpathSuffix,
-  //                              "xpath=//*[" + targetXpathSuffix);
-  //   }
-  // }
-}
-
 // test locators; remove invalid ones
+/**
+ * Its validate Locator list, on base of css, xpath, id and name and return validated ones
+ * @param {*} locatorList  its locator list
+ */
 function validateLocators(locatorList) {
   let filtered = locatorList.locator.filter(locator => {
     if (locator.startsWith("css=")) {
       let css = locator.substring(4);
       let matches = document.querySelectorAll(css);
       // sendConsole("log", "testing css selector " + css, matches);
-      return matches && matches.length === 1;
+      return matches?.length === 1;
     }
     if (locator.startsWith("xpath=")) {
       let xpath = locator.substring(6);
       let matches = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
       // sendConsole("log", "testing xpath selector " + xpath, matches);
       // must return exactly 1 result
-      if (matches && matches.resultType === 4) {
+      if (matches?.resultType === 4) {
         if (!matches.iterateNext()) return false;
         return !matches.iterateNext();
       } else {
@@ -467,7 +459,7 @@ function validateLocators(locatorList) {
     if (locator.startsWith("name=")) {
       let name = locator.substring(5);
       let matches = document.getElementsByName(name);
-      return matches && matches.length === 1;
+      return matches?.length === 1;
     }
     if (locator.startsWith("id=")) { return document.getElementById(locator.substring(3)); }
     return true;
@@ -479,6 +471,11 @@ function validateLocators(locatorList) {
   }
 }
 
+/**
+ * creating all possible locator's list
+ * @param {*} event its a event object contains a number of properties that describe the event that passed to this function on its occurrence
+ * @returns created locator list after filter
+ */
 function getLocatorList(event) {
   const paths = filterDomPath(event.target);
   const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
@@ -487,7 +484,6 @@ function getLocatorList(event) {
   // sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
   sendConsole("log", "LOCATOR LIST (filtered? " + paths.isFiltered + "): ", locatorList);
 
-  // resolveLabelTargetAsLocators(event, locatorList);
   validateLocators(locatorList);
   if (!locatorList.locator.length) {
     locatorList.locator = ["css=" + getCssPath(event.target), "xpath=" + getXPath(event.target)];
@@ -496,6 +492,12 @@ function getLocatorList(event) {
   return locatorList;
 }
 
+/**
+ * get command and event and send payload to background (chrome Extension file)
+ * Its creating locator(css and xpath) list
+ * @param {*} command its a nexial web command
+ * @param {*} event its a event object contains a number of properties that describe the event that passed to this function on its occurrence
+ */
 function sendInspectInfo(command, event) {
   let locatorList = getLocatorList(event);
   let locator = locatorList.locator;
@@ -571,6 +573,10 @@ document.addEventListener(
   true
 );
 
+/**
+ * Chrome Extension API
+ * here used to communicate with background
+ */
 chrome.runtime.onMessage.addListener(function (request) {
   switch (request.action) {
     case "getContextMenuElement":
