@@ -1,4 +1,4 @@
-let clickedElement = null, selectionText = null;
+let isClick = 1;
 let focusedInput = null;
 let step = null;
 const HAS_ATTRIBUTES = ["name", "id", "aria-label", "placeholder", "title", "alt", "class", "value", "type"]; //Order priority wise
@@ -28,6 +28,7 @@ function start(stepValue) {
   clickedElement = null;
   document.addEventListener("focus", handleFocus, true);
   document.addEventListener("mousedown", onClickElement); 
+  document.addEventListener("mouseup", onMouseUp);
   document.addEventListener("change", handleChange);
 }
 
@@ -64,6 +65,18 @@ function handleFocus(event) {
 }
 
 function onClickElement(event) {
+  // adding 'mousemove' to track whether something is being highlighted and not clicked
+  document.addEventListener("mousemove", onMoveElement);
+}
+
+function onMoveElement(event) {
+  isClick = 0;
+}
+function onMouseUp(event) {
+  // removing 'mousemove' because it's not required after user is done selecting some text
+  document.removeEventListener("mousemove", onMoveElement);
+
+  if (isClick == 1) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
 
@@ -79,7 +92,10 @@ function onClickElement(event) {
     focusedInput = null;
   }
 
-  if ((target.tagName === "DIV" && target.innerText) || CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())) {
+    if (
+      (target.tagName === "DIV" && target.innerText) ||
+      CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())
+    ) {
     sendConsole("log", "CLICK: ", target.tagName);
     sendInspectInfo("click(locator)", event);
     return;
@@ -91,10 +107,16 @@ function onClickElement(event) {
       return;
     }
     if (INPUT_TOGGLE_TYPES.includes(target.type)) {
-      sendInspectInfo(target.checked ? "checkAll(locator,waitMs)" : "uncheckAll(locator,waitMs)", event);
+        sendInspectInfo(
+          target.checked
+            ? "checkAll(locator,waitMs)"
+            : "uncheckAll(locator,waitMs)",
+          event
+        );
       return;
     }
   }
+}
 }
 
 function handleChange(event) {
