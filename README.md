@@ -19,3 +19,6 @@ Current feature set includes:
 7. On-demand locator inspector -- Useful even if you are not using Nexial!
 8. Oh ya, did we mention it's _**FREE**_?!
 
+# Installation nexial-webeasy
+
+Add the chrome extension of Nexial WebEZ from the Chrome web store by clicking on the following URL : [Nexial - WebEZ](https://chrome.google.com/webstore/detail/nexial-webez/ncngjmjcpjonbilhgolpdloabaemdngk?gclid=Cj0KCQiA2NaNBhDvARIsAEw55hjVPSJjsphBqyf2dNqCKnavIb8yieXembHft127ocnDCtIe2UfH1OsaAgLoEALw_wcB). 
