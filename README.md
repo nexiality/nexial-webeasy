@@ -21,4 +21,9 @@ Current feature set includes:
 
 # Installation nexial-webeasy
 
-Add the chrome extension of Nexial WebEZ from the Chrome web store by clicking on the following URL : [Nexial - WebEZ](https://chrome.google.com/webstore/detail/nexial-webez/ncngjmjcpjonbilhgolpdloabaemdngk?gclid=Cj0KCQiA2NaNBhDvARIsAEw55hjVPSJjsphBqyf2dNqCKnavIb8yieXembHft127ocnDCtIe2UfH1OsaAgLoEALw_wcB). 
+Add the chrome extension of Nexial WebEZ from the Chrome web store by clicking on the following URL : [Nexial - WebEZ](https://chrome.google.com/webstore/detail/nexial-webez/ncngjmjcpjonbilhgolpdloabaemdngk).
+
+
+# Working with nexial-webeasy
+
+[![WORKING WITH NEXIAL WEB-EZ](http://img.youtube.com/vi/vI7RcMbF95s/0.jpg)](https://youtu.be/vI7RcMbF95s) 
