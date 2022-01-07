@@ -171,11 +171,11 @@ select {
 }
 
 #inspect_table > tbody > tr > td:nth-child(2) {
-  width: 40%;
+  width: 39%;
 }
 
 #inspect_table > tbody > tr > td:nth-child(3) {
-  width:          40%;
+  width:          39%;
   padding:        0 !important;
   vertical-align: top;
 }

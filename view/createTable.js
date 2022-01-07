@@ -89,7 +89,6 @@ function createSubTableRow(param_table, key, data, step, editable) {
   let element = "";
   const id = key + "_" + step;
   td.setAttribute("title", key);
-
   if (key === "locator" && data) {
     element = createSelectElement(data, id, editable);
     const inspectListObject = getInspectListObject(step);
@@ -194,6 +193,7 @@ function toggleEditable(step, enable) {
  */
 function toggleActions(/*Number*/ i, /*Boolean*/ enable) {
   document.getElementById("delete_" + i).style.display = enable ? "inline-block" : "none";
+  document.getElementById("copy_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("edit_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("addNew_" + i).style.display = enable ? "inline-block" : "none";
   document.getElementById("duplicate_" + i).style.display = enable ? "inline-block" : "none";
@@ -255,6 +255,27 @@ function createDuplicateButton(step) {
  * @param {*} step
  * @returns
  */
+ function createCopyButton(step) {
+  let button = document.createElement('button');
+  button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
+  button.setAttribute('id',('copy_' + step));
+  button.setAttribute('title', 'Copy');
+  button.innerHTML = '<i class="fa fa-copy"></i>';
+  button.onclick = function (e) {
+    const indexAt = document.getElementById('step_' + step).rowIndex;
+    let payload = Object.assign({}, getInspectListObject(step));
+    let copyvalue;
+    if (payload.actions.selectedLocator){
+      copyvalue = payload.actions.selectedLocator;
+    } 
+    else{
+      copyvalue = payload.param.url;
+    }
+    navigator.clipboard.writeText(copyvalue);
+  };
+  return button;
+}
+
 function createDeleteButton(step) {
   let button = document.createElement('button');
   button.setAttribute('class', 'btn text-dark delete-button ripple-surface')
@@ -490,6 +511,7 @@ function addRow(data, indexAt = -1) {
     let cell = tr.insertCell(-1);
     if (key === "actions") {
       cell.appendChild(createEditButton(currentStep));
+      cell.appendChild(createCopyButton(currentStep));
       cell.appendChild(createDeleteButton(currentStep));
       cell.appendChild(createSaveButton(currentStep));
       cell.appendChild(createCloseButton(currentStep));
