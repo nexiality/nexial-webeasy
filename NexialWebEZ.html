@@ -24,11 +24,11 @@
             <div class="form-row" id="startOption">
               <div class="form-group col-9">
                 <div class="form-row">
-                  <div class="col">
+                  <div>
                     <label for="url" class="col-form-label ml-3 mr-2">Enter URL:</label>
                   </div>
                   <div class="col-7">
-                    <input type="text" class="col-sm-7 form-control" id="url" placeholder="URL">
+                    <input type="text" class="form-control" id="url" placeholder="URL">
                     <div class="valid-feedback">Please enter a valid URL (e.g. <code>https://www.google.com</code>)</div>
                   </div>
                   <div class="col">
@@ -37,7 +37,7 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group col-3">
+              <div class="form-group col-3" style="text-align: end;">
                 <input type="button" class="btn btn-primary mb-1" id="nowInspect" value="Inspect Current Page">
                 <span class="badge" data-toggle="modal" data-target="#infoModal" id="nowInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
               </div>
