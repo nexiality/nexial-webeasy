@@ -265,12 +265,7 @@ function createDuplicateButton(step) {
     const indexAt = document.getElementById('step_' + step).rowIndex;
     let payload = Object.assign({}, getInspectListObject(step));
     let copyvalue;
-    if (payload.actions.selectedLocator){
-      copyvalue = payload.actions.selectedLocator;
-    } 
-    else{
-      copyvalue = payload.param.url;
-    }
+ (payload.actions.selectedLocator) ? copyvalue = payload.actions.selectedLocator : copyvalue = payload.param.url;
     navigator.clipboard.writeText(copyvalue);
   };
   return button;
