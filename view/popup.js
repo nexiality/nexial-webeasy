@@ -26,6 +26,8 @@ function openDocLink(url) {
       });
     }
   });
+
+
 }
 
 function info(title, text) {
@@ -38,10 +40,13 @@ function clear() {
   while (table && table.hasChildNodes()) { table.removeChild(table.firstChild); }
   inspectElementList = [];
   // Messenger.sendInternalMessage({cmd: 'clear_inspection', value: ''});
-  chrome.runtime.getBackgroundPage((background) => {
-    background.clear();
-  });
+  // chrome.runtime.getBackgroundPage((background) => {
+  //   background.clear();
+  // });
+  
   document.getElementById("inspectDataOption").style.display = "none";
+  chrome.runtime.sendMessage({callClearMethod: 'clear'}, (response)=> {
+  });
 }
 
 function createScript() {
@@ -88,15 +93,25 @@ function stop() {
   document.getElementById("inspectDataOption").style.display = "none";
   document.getElementById("stopOption").style.display = "none";
   document.getElementById("showStatus").style.display = "none";
-  chrome.runtime.getBackgroundPage((background) => {
-    inspectElementList = background.inspectElementList;
-    // console.log('STOP STATUS : ', inspectElementList)
-    if (inspectElementList.length) {
+  // chrome.runtime.getBackgroundPage((background) => {
+  //   inspectElementList = background.inspectElementList;
+  //   // console.log('STOP STATUS : ', inspectElementList)
+  //   if (inspectElementList.length) {
+  //     document.getElementById("showData").style.display = "block";
+  //     document.getElementById("inspectDataOption").style.display = "block";
+  //     tableFromJson();
+  //   }
+  // });
+
+  chrome.storage?.local?.get(['inspectList'],(result)=>{
+    
+    if (result?.inspectList?.length > 0) {
       document.getElementById("showData").style.display = "block";
       document.getElementById("inspectDataOption").style.display = "block";
       tableFromJson();
     }
-  });
+  })
+
 }
 
 function pause() {
@@ -144,8 +159,11 @@ startInspect.addEventListener("click", function () {
     return;
   }
   start();
-  chrome.runtime.getBackgroundPage((background) => {
-    background.start(url);
+  // chrome.runtime.getBackgroundPage((background) => {
+  //   background.start(url);
+  // });
+
+  chrome.runtime.sendMessage({callStartMethod: 'start'}, function(response) {
   });
 });
 startInspect.addEventListener("mouseover", () => setClasses("startInspectInfo", "badge badge-focus"));
@@ -153,8 +171,8 @@ startInspect.addEventListener("mouseout", () => setClasses("startInspectInfo", "
 
 nowInspect.addEventListener("click", function () {
   start();
-  chrome.runtime.getBackgroundPage((background) => {
-    background.start('');
+  chrome.runtime.sendMessage({callStartMethod: 'start'}, function(response) {
+    
   });
 }, false);
 nowInspect.addEventListener("mouseover", () => setClasses("nowInspectInfo", "badge badge-focus"));
@@ -162,8 +180,11 @@ nowInspect.addEventListener("mouseout", () => setClasses("nowInspectInfo", "badg
 
 stopInspect.addEventListener("click", function () {
   stop();
-  chrome.runtime.getBackgroundPage((background) => {
-    background.stop();
+  // chrome.runtime.getBackgroundPage((background) => {
+  //   console.log(background);
+  //   background.stop();
+  // });
+  chrome.runtime.sendMessage({callStopMethod: 'stop'}, function(response) {
   });
 });
 
@@ -178,13 +199,17 @@ closePopup.addEventListener("click", function () {
 }, false);
 
 copyToNexial.addEventListener("click", function () {
+  
   let dummy = document.body.appendChild(document.createElement("textarea"));
-  dummy.value = createScript();
-  document.body.appendChild(dummy);
-  dummy.focus();
-  dummy.select();
-  document.execCommand('copy');
-  document.body.removeChild(dummy);
+  chrome?.storage?.local.get(['inspectList'],(result)=>{
+      inspectElementList = result?.inspectList;
+      dummy.value = createScript();
+      document.body.appendChild(dummy);
+      dummy.focus();
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+  });    
 }, false);
 copyToNexial.addEventListener("mouseover", () => setClasses("copyToNexialInfo", "badge badge-focus"));
 copyToNexial.addEventListener("mouseout", () => setClasses("copyToNexialInfo", "badge"));
@@ -247,13 +272,12 @@ document.getElementById("copyToNexialInfo").addEventListener("click", function (
 
 
 window.onload = function () {
-  // console.log("popup loaded");
-  chrome.runtime.getBackgroundPage((background) => {
-    // console.log(background)
-    const inspectStatus = background.inspectStatus;
-    // console.log("current status", inspectStatus)
-    if (inspectStatus === 'start') start();
-    else if (inspectStatus === 'paused') pause();
-    else if (inspectStatus === 'stop') stop();
-  });
+    var inspectStatus;
+    
+    chrome.storage?.local?.get(['inspectStatus'],(result)=>{ 
+      inspectStatus = result?.inspectStatus;
+      if (inspectStatus === 'start') start();
+      else if (inspectStatus === 'paused') pause();
+      else if (inspectStatus === 'stop') stop();
+    });
 }

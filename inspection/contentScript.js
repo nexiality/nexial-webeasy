@@ -18,7 +18,8 @@ const ATTRIB_HUMAN_READABLE = ["aria-label", "placeholder", "title", "alt"];
 let style = document.createElement("link");
 style.rel = "stylesheet";
 style.type = "text/css";
-style.href = chrome.extension.getURL("resources/style/nexial.css");
+
+style.href =chrome.runtime.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
 /**
@@ -90,8 +91,7 @@ function onMoveElement(event) {
 function onMouseUp(event) {
   // removing 'mousemove' because it's not required after user is done selecting some text
   document.removeEventListener("mousemove", onMoveElement);
-
-  if (isClick == 1) {
+  
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
 
@@ -106,11 +106,11 @@ function onMouseUp(event) {
     sendInspectInfo("type(locator,value)", focusedInput);
     focusedInput = null;
   }
-
-    if (
+  if (
       (target.tagName === "DIV" && target.innerText) ||
       CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())
     ) {
+    console.log('UMMMMMMMM')
     sendConsole("log", "CLICK: ", target.tagName);
     sendInspectInfo("click(locator)", event);
     return;
@@ -131,7 +131,7 @@ function onMouseUp(event) {
       return;
     }
   }
-}
+
 }
 
 /**
@@ -437,6 +437,7 @@ function getCssPath(el) {
  * @param {*} locatorList  its locator list
  */
 function validateLocators(locatorList) {
+  
   let filtered = locatorList.locator.filter(locator => {
     if (locator.startsWith("css=")) {
       let css = locator.substring(4);
@@ -510,7 +511,7 @@ function sendInspectInfo(command, event) {
       selectedLocator: selectedLocator,
     },
   };
-
+  console.log('send inspect info...');
   switch (command) {
     case "click(locator)":
     case "assertElementPresent(locator)":
@@ -560,8 +561,11 @@ function sendInspectInfo(command, event) {
     value: data,
   };
 
+  console.log(payload);
+
   if (!chrome || !chrome.runtime || !payload) return;
   sendConsole("log", "SEND PAYLOAD :", payload);
+
   chrome.runtime.sendMessage(payload);
 }
 
@@ -578,36 +582,48 @@ document.addEventListener(
  * here used to communicate with background
  */
 chrome.runtime.onMessage.addListener(function (request) {
-  switch (request.action) {
-    case "getContextMenuElement":
-      selectionText = request.selectionText;
-      if (!clickedElement) {
-        console.error('No element found');
+    switch (request.action) {
+      case "getContextMenuElement":
+        selectionText = request.selectionText;
+        if (!clickedElement) {
+          console.error('No element found');
+          break;
+        }
+        sendInspectInfo(request.command, clickedElement);
+        clickedElement = null;
         break;
-      }
-      sendInspectInfo(request.command, clickedElement);
-      clickedElement = null;
-      break;
-    case "start":
-      start(request.startStep);
-      break;
-    case "stop":
-      stop();
-      step = null;
-      focusedInput = null;
-      clickedElement = null;
-      break;
-    case "paused":
-      stop();
-      break;
-    case "findLocator":
-      if (!clickedElement) {
-        console.error('No element found');
+      case "start":
+        start(request.startStep);
         break;
-      }
-      createUI(getLocatorList(clickedElement).locator);
-      clickedElement = null;
-      break;
-  }
-  sendConsole("info", `BROWSER : ${request.action} INSPECTING`);
+      case "stop":
+        stop();
+        step = null;
+        focusedInput = null;
+        clickedElement = null;
+        break;
+      case "paused":
+        stop();
+        break;
+      case "findLocator":
+        if (!clickedElement) {
+          console.error('No element found');
+          break;
+        }
+        createUI(getLocatorList(clickedElement).locator);
+        clickedElement = null;
+        break;
+    }
+    sendConsole("info", `BROWSER : ${request.action} INSPECTING`);
+  // }
+  
 });
+
+
+
+// chrome.runtime.sendMessage({ msg: "Text field changed", data: textFieldContent }, (response) => {
+//   // If this message's recipient sends a response it will be handled here 
+//   if (response) {
+//     // do cool things with the response
+//     // ...
+//   }
+// });

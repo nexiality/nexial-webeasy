@@ -7,6 +7,7 @@ function sendConsole(level, logging, data = null) {
   };
   if (APP_ENV === "development") {
     printLog(level, logging, data);
+    console.log(chrome);
     chrome.runtime.sendMessage(payload);
   }
 }

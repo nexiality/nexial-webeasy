@@ -4,6 +4,7 @@ let contextMenus = chrome.contextMenus;
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
  */
 chrome.runtime.onInstalled.addListener(function () {
+  console.log(contextMenus);
   contextMenus.create({
                         title:    "Assert that...",
                         id:       "assert...",
