@@ -110,7 +110,7 @@ function onMouseUp(event) {
       (target.tagName === "DIV" && target.innerText) ||
       CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())
     ) {
-    console.log('UMMMMMMMM')
+      
     sendConsole("log", "CLICK: ", target.tagName);
     sendInspectInfo("click(locator)", event);
     return;

@@ -170,10 +170,28 @@ startInspect.addEventListener("mouseover", () => setClasses("startInspectInfo", 
 startInspect.addEventListener("mouseout", () => setClasses("startInspectInfo", "badge"));
 
 nowInspect.addEventListener("click", function () {
-  start();
-  chrome.runtime.sendMessage({callStartMethod: 'start'}, function(response) {
-    
+  chrome?.storage?.local.get(['inspectList'],(result)=>{
+
+    if(result?.inspectList?.length > 0)
+    {
+      const response = confirm("There are some steps already captured once you start inspecting it will clear eariler steps.?");
+      if(response)
+      {
+        start();
+        $('#inspect_table').remove();
+        chrome.runtime.sendMessage({callStartMethod: 'start'}, function(response) {
+          
+        });
+      }
+    }
+    else{
+      start();
+      chrome.runtime.sendMessage({callStartMethod: 'start'}, function(response) {
+        
+      });
+    }
   });
+  
 }, false);
 nowInspect.addEventListener("mouseover", () => setClasses("nowInspectInfo", "badge badge-focus"));
 nowInspect.addEventListener("mouseout", () => setClasses("nowInspectInfo", "badge"));

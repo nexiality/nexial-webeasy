@@ -41,6 +41,9 @@ function getCurrentInspectObject(step,inspectElementList) {
       inspectObj.actions['selectedLocator'] = document.getElementById(paramArr[index] + "_" + step).value;
     } else inspectObj.param[paramArr[index]] = document.getElementById(paramArr[index] + "_" + step).value;
   }
+  if(inspectObj.param.locator == undefined){
+    inspectObj.param.locator = [inspectObj.actions.selectedLocator];
+  }
   return inspectObj;
 }
 
@@ -109,9 +112,7 @@ function createSubTableRow(param_table, key, data, step, editable) {
   if (key === "locator" && data) {
     element = createSelectElement(data, id, editable);
     chrome?.storage?.local?.get(['inspectList'],(result)=>{ 
-        console.log(result);
         const inspectListObject = getInspectListObject(step,result?.inspectList);
-        console.log('in sub table '+inspectListObject);
         selectedLocator = inspectListObject?.actions['selectedLocator'];
         if (selectedLocator) { element.value = selectedLocator.replace(/^xpath=/g, ""); }
         element.onchange = function (e) {
@@ -594,6 +595,7 @@ function addRow(data, indexAt = -1,swapColumns) {
       cell.appendChild(createUpDownButton(currentStep, -1)); // up
       
     } else if(key === "param") {
+      
       const sub_table = createSubTable(data['param'], currentStep);
       cell.appendChild(sub_table);
       
@@ -625,8 +627,7 @@ function tableFromJson() {
   
   chrome?.storage?.local.get(['inspectList'],(result)=>{ 
     inspectElementList = result?.inspectList
-    console.log(inspectElementList);
-  
+    
       for (i = 0; i < inspectElementList.length; i++) {
         for (let key in inspectElementList[i]) {
           if (col.indexOf(key) === -1) {
