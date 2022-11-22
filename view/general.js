@@ -8,10 +8,13 @@ function createSelectElement(items, id, editable = true) {
   //Create and append the options
   let optgroup = '', optgroupLabel = '';
   for (let index = 0; index < items.length; index++) {
-    if ((items[index]).includes('=') && optgroupLabel !== items[index].split('=')[0]) {
-      optgroupLabel = items[index].split('=')[0];
-      optgroup = document.createElement("optgroup");
-      optgroup.setAttribute('label', optgroupLabel.toUpperCase())
+    if ((items[index]))
+    {
+      if ((items[index]).includes('=') && optgroupLabel !== items[index].split('=')[0]) {
+        optgroupLabel = items[index].split('=')[0];
+        optgroup = document.createElement("optgroup");
+        optgroup.setAttribute('label', optgroupLabel.toUpperCase())
+      }
     }
 
     let optionText = items[index];

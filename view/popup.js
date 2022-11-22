@@ -8,26 +8,7 @@ function resizePopupWindow() {
 }
 
 function openDocLink(url) {
-  chrome.runtime.getBackgroundPage((background) => {
-    if (background.docTab) {
-      chrome.tabs.get(background.docTab.id, () => {
-        if (chrome.runtime.lastError) {
-          chrome.tabs.create({"url": url}, function (tab) {
-            background.docTab = JSON.parse(JSON.stringify(tab));
-          });
-        } else {
-          // Tab exists
-          chrome.tabs.update(background.docTab.id, {url: url, 'active': true}, (tab) => { });
-        }
-      });
-    } else {
-      chrome.tabs.create({"url": url}, function (tab) {
-        background.docTab = JSON.parse(JSON.stringify(tab));
-      });
-    }
-  });
-
-
+  chrome.tabs.create({"url": url}, (tab)=> {});
 }
 
 function info(title, text) {
@@ -39,14 +20,8 @@ function clear() {
   let table = document.getElementById('inspect_table');
   while (table && table.hasChildNodes()) { table.removeChild(table.firstChild); }
   inspectElementList = [];
-  // Messenger.sendInternalMessage({cmd: 'clear_inspection', value: ''});
-  // chrome.runtime.getBackgroundPage((background) => {
-  //   background.clear();
-  // });
-  
   document.getElementById("inspectDataOption").style.display = "none";
-  chrome.runtime.sendMessage({callClearMethod: 'clear'}, (response)=> {
-  });
+  chrome.runtime.sendMessage({callMethod: 'clear'}, (response)=> {});
 }
 
 function createScript() {
@@ -79,7 +54,7 @@ function validURL(myURL) {
 }
 
 function start() {
-  // console.log('start')
+  
   document.getElementById("stopOption").style.display = "block";
   document.getElementById("showStatus").style.display = "block";
   document.getElementById("startOption").style.display = "none";
@@ -93,16 +68,7 @@ function stop() {
   document.getElementById("inspectDataOption").style.display = "none";
   document.getElementById("stopOption").style.display = "none";
   document.getElementById("showStatus").style.display = "none";
-  // chrome.runtime.getBackgroundPage((background) => {
-  //   inspectElementList = background.inspectElementList;
-  //   // console.log('STOP STATUS : ', inspectElementList)
-  //   if (inspectElementList.length) {
-  //     document.getElementById("showData").style.display = "block";
-  //     document.getElementById("inspectDataOption").style.display = "block";
-  //     tableFromJson();
-  //   }
-  // });
-
+  
   chrome.storage?.local?.get(['inspectList'],(result)=>{
     
     if (result?.inspectList?.length > 0) {
@@ -138,15 +104,11 @@ pauseInspect.addEventListener("click", function () {
   pauseInspect.classList.toggle("btn-primary");
   if (pauseInspect.value === 'Pause') {
     pauseInspect.value = 'Resume';
-    chrome.runtime.getBackgroundPage((background) => {
-      background.pause();
-    });
+    chrome.runtime.sendMessage({callMethod: 'pause'}, (response)=> {});
   } else {
     pauseInspect.value = 'Pause';
     start();
-    chrome.runtime.getBackgroundPage((background) => {
-      background.start();
-    });
+    chrome.runtime.sendMessage({callMethod: 'start'}, (response)=> {});
   }
 }, false);
 
@@ -159,12 +121,7 @@ startInspect.addEventListener("click", function () {
     return;
   }
   start();
-  // chrome.runtime.getBackgroundPage((background) => {
-  //   background.start(url);
-  // });
-
-  chrome.runtime.sendMessage({callStartMethod: 'start'}, function(response) {
-  });
+  chrome.runtime.sendMessage({callMethod: 'start'}, (response)=> {});
 });
 startInspect.addEventListener("mouseover", () => setClasses("startInspectInfo", "badge badge-focus"));
 startInspect.addEventListener("mouseout", () => setClasses("startInspectInfo", "badge"));
@@ -179,16 +136,12 @@ nowInspect.addEventListener("click", function () {
       {
         start();
         $('#inspect_table').remove();
-        chrome.runtime.sendMessage({callStartMethod: 'start'}, function(response) {
-          
-        });
+        chrome.runtime.sendMessage({callMethod: 'start'}, (response)=> {});
       }
     }
     else{
       start();
-      chrome.runtime.sendMessage({callStartMethod: 'start'}, function(response) {
-        
-      });
+      chrome.runtime.sendMessage({callMethod: 'start'}, (response)=> {});
     }
   });
   
@@ -198,12 +151,7 @@ nowInspect.addEventListener("mouseout", () => setClasses("nowInspectInfo", "badg
 
 stopInspect.addEventListener("click", function () {
   stop();
-  // chrome.runtime.getBackgroundPage((background) => {
-  //   console.log(background);
-  //   background.stop();
-  // });
-  chrome.runtime.sendMessage({callStopMethod: 'stop'}, function(response) {
-  });
+  chrome.runtime.sendMessage({callMethod: 'stop'},(response)=> {});
 });
 
 showHelp.addEventListener("click", function () { openDocLink(`${HELP_URL}`); }, false);
@@ -290,10 +238,8 @@ document.getElementById("copyToNexialInfo").addEventListener("click", function (
 
 
 window.onload = function () {
-    var inspectStatus;
-    
     chrome.storage?.local?.get(['inspectStatus'],(result)=>{ 
-      inspectStatus = result?.inspectStatus;
+      let inspectStatus = result?.inspectStatus;
       if (inspectStatus === 'start') start();
       else if (inspectStatus === 'paused') pause();
       else if (inspectStatus === 'stop') stop();

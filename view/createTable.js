@@ -9,15 +9,11 @@ function updateBackground() {
     
     if(result?.inspectList)
     {
-      chrome?.storage?.local.set({'inspectList': result?.inspectList}, function() {
-          
-      });
+      chrome?.storage?.local.set({'inspectList': result?.inspectList}, ()=> {});
     }
     else
     {
-      chrome?.storage?.local.set({'inspectList': []}, function() {
-        
-      });
+      chrome?.storage?.local.set({'inspectList': []}, ()=> {});
     }  
   })
 }
@@ -193,12 +189,9 @@ function saveRow(step) {
       inspectElementList = result?.inspectList;
       let objIndex = inspectElementList.findIndex((obj) => obj.step === step);
       inspectElementList[objIndex] = getCurrentInspectObject(step,inspectElementList);
-      chrome?.storage?.local.set({'inspectList': inspectElementList}, ()=> {
-          
-      });
+      chrome?.storage?.local.set({'inspectList': inspectElementList}, ()=> {});
       updateBackground();
   });    
-  // console.log("AFTER SAVE : ", inspectElementList);
 }
 
 /**
@@ -438,9 +431,7 @@ function createInspectElement(key, step) {
   button.setAttribute('class', 'btn text-dark input-group-text')
   button.setAttribute('id', ('inspectBtn_' + step));
   button.innerHTML = '<i class="fas fa-search-plus"></i>';
-  button.onclick = function (e) {
-    // console.log('INSPECT ELEMENT CLICK')
-  };
+  button.onclick = function (e) {};
   subDiv.appendChild(button);
   inspectElement.appendChild(subDiv);
   return inspectElement;
@@ -500,7 +491,7 @@ function updateTableRow() {
   const rows = table.tBodies[0].rows;
   
   for (let i = 0; i < rows.length; i++) {
-    // console.log(rows[i].cells[0]);
+    
     rows[i].cells[0].innerHTML = i + 1;    // Update step cell
 
     // update the ids for row
@@ -564,9 +555,7 @@ function addRow(data, indexAt = -1,swapColumns) {
               item.step = index + 1; 
           }) 
           
-          chrome?.storage?.local.set({'inspectList': inspectElementList}, function() {
-        
-          });
+          chrome?.storage?.local.set({'inspectList': inspectElementList}, ()=> {});
       }
     })  
     
@@ -578,9 +567,9 @@ function addRow(data, indexAt = -1,swapColumns) {
     {
       [keys[3],keys[0]] = [keys[0],keys[3]] 
     }
-  // console.log(keys);
+  
   for (let i = 0 ;i<keys.length;i++) {
-    // console.log(key);
+    
     let key = keys[i];
     let cell = tr.insertCell(-1);
     if (key === "actions") {
@@ -627,52 +616,58 @@ function tableFromJson() {
   
   chrome?.storage?.local.get(['inspectList'],(result)=>{ 
     inspectElementList = result?.inspectList
-    
-      for (i = 0; i < inspectElementList.length; i++) {
-        for (let key in inspectElementList[i]) {
-          if (col.indexOf(key) === -1) {
-            col.push(key);
+
+      inspectElementList.forEach((item,index)=>{
+        item.step = (index + 1);
+      })
+      
+      chrome?.storage?.local.set({'inspectList': inspectElementList}, ()=> {
+        for (i = 0; i < inspectElementList.length; i++) {
+          for (let key in inspectElementList[i]) {
+            if (col.indexOf(key) === -1) {
+              col.push(key);
+            }
           }
         }
-      }
 
-      // Create a table.
-      table = document.createElement("table");
-      table.setAttribute('class', 'table table-hover');
-      table.setAttribute('id', 'inspect_table');
-      table.setAttribute('cellspacing', '0');
-      const showDataDiv = document.getElementById('showData');
-      $(showDataDiv).hide();
-      showDataDiv.appendChild(table);
+        // Create a table.
+        table = document.createElement("table");
+        table.setAttribute('class', 'table table-hover');
+        table.setAttribute('id', 'inspect_table');
+        table.setAttribute('cellspacing', '0');
+        const showDataDiv = document.getElementById('showData');
+        $(showDataDiv).hide();
+        showDataDiv.appendChild(table);
 
-      // Create table header row using the extracted headers above.
-      let head = table.createTHead();
-      let tr = head.insertRow(-1);
-      
+        // Create table header row using the extracted headers above.
+        let head = table.createTHead();
+        let tr = head.insertRow(-1);
+        
 
-      // swapped columns as action column should come as last column.
-      [col[3],col[0]] = [col[0],col[3]];
+        // swapped columns as action column should come as last column.
+        [col[3],col[0]] = [col[0],col[3]];
 
-      // table header.
-      for (i = 0; i < col.length; i++) {
-        let heading = col[i] === 'command' ? 'command (web)' :
-                      col[i] === 'param' ? 'parameters' :
-                      col[i] === 'step' ? '#' :
-                      col[i];
-        let th = document.createElement("th");
-        th.innerHTML = heading;
-        tr.appendChild(th);
-      }
+        // table header.
+        for (i = 0; i < col.length; i++) {
+          let heading = col[i] === 'command' ? 'command (web)' :
+                        col[i] === 'param' ? 'parameters' :
+                        col[i] === 'step' ? '#' :
+                        col[i];
+          let th = document.createElement("th");
+          th.innerHTML = heading;
+          tr.appendChild(th);
+        }
 
-      const body = table.createTBody();
-      // console.log(body);
-      // add json data to the table as rows.
-      for (i = 0; i < inspectElementList.length; i++) {
-        addRow(inspectElementList[i],-1,true);
-      }
+        const body = table.createTBody();
+        
+        // add json data to the table as rows.
+        for (i = 0; i < inspectElementList.length; i++) {
+          addRow(inspectElementList[i],-1,true);
+        }
 
-      updateTableRow();
-      $(showDataDiv).show();
+        updateTableRow();
+        $(showDataDiv).show();
+      });    
   });
 }
 
@@ -694,9 +689,7 @@ function swapUpOrDownItemInArrow(index,direction){
       isList[index-1].step = index-1;
     } 
     
-    chrome?.storage?.local.set({'inspectList': isList}, ()=> {
-      
-    });
+    chrome?.storage?.local.set({'inspectList': isList}, ()=> {});
       
   })
 
