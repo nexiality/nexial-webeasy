@@ -617,13 +617,3 @@ chrome.runtime.onMessage.addListener(function (request) {
   // }
   
 });
-
-
-
-// chrome.runtime.sendMessage({ msg: "Text field changed", data: textFieldContent }, (response) => {
-//   // If this message's recipient sends a response it will be handled here 
-//   if (response) {
-//     // do cool things with the response
-//     // ...
-//   }
-// });
