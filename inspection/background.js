@@ -158,6 +158,7 @@ function createOpenURLEntry(url) {
       printLog( inspectingTab)
       updateBadge();
       loadListener(url);
+      
     });
   } else {
     chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
@@ -169,6 +170,7 @@ function createOpenURLEntry(url) {
       printLog( inspectingTab)
       loadListener(inspectingTab.url);
       updateBadge();
+      
     });
   }
 }
@@ -183,6 +185,7 @@ function sendRunTimeMessage(message) {
       chrome.tabs.sendMessage(tabs[0].id, message);
       
     }
+    
   });
 }
 
@@ -206,7 +209,7 @@ let injectIntoTab = function (tab) {
     chrome.scripting.executeScript({
         target: {tabId: tab.id},
           file: [scripts[i]]
-      });
+    });
   }
 }
 
@@ -248,12 +251,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab)=> {
       
     })
   })
+  
 })
 
 /**
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
  */
-chrome.runtime.onMessage.addListener(function (action) {
+chrome.runtime.onMessage.addListener(function (action,sender, sendResponse) {
   switch (action.cmd) {
     case 'inspecting': {
       step = action.value.step;
@@ -276,7 +280,8 @@ chrome.runtime.onMessage.addListener(function (action) {
       break;
   }
   updateBadge();
-  
+  sendResponse();
+  return true;
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
@@ -296,5 +301,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
   if (request?.callMethod == "pause"){
     pause();
   }
+  
+  sendResponse();
+  return true;
 })
 

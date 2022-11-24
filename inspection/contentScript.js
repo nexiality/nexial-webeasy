@@ -95,7 +95,7 @@ function onMouseUp(event) {
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
 
-  sendConsole("log", "MOUSE CLICK : ", event.button);
+  // sendConsole("log", "MOUSE CLICK : ", event.button);
   if (event.button === 2) {
     // sendConsole("log", "RIGHT CLICK RETURN FROM onClickElement : ", event.button);
     return;
@@ -581,7 +581,7 @@ document.addEventListener(
  * Chrome Extension API
  * here used to communicate with background
  */
-chrome.runtime.onMessage.addListener(function (request) {
+chrome.runtime.onMessage.addListener(function (request,sender, sendResponse) {
     switch (request.action) {
       case "getContextMenuElement":
         selectionText = request.selectionText;
@@ -615,5 +615,6 @@ chrome.runtime.onMessage.addListener(function (request) {
     }
     sendConsole("info", `BROWSER : ${request.action} INSPECTING`);
   // }
-  
+  sendResponse()
+  return true;
 });
