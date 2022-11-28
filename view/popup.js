@@ -1,6 +1,7 @@
 let inspectElementList = [];
 let height = "98px";
 
+
 function resizePopupWindow() {
   if (window.innerHeight < 150) {
     document.getElementById("nexial-container").style.height = "350px";
@@ -8,7 +9,7 @@ function resizePopupWindow() {
 }
 
 function openDocLink(url) {
-  chrome.tabs.create({"url": url}, (tab)=> {});
+  chrome.tabs.create({ "url": url }, (tab) => { });
 }
 
 function info(title, text) {
@@ -21,7 +22,7 @@ function clear() {
   while (table && table.hasChildNodes()) { table.removeChild(table.firstChild); }
   inspectElementList = [];
   document.getElementById("inspectDataOption").style.display = "none";
-  chrome.runtime.sendMessage({callMethod: 'clear'}, (response)=> {});
+  chrome.runtime.sendMessage({ callMethod: clearStatus }, (response) => { });
 }
 
 function createScript() {
@@ -45,16 +46,16 @@ function createScript() {
 
 function validURL(myURL) {
   let pattern = new RegExp('^(http(s)?:\/\/.)' + // protocol
-                           '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-                           '((\\d{1,3}\\.){3}\\d{1,3}))' + // ip (v4) address
-                           '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + //port
-                           '(\\?[;&amp;a-z\\d%_.~+=-]*)?' + // query string
-                           '(\\#[-a-z\\d_]*)?$', 'i');
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + //port
+    '(\\?[;&amp;a-z\\d%_.~+=-]*)?' + // query string
+    '(\\#[-a-z\\d_]*)?$', 'i');
   return pattern.test(myURL);
 }
 
 function start() {
-  
+
   document.getElementById("stopOption").style.display = "block";
   document.getElementById("showStatus").style.display = "block";
   document.getElementById("startOption").style.display = "none";
@@ -68,9 +69,9 @@ function stop() {
   document.getElementById("inspectDataOption").style.display = "none";
   document.getElementById("stopOption").style.display = "none";
   document.getElementById("showStatus").style.display = "none";
-  
-  chrome.storage?.local?.get(['inspectList'],(result)=>{
-    
+
+  chrome.storage?.local?.get(['inspectList'], (result) => {
+
     if (result?.inspectList?.length > 0) {
       document.getElementById("showData").style.display = "block";
       document.getElementById("inspectDataOption").style.display = "block";
@@ -99,20 +100,20 @@ let showHelp = document.getElementById("showHelp");
 let copyToNexial = document.getElementById("copyToNexial");
 let clearInspection = document.getElementById("clear");
 
-pauseInspect.addEventListener("click", function () {
+pauseInspect.addEventListener(clickEvt, function () {
   pauseInspect.classList.toggle("btn-default");
   pauseInspect.classList.toggle("btn-primary");
   if (pauseInspect.value === 'Pause') {
     pauseInspect.value = 'Resume';
-    chrome.runtime.sendMessage({callMethod: 'pause'}, (response)=> {});
+    chrome.runtime.sendMessage({ callMethod: pauseStatus }, (response) => { });
   } else {
     pauseInspect.value = 'Pause';
     start();
-    chrome.runtime.sendMessage({callMethod: 'start'}, (response)=> {});
+    chrome.runtime.sendMessage({ callMethod: startStatus }, (response) => { });
   }
 }, false);
 
-startInspect.addEventListener("click", function () {
+startInspect.addEventListener(clickEvt, function () {
   let url = document.getElementById("url").value.trim();
   if (!validURL(url)) {
     let validFeedback = document.getElementsByClassName('valid-feedback')[0];
@@ -121,127 +122,125 @@ startInspect.addEventListener("click", function () {
     return;
   }
   start();
-  chrome.runtime.sendMessage({callMethod: 'start'}, (response)=> {});
+  chrome.runtime.sendMessage({ callMethod: startStatus }, (response) => { });
 });
 startInspect.addEventListener("mouseover", () => setClasses("startInspectInfo", "badge badge-focus"));
 startInspect.addEventListener("mouseout", () => setClasses("startInspectInfo", "badge"));
 
-nowInspect.addEventListener("click", function () {
-  chrome?.storage?.local.get(['inspectList'],(result)=>{
+nowInspect.addEventListener(clickEvt, function () {
+  chrome?.storage?.local.get(['inspectList'], (result) => {
 
-    if(result?.inspectList?.length > 0)
-    {
+    if (result?.inspectList?.length > 0) {
       const response = confirm("There are some steps already captured once you start inspecting it will clear eariler steps.?");
-      if(response)
-      {
+      if (response) {
         start();
         $('#inspect_table').remove();
-        chrome.runtime.sendMessage({callMethod: 'start'}, (response)=> {});
+        chrome.runtime.sendMessage({ callMethod: startStatus }, (response) => { });
       }
     }
-    else{
+    else {
       start();
-      chrome.runtime.sendMessage({callMethod: 'start'}, (response)=> {});
+      chrome.runtime.sendMessage({ callMethod: startStatus }, (response) => { });
     }
   });
-  
+
 }, false);
 nowInspect.addEventListener("mouseover", () => setClasses("nowInspectInfo", "badge badge-focus"));
 nowInspect.addEventListener("mouseout", () => setClasses("nowInspectInfo", "badge"));
 
-stopInspect.addEventListener("click", function () {
+stopInspect.addEventListener(clickEvt, function () {
   stop();
-  chrome.runtime.sendMessage({callMethod: 'stop'},(response)=> {});
+  chrome.runtime.sendMessage({ callMethod: stopStatus }, (response) => { });
 });
 
-showHelp.addEventListener("click", function () { openDocLink(`${HELP_URL}`); }, false);
+showHelp.addEventListener(clickEvt, function () { openDocLink(`${HELP_URL}`); }, false);
 
-maximizePopup.addEventListener("click", async () => {
+maximizePopup.addEventListener(clickEvt, async () => {
   await chrome.tabs.create({ url: chrome.runtime.getURL("NexialWebEZ.html") });
 })
 
-closePopup.addEventListener("click", function () {
+closePopup.addEventListener(clickEvt, function () {
   window.close();
 }, false);
 
-copyToNexial.addEventListener("click", function () {
-  
+copyToNexial.addEventListener(clickEvt, function () {
+
   let dummy = document.body.appendChild(document.createElement("textarea"));
-  chrome?.storage?.local.get(['inspectList'],(result)=>{
-      inspectElementList = result?.inspectList;
-      dummy.value = createScript();
-      document.body.appendChild(dummy);
-      dummy.focus();
-      dummy.select();
-      document.execCommand('copy');
-      document.body.removeChild(dummy);
-  });    
+  chrome?.storage?.local.get(['inspectList'], (result) => {
+    inspectElementList = result?.inspectList;
+    dummy.value = createScript();
+    document.body.appendChild(dummy);
+    dummy.focus();
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+  });
 }, false);
 copyToNexial.addEventListener("mouseover", () => setClasses("copyToNexialInfo", "badge badge-focus"));
 copyToNexial.addEventListener("mouseout", () => setClasses("copyToNexialInfo", "badge"));
 
-clearInspection.addEventListener("click", clear);
+clearInspection.addEventListener(clickEvt, clear);
 clearInspection.addEventListener("mouseover", () => setClasses("clearInfo", "badge badge-focus"));
 clearInspection.addEventListener("mouseout", () => setClasses("clearInfo", "badge"));
 
 
-document.getElementById("startInspectInfo").addEventListener("click", function () {
+document.getElementById("startInspectInfo").addEventListener(clickEvt, function () {
   resizePopupWindow();
   info('Inspect',
-       'Enter a valid URL and click on this button to start the WebEZ inspection ' +
-       'process on the specified URL . WebEZ will capture and inspect your mouse ' +
-       'clicks and keyboard inputs (when interacting with a form). Additionally, ' +
-       'you may add waits ' + 'and assertions via the context menu. When you are ' +
-       'done interacting with your browser, return back to WebEZ and click on ' +
-       '"Stop".' +
-       '<div style="text-align: center"><img' +
-       ' src="https://nexiality.github.io/documentation/webez/image/inspect.gif"' +
-       ' alt="HOWTO: Inspect" style="width:90%;margin:5px 0"/></div>'
+    'Enter a valid URL and click on this button to start the WebEZ inspection ' +
+    'process on the specified URL . WebEZ will capture and inspect your mouse ' +
+    'clicks and keyboard inputs (when interacting with a form). Additionally, ' +
+    'you may add waits ' + 'and assertions via the context menu. When you are ' +
+    'done interacting with your browser, return back to WebEZ and click on ' +
+    '"Stop".' +
+    '<div style="text-align: center"><img' +
+    ' src="https://nexiality.github.io/documentation/webez/image/inspect.gif"' +
+    ' alt="HOWTO: Inspect" style="width:90%;margin:5px 0"/></div>'
   );
 }, false);
 
-document.getElementById("nowInspectInfo").addEventListener("click", function () {
+document.getElementById("nowInspectInfo").addEventListener(clickEvt, function () {
   resizePopupWindow();
   info('Inspect Current Page',
-       'Click this button to start the WebEZ inspection process on the current ' +
-       'web page. WebEZ will capture and inspect your mouse clicks and keyboard ' +
-       'inputs (when interacting with a form). Additionally, you may add waits ' +
-       'and assertions via the context menu. When you are done interacting with ' +
-       'your browser, return back to WebEZ and click on "Stop".' +
-       '<div style="text-align: center"><img' +
-       ' src="https://nexiality.github.io/documentation/webez/image/inspect-now.gif"' +
-       ' alt="HOWTO: Inspect Now" style="width:90%;margin:5px 0"/></div>'
+    'Click this button to start the WebEZ inspection process on the current ' +
+    'web page. WebEZ will capture and inspect your mouse clicks and keyboard ' +
+    'inputs (when interacting with a form). Additionally, you may add waits ' +
+    'and assertions via the context menu. When you are done interacting with ' +
+    'your browser, return back to WebEZ and click on "Stop".' +
+    '<div style="text-align: center"><img' +
+    ' src="https://nexiality.github.io/documentation/webez/image/inspect-now.gif"' +
+    ' alt="HOWTO: Inspect Now" style="width:90%;margin:5px 0"/></div>'
   );
 }, false);
 
-document.getElementById("clearInfo").addEventListener("click", function () {
+document.getElementById("clearInfo").addEventListener(clickEvt, function () {
   info('Clear',
-       'Use this button to clear away all the captured steps. Please note that ' +
-       'there is no Undo for this functionality.'
+    'Use this button to clear away all the captured steps. Please note that ' +
+    'there is no Undo for this functionality.'
   );
 }, false);
 
-document.getElementById("copyToNexialInfo").addEventListener("click", function () {
+document.getElementById("copyToNexialInfo").addEventListener(clickEvt, function () {
   resizePopupWindow();
   info('Copy to Nexial script',
-       'Use this button to copy the current steps and commands to clipboard. ' +
-       'Open up the test scenario of your choosing, then perform Paste (' +
-       '<code>CTRL+v</code> for Windows, <code>COMMAND+v</code> for Mac) on a ' +
-       '"cmd type" cell. Edit the copied steps as needed. Be sure to set your ' +
-       'browser type via <code>nexial.browser</code> System variable before ' +
-       'running the script' +
-       '<div style="text-align: center"><img' +
-       ' src="https://nexiality.github.io/documentation/webez/image/copy-to-nexial.gif"' +
-       ' alt="HOWTO: Copy to Nexial" style="width:90%;margin:5px 0"/></div>'
+    'Use this button to copy the current steps and commands to clipboard. ' +
+    'Open up the test scenario of your choosing, then perform Paste (' +
+    '<code>CTRL+v</code> for Windows, <code>COMMAND+v</code> for Mac) on a ' +
+    '"cmd type" cell. Edit the copied steps as needed. Be sure to set your ' +
+    'browser type via <code>nexial.browser</code> System variable before ' +
+    'running the script' +
+    '<div style="text-align: center"><img' +
+    ' src="https://nexiality.github.io/documentation/webez/image/copy-to-nexial.gif"' +
+    ' alt="HOWTO: Copy to Nexial" style="width:90%;margin:5px 0"/></div>'
   );
 }, false);
 
 
 window.onload = function () {
-    chrome.storage?.local?.get(['inspectStatus'],(result)=>{ 
-      let inspectStatus = result?.inspectStatus;
-      if (inspectStatus === 'start') start();
-      else if (inspectStatus === 'paused') pause();
-      else if (inspectStatus === 'stop') stop();
-    });
+  chrome.storage?.local?.get(['inspectStatus'], (result) => {
+    let inspectStatus = result?.inspectStatus;
+    if (inspectStatus === startStatus) start();
+    else if (inspectStatus === pauseStatus) pause();
+    else if (inspectStatus === stopStatus) stop();
+  });
 }

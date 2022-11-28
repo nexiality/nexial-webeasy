@@ -4,75 +4,75 @@ let contextMenus = chrome.contextMenus;
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
  */
 chrome.runtime.onInstalled.addListener(function () {
-  
-  contextMenus.create({
-                        title:    "Assert that...",
-                        id:       "assert...",
-                        contexts: ["all"]
-                      });
-  contextMenus.create({
-                        title:    "this element is present",
-                        id:       "assertElementPresent",
-                        parentId: "assert...",
-                        contexts: ["all"]
-                      });
-  contextMenus.create({
-                        title:    "this element has the text as shown",
-                        id:       "assertText",
-                        parentId: "assert...",
-                        contexts: ["all"]
-                      });
-  contextMenus.create({
-                        title:    "this input element has the current value",
-                        id:       "assertValue",
-                        parentId: "assert...",
-                        contexts: ["all"]
-                      });
-  contextMenus.create({
-                        title:    "the selected text is present",
-                        id:       "assertTextPresent",
-                        parentId: "assert...",
-                        contexts: ["selection"]
-                      });
 
   contextMenus.create({
-                        title:    "Wait until...",
-                        id:       "wait...",
-                        contexts: ["all"]
-                      });
+    title: "Assert that...",
+    id: "assert...",
+    contexts: ["all"]
+  });
   contextMenus.create({
-                        title:    "this element is available",
-                        id:       "waitForElementPresent",
-                        parentId: "wait...",
-                        contexts: ["all"]
-                      });
+    title: "this element is present",
+    id: "assertElementPresent",
+    parentId: "assert...",
+    contexts: ["all"]
+  });
   contextMenus.create({
-                        title:    "the text of this element is found",
-                        id:       "waitForElementTextPresent",
-                        parentId: "wait...",
-                        contexts: ["all"]
-                      });
+    title: "this element has the text as shown",
+    id: "assertText",
+    parentId: "assert...",
+    contexts: ["all"]
+  });
   contextMenus.create({
-                        title:    "this element is visible",
-                        id:       "waitUntilVisible",
-                        parentId: "wait...",
-                        contexts: ["all"]
-                      });
+    title: "this input element has the current value",
+    id: "assertValue",
+    parentId: "assert...",
+    contexts: ["all"]
+  });
   contextMenus.create({
-                        title:    "this element is enabled",
-                        id:       "waitUntilEnabled",
-                        parentId: "wait...",
-                        contexts: ["all"]
-                      });
+    title: "the selected text is present",
+    id: "assertTextPresent",
+    parentId: "assert...",
+    contexts: ["selection"]
+  });
+
   contextMenus.create({
-                        title:    "the selected text is found",
-                        id:       "waitForText",
-                        parentId: "wait...",
-                        contexts: ["selection"]
-                      });
+    title: "Wait until...",
+    id: "wait...",
+    contexts: ["all"]
+  });
   contextMenus.create({
-    title:    "Show Locator",
-    id:       "findLocator",
+    title: "this element is available",
+    id: "waitForElementPresent",
+    parentId: "wait...",
+    contexts: ["all"]
+  });
+  contextMenus.create({
+    title: "the text of this element is found",
+    id: "waitForElementTextPresent",
+    parentId: "wait...",
+    contexts: ["all"]
+  });
+  contextMenus.create({
+    title: "this element is visible",
+    id: "waitUntilVisible",
+    parentId: "wait...",
+    contexts: ["all"]
+  });
+  contextMenus.create({
+    title: "this element is enabled",
+    id: "waitUntilEnabled",
+    parentId: "wait...",
+    contexts: ["all"]
+  });
+  contextMenus.create({
+    title: "the selected text is found",
+    id: "waitForText",
+    parentId: "wait...",
+    contexts: ["selection"]
+  });
+  contextMenus.create({
+    title: "Show Locator",
+    id: "findLocator",
     contexts: ["all"]
   });
 });
@@ -84,9 +84,9 @@ chrome.runtime.onInstalled.addListener(function () {
  * @param {*} command Its key tells describe current action
  */
 function callbackContextmenu(info, tab, command) {
-  if(command === 'findLocator') {
-    sendRunTimeMessage({action: "findLocator"})
-  } else sendRunTimeMessage({action: "getContextMenuElement", command: command, selectionText: info.selectionText})
+  if (command === 'findLocator') {
+    sendRunTimeMessage({ action: "findLocator" })
+  } else sendRunTimeMessage({ action: "getContextMenuElement", command: command, selectionText: info.selectionText })
 }
 
 /**

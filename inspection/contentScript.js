@@ -19,7 +19,7 @@ let style = document.createElement("link");
 style.rel = "stylesheet";
 style.type = "text/css";
 
-style.href =chrome.runtime.getURL("resources/style/nexial.css");
+style.href = chrome.runtime.getURL("resources/style/nexial.css");
 (document.head || document.documentElement).appendChild(style);
 
 /**
@@ -32,7 +32,7 @@ function start(stepValue) {
   focusedInput = null;
   clickedElement = null;
   document.addEventListener("focus", handleFocus, true);
-  document.addEventListener("mousedown", onClickElement); 
+  document.addEventListener("mousedown", onClickElement);
   document.addEventListener("mouseup", onMouseUp);
   document.addEventListener("change", handleChange);
 }
@@ -91,7 +91,7 @@ function onMoveElement(event) {
 function onMouseUp(event) {
   // removing 'mousemove' because it's not required after user is done selecting some text
   document.removeEventListener("mousemove", onMoveElement);
-  
+
   if (event === undefined) event = window.event;
   let target = "target" in event ? event.target : event.srcElement;
 
@@ -107,10 +107,10 @@ function onMouseUp(event) {
     focusedInput = null;
   }
   if (
-      (target.tagName === "DIV" && target.innerText) ||
-      CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())
-    ) {
-      
+    (target.tagName === "DIV" && target.innerText) ||
+    CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())
+  ) {
+
     sendConsole("log", "CLICK: ", target.tagName);
     sendInspectInfo("click(locator)", event);
     return;
@@ -122,12 +122,12 @@ function onMouseUp(event) {
       return;
     }
     if (INPUT_TOGGLE_TYPES.includes(target.type)) {
-        sendInspectInfo(
-          target.checked
-            ? "checkAll(locator,waitMs)"
-            : "uncheckAll(locator,waitMs)",
-          event
-        );
+      sendInspectInfo(
+        target.checked
+          ? "checkAll(locator,waitMs)"
+          : "uncheckAll(locator,waitMs)",
+        event
+      );
       return;
     }
   }
@@ -188,7 +188,7 @@ function cssAttrSelector(name, value) {
 function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
   let res = {
     xpath: [],
-    css:   [],
+    css: [],
   };
 
   if (baseXpathNode) baseXpathNode = baseXpathNode.replace("xpath=", "");
@@ -211,16 +211,16 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
         }
       }
     } else {
-      if(attr === "for") break;
+      if (attr === "for") break;
       res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}']` + baseXpathNode);
-      res["css"].push("css=" + el.node + (attr === "id" ?  `#${value}` : `[${attr}='${value}']`) + baseCssPath);
+      res["css"].push("css=" + el.node + (attr === "id" ? `#${value}` : `[${attr}='${value}']`) + baseCssPath);
 
       // special treatment for input element
       if (el.node === "input" && attr !== "type" && el.attribute.hasOwnProperty('type')) {
         res["xpath"].push("xpath=//" + el.node + `[@${attr}='${value}' and @type='${el.attribute["type"]}']` + baseXpathNode);
         res["css"].push("css=" + el.node +
-                        (attr === "id" ? `#${value}` : `[${attr}='${value}']`) +
-                        `[type='${el.attribute["type"]}']` + baseCssPath);
+          (attr === "id" ? `#${value}` : `[${attr}='${value}']`) +
+          `[type='${el.attribute["type"]}']` + baseCssPath);
       }
     }
   }
@@ -235,10 +235,10 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
  * @returns
  */
 function getLocator(e, paths, isFiltered) {
-  let locator         = [],
-      xpath           = [],
-      css             = [],
-      selectedLocator = null;
+  let locator = [],
+    xpath = [],
+    css = [],
+    selectedLocator = null;
   const activeElnode = paths[paths.length - 1].node;
 
   if (e.id) locator.push("id=" + e.id);
@@ -266,9 +266,9 @@ function getLocator(e, paths, isFiltered) {
         let compareText = updatingText(el.innerText);
         // use `text()` when possible for added accuracy
         let xpathViaText = "xpath=//" + el.node +
-                           (!el.children || el.children.length < 1 ?
-                            `[normalize-space(text())=${compareText}]` :
-                            `[normalize-space(string(.))=${compareText}]`);
+          (!el.children || el.children.length < 1 ?
+            `[normalize-space(text())=${compareText}]` :
+            `[normalize-space(string(.))=${compareText}]`);
         xpath.push(xpathViaText);
         // if (NODE_LIST_HAS_TEXT.includes(el.node)) { selectedLocator = xpathViaText; }
         if (!selectedLocator || (selectedLocator.length > xpathViaText.length && !selectedLocator.startsWith("css="))) {
@@ -305,7 +305,7 @@ function getLocator(e, paths, isFiltered) {
 function createNode(el) {
   let node = {};
   node["node"] = el.nodeName.toLowerCase();
-  node["innerText"] = el.textContent || el.text || el.innerText ;
+  node["innerText"] = el.textContent || el.text || el.innerText;
   node["attribute"] = [];
   if (el.hasAttributes()) {
     for (let i = 0; i <= HAS_ATTRIBUTES.length - 1; i++) {
@@ -437,7 +437,7 @@ function getCssPath(el) {
  * @param {*} locatorList  its locator list
  */
 function validateLocators(locatorList) {
-  
+
   let filtered = locatorList.locator.filter(locator => {
     if (locator.startsWith("css=")) {
       let css = locator.substring(4);
@@ -504,14 +504,14 @@ function sendInspectInfo(command, event) {
   let locator = locatorList.locator;
   let selectedLocator = locatorList.selectedLocator;
   let data = {
-    step:    step++,
+    step: step++,
     command: command,
-    param:   {},
+    param: {},
     actions: {
       selectedLocator: selectedLocator,
     },
   };
-  console.log('send inspect info...');
+  
   switch (command) {
     case "click(locator)":
     case "assertElementPresent(locator)":
@@ -548,8 +548,8 @@ function sendInspectInfo(command, event) {
       data.param["locator"] = locator;
       data.param["waitMs"] = "<MISSING>";
       break;
-    case "checkAll(locator,waitMs)" :
-    case "uncheckAll(locator,waitMs)" :
+    case "checkAll(locator,waitMs)":
+    case "uncheckAll(locator,waitMs)":
       data.param["locator"] = locator;
       data.param["waitMs"] = "<MISSING>";
       break;
@@ -581,39 +581,39 @@ document.addEventListener(
  * Chrome Extension API
  * here used to communicate with background
  */
-chrome.runtime.onMessage.addListener(function (request,sender, sendResponse) {
-    switch (request.action) {
-      case "getContextMenuElement":
-        selectionText = request.selectionText;
-        if (!clickedElement) {
-          console.error('No element found');
-          break;
-        }
-        sendInspectInfo(request.command, clickedElement);
-        clickedElement = null;
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  switch (request.action) {
+    case "getContextMenuElement":
+      selectionText = request.selectionText;
+      if (!clickedElement) {
+        console.error('No element found');
         break;
-      case "start":
-        start(request.startStep);
+      }
+      sendInspectInfo(request.command, clickedElement);
+      clickedElement = null;
+      break;
+    case startStatus:
+      start(request.startStep);
+      break;
+    case stopStatus:
+      stop();
+      step = null;
+      focusedInput = null;
+      clickedElement = null;
+      break;
+    case pauseStatus:
+      stop();
+      break;
+    case "findLocator":
+      if (!clickedElement) {
+        console.error('No element found');
         break;
-      case "stop":
-        stop();
-        step = null;
-        focusedInput = null;
-        clickedElement = null;
-        break;
-      case "paused":
-        stop();
-        break;
-      case "findLocator":
-        if (!clickedElement) {
-          console.error('No element found');
-          break;
-        }
-        createUI(getLocatorList(clickedElement).locator);
-        clickedElement = null;
-        break;
-    }
-    sendConsole("info", `BROWSER : ${request.action} INSPECTING`);
+      }
+      createUI(getLocatorList(clickedElement).locator);
+      clickedElement = null;
+      break;
+  }
+  sendConsole("info", `BROWSER : ${request.action} INSPECTING`);
   // }
   sendResponse()
   return true;

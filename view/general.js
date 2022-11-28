@@ -1,3 +1,5 @@
+const startStatus = "start", pauseStatus = "paused", stopStatus = "stop", clearStatus = "clear", clickEvt = "click";
+
 function createSelectElement(items, id, editable = true) {
   // Create and append select list
   let selectList = document.createElement("select");
@@ -8,8 +10,7 @@ function createSelectElement(items, id, editable = true) {
   //Create and append the options
   let optgroup = '', optgroupLabel = '';
   for (let index = 0; index < items.length; index++) {
-    if ((items[index]))
-    {
+    if ((items[index])) {
       if ((items[index]).includes('=') && optgroupLabel !== items[index].split('=')[0]) {
         optgroupLabel = items[index].split('=')[0];
         optgroup = document.createElement("optgroup");
