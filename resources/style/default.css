@@ -204,7 +204,7 @@ select {
 }
 
 .sub-table {
-  width:     100%;
+  width:     90%;
   font-size: 11pt;
   margin:    2px 0 !important;
 }
@@ -297,7 +297,7 @@ footer {
 
 .command {
   display: inline-block;
-  width:   93%;
+  width:   84%;
 }
 
 .command-link {
@@ -308,4 +308,18 @@ footer {
   font-size:     10pt !important;
   float:         right;
   cursor:        pointer;
+}
+
+.copyicon {
+  left: 3%;
+  position: relative;
+  cursor: pointer;
+}
+
+.copyParamIcon{
+  float: right;
+  left: 8%;
+  position: relative;
+  bottom: 28px;
+  cursor: pointer;
 }

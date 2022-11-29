@@ -1,71 +1,143 @@
-window.inspectStatus = 'stop';
-window.inspectElementList = [];
-let inspectingTab = null, docTab = null;
-let step = 1;
-// Add a `manifest` property to the `chrome` object.
-chrome.manifest = chrome.app.getDetails();
+importScripts("../env.js");
+importScripts("../resources/scripts/console.js");
+importScripts("./contextMenu.js");
+var inspectList = "inspectList",
+  inspectStatus = "inspectStatus",
+  inspectingTab = "inspectingTab";
+const startStatus = "start", pauseStatus = "paused", stopStatus = "stop", clearStatus = "clear";
+
+chrome?.storage?.local.get(["inspectStatus"], (result) => {
+  if (result?.inspectStatus) {
+    chrome?.storage?.local.set(
+      { inspectStatus: result?.inspectStatus },
+      () => { }
+    );
+  } else {
+    chrome?.storage?.local.set({ inspectStatus: stopStatus }, () => { });
+  }
+});
+
+chrome?.storage?.local.get(["inspectList"], (result) => {
+  if (result?.inspectList) {
+    chrome?.storage?.local.set({ inspectList: result?.inspectList }, () => { });
+  } else {
+    chrome?.storage?.local.set({ inspectList: [] }, () => { });
+  }
+});
+
+chrome?.storage?.local.get(["inspectingTab"], (result) => {
+  if (result?.inspectingTab) {
+    chrome?.storage?.local.set(
+      { inspectingTab: result?.inspectingTab },
+      () => { }
+    );
+  } else {
+    chrome?.storage?.local.set({ inspectingTab: null }, () => { });
+  }
+});
+
+chrome?.storage?.local.get(["step"], (result) => {
+  if (result?.step) {
+    chrome?.storage?.local.set({ step: result?.step }, () => { });
+  } else {
+    chrome?.storage?.local.set({ step: "1" }, () => { });
+  }
+});
 
 /**
  * Send message to start Inspection
  * @param {*} url Its a web address
  */
 function start(url) {
-  printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
-  window.inspectElementList = [];
-  window.inspectStatus = 'start';
+  printLog("group", `BACKGROUND RECEIVED START INSPECTING`);
+  chrome?.storage?.local.get(["inspectList"], (result) => {
+    if (result?.inspectList) {
+      chrome?.storage?.local.set(
+        { inspectList: result?.inspectList },
+        () => { }
+      );
+    } else {
+      chrome?.storage?.local.set({ inspectList: [] }, () => { });
+    }
+  });
+
+  chrome.storage.local.set({ inspectStatus: startStatus }, () => { });
   createOpenURLEntry(url);
-  sendRunTimeMessage({action: window.inspectStatus, startStep: step})
+  sendRunTimeMessage({ action: startStatus, startStep: 1 });
 }
 
 /**
  * Send message to stop inspection
  */
 function stop() {
-  printLog('groupend', `BACKGROUND RECEIVED STOP INSPECTING`);
-  window.inspectStatus = 'stop';
+  printLog("groupend", `BACKGROUND RECEIVED STOP INSPECTING`);
+  chrome.storage.local.set({ inspectStatus: stopStatus }, () => { });
   step = 1;
   inspectingTab = null;
-  sendRunTimeMessage({action: 'stop'})
+  sendRunTimeMessage({ action: stopStatus });
   updateBadge();
 }
 
-/**
- * Send message to pause inspection
- */
+// /**
+//  * Send message to pause inspection
+//  */
 function pause() {
-  printLog( `BACKGROUND RECEIVED PAUSE INSPECTING`);
-  window.inspectStatus = 'paused';
-  sendRunTimeMessage({action: 'paused'})
+  printLog(`BACKGROUND RECEIVED PAUSE INSPECTING`);
+  chrome.storage.local.set({ inspectStatus: pauseStatus }, () => { });
+  sendRunTimeMessage({ action: pauseStatus });
   updateBadge();
 }
 
-/**
- * clear inspected list
- */
+// /**
+//  * clear inspected list
+//  */
 function clear() {
-  window.inspectElementList = [];
+  chrome?.storage?.local.set({ inspectList: [] }, () => { });
   updateBadge();
 }
 
-/**
- * add and remove badge from extension icon
- */
+// /**
+//  * add and remove badge from extension icon
+//  */
 function updateBadge() {
-  if (window.inspectStatus === 'start' && inspectingTab) {
-    chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
-    chrome.browserAction.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
-  } else {
-    chrome.browserAction.setBadgeText({ tabId: (inspectingTab? inspectingTab.tabId : null), text: '' });
-  }
+  chrome.storage.local.get(["inspectStatus"], (result) => {
+    let inspectStatus = result?.inspectStatus;
+    chrome.storage.local.get(["inspectingTab"], (result2) => {
+      let inspectingTab = result2.inspectingTab ? result2.inspectingTab : null;
+      if (inspectStatus === startStatus && inspectingTab) {
+        chrome.action.setBadgeBackgroundColor({ color: "red" });
+        chrome.action.setBadgeText({ tabId: inspectingTab.tabId, text: " " });
+      } else {
+        chrome.action.setBadgeText({
+          tabId: inspectingTab ? inspectingTab.tabId : null,
+          text: "",
+        });
+      }
+    });
+  });
 }
 
-/**
- * add open url inspection in inspectElementList
- * @param {*} url Its a web address
- */
+// /**
+//  * add open url inspection in inspectElementList
+//  * @param {*} url Its a web address
+//  */
 function loadListener(url) {
-  printLog( 'CREATE OPEN URL ENTRY');
-  window.inspectElementList.push({step: step, command: 'open(url)', param: {url: url}, actions: ''});
+  printLog("CREATE OPEN URL ENTRY");
+  chrome?.storage?.local.get(["inspectList"], (result1) => {
+    let inspectElementList;
+    let step;
+    inspectElementList = result1?.inspectList;
+    chrome?.storage?.local.get(["step"], (result2) => {
+      step = result2?.step;
+      inspectElementList.push({
+        step: step,
+        command: "open(url)",
+        param: { url: url },
+        actions: "",
+      });
+      chrome?.storage?.local.set({ inspectList: inspectElementList }, () => { });
+    });
+  });
 }
 
 /**
@@ -74,19 +146,23 @@ function loadListener(url) {
  */
 function createOpenURLEntry(url) {
   if (url) {
-    chrome.tabs.create({"url": url}, function (tab) {
-      printLog('OPEN NEW PAGE')
-      inspectingTab = JSON.parse(JSON.stringify(tab));
-      printLog( inspectingTab)
+    chrome.tabs.create({ url: url }, function (tab) {
+      printLog("OPEN NEW PAGE");
+      chrome?.storage?.local.set(
+        { inspectingTab: JSON.parse(JSON.stringify(tab)) },
+        () => { }
+      );
+      printLog(inspectingTab);
       updateBadge();
       loadListener(url);
     });
   } else {
-    chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
       if (!tabs || tabs.length < 1) return;
-      printLog('CURRENT PAGE')
+      printLog("CURRENT PAGE");
       inspectingTab = JSON.parse(JSON.stringify(tabs[0]));
-      printLog( inspectingTab)
+      chrome?.storage?.local.set({ inspectingTab: inspectingTab }, () => { });
+      printLog(inspectingTab);
       loadListener(inspectingTab.url);
       updateBadge();
     });
@@ -98,9 +174,7 @@ function createOpenURLEntry(url) {
  * @param {*} message its a data that we want to pass
  */
 function sendRunTimeMessage(message) {
-  // console.log(' SEND  MESSAGE - ', message )
-  chrome.tabs.query({ active: !0, currentWindow: !0 }, function (tabs) {
-    // console.log('tab ', tabs[0])
+  chrome.tabs.query({ active: !0, currentWindow: !0 }, (tabs) => {
     if (tabs[0]) {
       chrome.tabs.sendMessage(tabs[0].id, message);
     }
@@ -122,59 +196,109 @@ async function getCurrentTab() {
  */
 let injectIntoTab = function (tab) {
   let scripts = chrome.manifest.content_scripts[0].js;
-  let i = 0, s = scripts.length;
-  for( ; i < s; i++ ) {
-      chrome.tabs.executeScript(tab.id, {
-          file: scripts[i]
-      });
+  let i = 0,
+    s = scripts.length;
+  for (; i < s; i++) {
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      file: [scripts[i]],
+    });
   }
-}
+};
 
 // Get all windows
 /**
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/windows/
  */
-chrome.windows.getAll({
-  populate: true
-}, function (windows) {
-  let i = 0, w = windows.length, currentWindow;
-  for( ; i < w; i++ ) {
+chrome.windows.getAll(
+  {
+    populate: true,
+  },
+  function (windows) {
+    let i = 0,
+      w = windows.length,
+      currentWindow;
+    for (; i < w; i++) {
       currentWindow = windows[i];
-      let j = 0, t = currentWindow.tabs.length, currentWindowTab;
-      for( ; j < t; j++ ) {
-        currentWindowTab = currentWindow.tabs[j];
-          // Skip chrome:// and https:// pages
-          if( currentWindowTab.url && ! currentWindowTab.url.match(/(chrome|https):\/\//gi) ) {
-              injectIntoTab(currentWindowTab);
-          }
+      currentTabs = getCurrentTab();
+      let j = 0,
+        t = currentTabs.length,
+        currentWindowTab;
+      for (; j < t; j++) {
+        currentWindowTab = currentTabs[j];
+        // Skip chrome:// and https:// pages
+        if (
+          currentWindowTab.url &&
+          !currentWindowTab.url.match(/(chrome|https):\/\//gi)
+        ) {
+          injectIntoTab(currentWindowTab);
+        }
       }
+    }
   }
-});
+);
 
 /**
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/tabs/
  */
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (window.inspectStatus === 'start' && changeInfo.status === 'complete') {
-    sendRunTimeMessage({action: window.inspectStatus, startStep: step});
-    updateBadge();
-  }
-})
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  chrome.storage.local.get(["inspectStatus"], (result1) => {
+    inspectStatus = result1?.inspectStatus;
+    chrome.storage.local.get(["step"], (result2) => {
+      step = result2?.step;
+      if (inspectStatus === startStatus && changeInfo.status === "complete") {
+        sendRunTimeMessage({ action: inspectStatus, startStep: step });
+        updateBadge();
+      }
+    });
+  });
+});
 
 /**
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
  */
-chrome.runtime.onMessage.addListener(function (action) {
-
+chrome.runtime.onMessage.addListener(function (action, sender, sendResponse) {
   switch (action.cmd) {
-    case 'inspecting': {
+    case "inspecting": {
       step = action.value.step;
-      window.inspectElementList.push(action.value);
+
+      chrome.storage.local.get(["inspectList"], function (result) {
+
+        if (result?.inspectList != undefined) {
+          inspectElementList = result?.inspectList;
+        }
+
+        inspectElementList.push(action.value);
+        chrome.storage.local.set({ inspectList: inspectElementList }, () => { });
+      });
       break;
     }
-    case 'console':
+    case "console":
       printLog(action.type, action.msg, action.data);
       break;
   }
   updateBadge();
+  sendResponse();
+  return true;
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
+  switch (request?.callMethod) {
+    case startStatus:
+      start();
+      break;
+    case stopStatus:
+      stop();
+      break;
+    case clearStatus:
+      clear();
+      break;
+    case pauseStatus:
+      pause();
+      break;
+
+  }
+  sendResponse();
+  return true;
 });
