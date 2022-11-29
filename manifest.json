@@ -35,7 +35,7 @@
   "permissions": ["activeTab","contextMenus","storage"],
   "web_accessible_resources":[
       {
-        "resources": ["resources/style/nexial.css", "view/dialogInjector.js","env.js","resources/scripts/console.js","inspection/contextMenu.js","*.css"],
+        "resources": ["resources/style/nexial.css","env.js","resources/scripts/console.js","inspection/contextMenu.js","*.css"],
         "matches": ["\u003Call_urls>"]
       }
     ]
