@@ -12,24 +12,24 @@ const STATUS_PAUSE = 'paused';
 const STATUS_STOP = 'stop';
 const STATUS_CLEAR = 'clear';
 
-var inspectingTab = INSPECT_TAB;
+var inspectingTab;
 
 let localStore = chrome?.storage?.local;
 
 localStore?.get([INSPECT_STATUS], (result) => {
-	localStore?.set({inspectStatus: result?.inspectStatus || STATUS_STOP}, () => {});
+	localStore?.set({ inspectStatus: result?.inspectStatus || STATUS_STOP }, () => { });
 });
 
 localStore?.get([INSPECT_LIST], (result) => {
-	localStore?.set({inspectList: result?.inspectList ? result?.inspectList : []}, () => {});
+	localStore?.set({ inspectList: result?.inspectList ? result?.inspectList : [] }, () => { });
 });
 
 localStore?.get([INSPECT_TAB], (result) => {
-	localStore?.set({inspectingTab: result?.inspectingTab ? result?.inspectingTab : null}, () => {});
+	localStore?.set({ inspectingTab: result?.inspectingTab ? result?.inspectingTab : null }, () => { });
 });
 
 localStore?.get([STEP], (result) => {
-	localStore?.set({step: result?.step ? result?.step : '1'}, () => {});
+	localStore?.set({ step: result?.step ? result?.step : '1' }, () => { });
 });
 
 /**
@@ -39,12 +39,12 @@ localStore?.get([STEP], (result) => {
 function start(url) {
 	printLog('group', `BACKGROUND RECEIVED START INSPECTING`);
 	localStore?.get([INSPECT_LIST], (result) => {
-		localStore?.set({inspectList: result?.inspectList ? result?.inspectList : []}, () => {});
+		localStore?.set({ inspectList: result?.inspectList ? result?.inspectList : [] }, () => { });
 	});
 
-	localStore?.set({inspectStatus: STATUS_START}, () => {});
+	localStore?.set({ inspectStatus: STATUS_START }, () => { });
 	createOpenURLEntry(url);
-	sendRunTimeMessage({action: STATUS_START, startStep: 1});
+	sendRunTimeMessage({ action: STATUS_START, startStep: 1 });
 }
 
 /**
@@ -52,12 +52,9 @@ function start(url) {
  */
 function stop() {
 	printLog('groupend', `BACKGROUND RECEIVED STOP INSPECTING`);
-	localStore?.set({inspectStatus: STATUS_STOP}, () => {});
-	// todo: is `step` a global var or local?
-	step = 1;
-	// todo: is `inspectingTab` a global var or local?
+	localStore?.set({ inspectStatus: STATUS_STOP }, () => { });
 	inspectingTab = null;
-	sendRunTimeMessage({action: STATUS_STOP});
+	sendRunTimeMessage({ action: STATUS_STOP });
 	updateBadge();
 }
 
@@ -66,8 +63,8 @@ function stop() {
  */
 function pause() {
 	printLog('log', `BACKGROUND RECEIVED PAUSE INSPECTING`);
-	localStore?.set({inspectStatus: STATUS_PAUSE}, () => {});
-	sendRunTimeMessage({action: STATUS_PAUSE});
+	localStore?.set({ inspectStatus: STATUS_PAUSE }, () => { });
+	sendRunTimeMessage({ action: STATUS_PAUSE });
 	updateBadge();
 }
 
@@ -75,7 +72,7 @@ function pause() {
  * clear inspected list
  */
 function clear() {
-	localStore?.set({inspectList: []}, () => {});
+	localStore?.set({ inspectList: [] }, () => { });
 	updateBadge();
 }
 
@@ -88,8 +85,8 @@ function updateBadge() {
 		localStore?.get([INSPECT_TAB], (result2) => {
 			let inspectingTab = result2.inspectingTab ? result2.inspectingTab : null;
 			if (inspectStatus === STATUS_START && inspectingTab) {
-				chrome.action.setBadgeBackgroundColor({color: 'red'});
-				chrome.action.setBadgeText({tabId: inspectingTab.tabId, text: ' '});
+				chrome.action.setBadgeBackgroundColor({ color: 'red' });
+				chrome.action.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
 			} else {
 				chrome.action.setBadgeText({
 					tabId: inspectingTab ? inspectingTab.tabId : null,
@@ -112,10 +109,10 @@ function loadListener(url) {
 			inspectElementList.push({
 				step: result2?.step,
 				command: 'open(url)',
-				param: {url: url},
+				param: { url: url },
 				actions: '',
 			});
-			localStore?.set({inspectList: inspectElementList}, () => {});
+			localStore?.set({ inspectList: inspectElementList }, () => { });
 		});
 	});
 }
@@ -126,23 +123,21 @@ function loadListener(url) {
  */
 function createOpenURLEntry(url) {
 	if (url) {
-		chrome.tabs.create({url: url}, function (tab) {
+		chrome.tabs.create({ url: url }, function (tab) {
 			printLog('log', 'OPEN NEW PAGE');
-			localStore?.set({inspectingTab: JSON.parse(JSON.stringify(tab))}, () => {});
-			// todo: is `inspectingTab` a global var or local?
+			localStore?.set({ inspectingTab: JSON.parse(JSON.stringify(tab)) }, () => { });
 			printLog(inspectingTab);
 			updateBadge();
 			loadListener(url);
 		});
 	} else {
-		chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+		chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
 			if (!tabs || tabs.length < 1) {
 				return;
 			}
 			printLog('log', 'CURRENT PAGE');
-			// todo: is `inspectingTab` a global var or local?
 			inspectingTab = JSON.parse(JSON.stringify(tabs[0]));
-			localStore?.set({inspectingTab: inspectingTab}, () => {});
+			localStore?.set({ inspectingTab: inspectingTab }, () => { });
 			printLog(inspectingTab);
 			loadListener(inspectingTab.url);
 			updateBadge();
@@ -155,7 +150,7 @@ function createOpenURLEntry(url) {
  * @param {*} message its a data that we want to pass
  */
 function sendRunTimeMessage(message) {
-	chrome.tabs.query({active: !0, currentWindow: !0}, (tabs) => {
+	chrome.tabs.query({ active: !0, currentWindow: !0 }, (tabs) => {
 		if (tabs[0]) {
 			chrome.tabs.sendMessage(tabs[0].id, message);
 		}
@@ -167,7 +162,7 @@ function sendRunTimeMessage(message) {
  * @returns current tab
  */
 async function getCurrentTab() {
-	let queryOptions = {active: true, currentWindow: true};
+	let queryOptions = { active: true, currentWindow: !0 };
 	let [tab] = await chrome.tabs.query(queryOptions);
 	return tab;
 }
@@ -179,7 +174,7 @@ let injectIntoTab = function (tab) {
 	let scripts = chrome.manifest.content_scripts[0].js;
 	for (const item of scripts) {
 		chrome.scripting.executeScript({
-			target: {tabId: tab.id},
+			target: { tabId: tab.id },
 			file: [item],
 		});
 	}
@@ -189,10 +184,8 @@ let injectIntoTab = function (tab) {
 /**
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/windows/
  */
-chrome.windows.getAll({populate: true}, function (windows) {
+chrome.windows.getAll({ populate: true }, function (windows) {
 	for (let i = 0; i < windows.length; i++) {
-		// todo: what's the point of `currentWindow`?
-		let currentWindow = windows[i];
 		let currentTabs = getCurrentTab();
 		for (let j = 0; j < currentTabs.length; j++) {
 			let currentWindowTab = currentTabs[j];
@@ -211,10 +204,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	localStore?.get([INSPECT_STATUS], (result1) => {
 		let inspectStatus = result1?.inspectStatus;
 		localStore?.get([STEP], (result2) => {
-			// todo: is `step` a global var or local?
-			step = result2?.step;
 			if (inspectStatus === STATUS_START && changeInfo.status === 'complete') {
-				sendRunTimeMessage({action: inspectStatus, startStep: step});
+				sendRunTimeMessage({ action: inspectStatus, startStep: result2?.step });
 				updateBadge();
 			}
 		});
@@ -227,33 +218,20 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
 	switch (action.cmd) {
 		case 'inspecting': {
-			// todo: is `step` a global var or local?
-			step = action.value.step;
-
 			localStore?.get([INSPECT_LIST], function (result) {
 				if (result?.inspectList !== undefined) {
 					inspectElementList = result?.inspectList;
 				}
 				inspectElementList.push(action.value);
-				localStore?.set({inspectList: inspectElementList}, () => {});
+				localStore?.set({ inspectList: inspectElementList }, () => { });
 			});
 			break;
 		}
 		case 'console':
 			printLog(action.type, action.msg, action.data);
 			break;
-	}
-	updateBadge();
-	sendResponse();
-	return true;
-});
-
-// todo: possible to combine with the above `addListener()` code?
-chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
-	switch (action?.callMethod) {
 		case STATUS_START:
-			// todo: don' we need to pass in a URL here?
-			start();
+			start(action?.url);
 			break;
 		case STATUS_STOP:
 			stop();
@@ -265,6 +243,9 @@ chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
 			pause();
 			break;
 	}
+	updateBadge();
 	sendResponse();
 	return true;
 });
+
+

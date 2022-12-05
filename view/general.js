@@ -1,7 +1,7 @@
-const startStatus = 'start';
-const pauseStatus = 'paused';
-const stopStatus = 'stop';
-const clearStatus = 'clear';
+const STATUS_START = 'start';
+const STATUS_PAUSE = 'paused';
+const STATUS_STOP = 'stop';
+const STATUS_CLEAR = 'clear';
 const clickEvt = 'click';
 
 function createSelectElement(items, id, editable = true) {
