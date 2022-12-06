@@ -583,7 +583,10 @@ function sendInspectInfo(command, event) {
 	}
 
 	// ToDo: for payload create user define datatype
-	const payload = new stepObject('inspecting', data);
+	const payload = {
+		cmd: 'inspecting',
+		value: data,
+	};
 
 	if (!chrome || !chrome.runtime || !payload) return;
 	sendConsole('log', 'SEND PAYLOAD :', payload);
@@ -640,11 +643,3 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	sendResponse();
 	return true;
 });
-
-
-/* payload user defined data type */
-
-function stepObject(cmd, value) {
-	this.cmd = cmd;
-	this.value = value;
-}

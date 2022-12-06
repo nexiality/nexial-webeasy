@@ -12,8 +12,6 @@ const STATUS_PAUSE = 'paused';
 const STATUS_STOP = 'stop';
 const STATUS_CLEAR = 'clear';
 
-var inspectingTab;
-
 let localStore = chrome?.storage?.local;
 
 localStore?.get([INSPECT_STATUS], (result) => {
@@ -53,7 +51,6 @@ function start(url) {
 function stop() {
 	printLog('groupend', `BACKGROUND RECEIVED STOP INSPECTING`);
 	localStore?.set({ inspectStatus: STATUS_STOP }, () => { });
-	inspectingTab = null;
 	sendRunTimeMessage({ action: STATUS_STOP });
 	updateBadge();
 }
@@ -150,7 +147,7 @@ function createOpenURLEntry(url) {
  * @param {*} message its a data that we want to pass
  */
 function sendRunTimeMessage(message) {
-	chrome.tabs.query({ active: !0, currentWindow: !0 }, (tabs) => {
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		if (tabs[0]) {
 			chrome.tabs.sendMessage(tabs[0].id, message);
 		}
@@ -162,7 +159,7 @@ function sendRunTimeMessage(message) {
  * @returns current tab
  */
 async function getCurrentTab() {
-	let queryOptions = { active: true, currentWindow: !0 };
+	let queryOptions = { active: true, currentWindow: true };
 	let [tab] = await chrome.tabs.query(queryOptions);
 	return tab;
 }
