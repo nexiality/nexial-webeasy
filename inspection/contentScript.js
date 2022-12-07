@@ -1,3 +1,4 @@
+/* Declare variables */
 let isClick = 1;
 let focusedInput = null;
 let step = null;
@@ -232,10 +233,10 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
 				);
 				res['css'].push(
 					'css=' +
-						el.node +
-						(attr === 'id' ? `#${value}` : `[${attr}='${value}']`) +
-						`[type='${el.attribute['type']}']` +
-						baseCssPath
+					el.node +
+					(attr === 'id' ? `#${value}` : `[${attr}='${value}']`) +
+					`[type='${el.attribute['type']}']` +
+					baseCssPath
 				);
 			}
 		}
@@ -586,8 +587,6 @@ function sendInspectInfo(command, event) {
 		cmd: 'inspecting',
 		value: data,
 	};
-
-	console.log(payload);
 
 	if (!chrome || !chrome.runtime || !payload) return;
 	sendConsole('log', 'SEND PAYLOAD :', payload);

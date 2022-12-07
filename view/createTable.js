@@ -11,9 +11,9 @@ function updateBackground() {
 	const localStore = chrome?.storage?.local;
 	localStore?.get(['inspectList'], (result) => {
 		if (result?.inspectList) {
-			localStore?.set({'inspectList': result?.inspectList}, () => {});
+			localStore?.set({ 'inspectList': result?.inspectList }, () => { });
 		} else {
-			localStore?.set({'inspectList': []}, () => {});
+			localStore?.set({ 'inspectList': [] }, () => { });
 		}
 	});
 }
@@ -119,9 +119,7 @@ function createSubTableRow(param_table, key, data, step, editable) {
 			if (selectedLocator) {
 				element.value = selectedLocator.replace(/^xpath=/g, '');
 			}
-			element.onchange = function (e) {
-				// ToDO:
-			};
+
 		});
 	} else if (key === 'locator' && !data) {
 		element = createInspectElement(key, step);
@@ -198,7 +196,7 @@ function saveRow(step) {
 		inspectElementList = result?.inspectList;
 		let objIndex = inspectElementList.findIndex((obj) => obj.step === step);
 		inspectElementList[objIndex] = getCurrentInspectObject(step, inspectElementList);
-		localStore?.set({'inspectList': inspectElementList}, () => {});
+		localStore?.set({ 'inspectList': inspectElementList }, () => { });
 		updateBackground();
 	});
 }
@@ -305,7 +303,7 @@ function createDeleteButton(step) {
 			inspectElementList = result?.inspectList;
 			let index = inspectElementList.findIndex((item) => item.step === step);
 			if (index !== -1) inspectElementList.splice(index, 1);
-			localStore?.set({'inspectList': inspectElementList}, () => {
+			localStore?.set({ 'inspectList': inspectElementList }, () => {
 				updateTableRow();
 				updateBackground();
 			});
@@ -444,7 +442,7 @@ function createInspectElement(key, step) {
 	button.setAttribute('class', 'btn text-dark input-group-text');
 	button.setAttribute('id', 'inspectBtn_' + step);
 	button.innerHTML = '<i class="fas fa-search-plus"></i>';
-	button.onclick = function (e) {};
+	button.onclick = function (e) { };
 
 	subDiv.appendChild(button);
 
@@ -567,7 +565,7 @@ function addRow(data, indexAt = -1, swapColumns) {
 					item.step = index + 1;
 				});
 
-				localStore?.set({'inspectList': inspectElementList}, () => {});
+				localStore?.set({ 'inspectList': inspectElementList }, () => { });
 			}
 		});
 	}
@@ -624,7 +622,7 @@ function tableFromJson() {
 			item.step = index + 1;
 		});
 
-		localStore?.set({'inspectList': inspectElementList}, () => {
+		localStore?.set({ 'inspectList': inspectElementList }, () => {
 			for (i = 0; i < inspectElementList.length; i++) {
 				for (let key in inspectElementList[i]) {
 					if (col.indexOf(key) === -1) {
@@ -687,7 +685,7 @@ function swapUpOrDownItemInArrow(index, direction) {
 			isList[index - 1].step = index - 1;
 		}
 
-		localStore?.set({'inspectList': isList}, () => {});
+		localStore?.set({ 'inspectList': isList }, () => { });
 	});
 }
 
