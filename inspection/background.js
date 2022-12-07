@@ -123,9 +123,8 @@ function createOpenURLEntry(url) {
 		chrome.tabs.create({ url: url }, function (tab) {
 			printLog('log', 'OPEN NEW PAGE');
 			localStore?.set({ inspectingTab: JSON.parse(JSON.stringify(tab)) }, () => { });
-			printLog(inspectingTab);
-			updateBadge();
 			loadListener(url);
+			updateBadge();
 		});
 	} else {
 		chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
@@ -133,10 +132,8 @@ function createOpenURLEntry(url) {
 				return;
 			}
 			printLog('log', 'CURRENT PAGE');
-			inspectingTab = JSON.parse(JSON.stringify(tabs[0]));
-			localStore?.set({ inspectingTab: inspectingTab }, () => { });
-			printLog(inspectingTab);
-			loadListener(inspectingTab.url);
+			localStore?.set({ inspectingTab: JSON.parse(JSON.stringify(tabs[0])) }, () => { });
+			loadListener(JSON.parse(JSON.stringify(tabs[0])).url);
 			updateBadge();
 		});
 	}
