@@ -1,6 +1,7 @@
 let inspectElementList = [];
 let height = '98px';
-
+let localStore = chrome?.storage?.local;
+let preferredSelectors;
 function resizePopupWindow() {
 	if (window.innerHeight < 150) {
 		document.getElementById('nexial-container').style.height = '350px';
@@ -31,7 +32,7 @@ function createScript() {
 	let script = '';
 
 	for (let i = 0; i < inspectElementList.length; i++) {
-		script += 'web' + delim + inspectElementList[i].command + delim;
+		script += inspectElementList[i].command == "save(var,value)" ? 'base' + delim + inspectElementList[i].command + delim : 'web' + delim + inspectElementList[i].command + delim;
 		for (let parameter in inspectElementList[i].param) {
 			const el = document.getElementById(parameter + '_' + inspectElementList[i].step);
 			if (el && el.tagName && el.tagName === 'SELECT') {
@@ -73,7 +74,7 @@ function stop() {
 	document.getElementById('stopOption').style.display = 'none';
 	document.getElementById('showStatus').style.display = 'none';
 
-	chrome.storage?.local?.get(['inspectList'], (result) => {
+	localStore?.get(['inspectList'], (result) => {
 		if (result?.inspectList?.length > 0) {
 			document.getElementById('showData').style.display = 'block';
 			document.getElementById('inspectDataOption').style.display = 'block';
@@ -100,6 +101,10 @@ let stopInspect = document.getElementById('stopInspect');
 let showHelp = document.getElementById('showHelp');
 let copyToNexial = document.getElementById('copyToNexial');
 let clearInspection = document.getElementById('clear');
+let selectPrefrences = document.getElementById('selectPrefrences');
+let backArrow = document.getElementById('backArrow');
+let submitPrefrences = document.getElementById('submitPrefrences');
+let allButtonForSelectorPreference = document.getElementById('all');
 
 pauseInspect.addEventListener(
 	clickEvt,
@@ -160,6 +165,74 @@ stopInspect.addEventListener(clickEvt, function () {
 	stop();
 	chrome.runtime.sendMessage({ cmd: STATUS_STOP }, (response) => { });
 });
+
+selectPrefrences.addEventListener(clickEvt, function () {
+	$('.row.content').css('display', 'none');
+	$('.selectPrefrencesDiv').css('display', 'block');
+	localStore?.get(['preferences'], (result) => {
+		console.log(result);
+		console.log(result?.preferences?.waitTimeSetInPreference == "" ? 2500 : (result?.preferences?.waitTimeSetInPreference == "clearedwaittime" ? "" : result?.preferences?.waitTimeSetInPreference));
+		console.log(result?.preferences?.varName == "" ? "defaultWaitTime" : (result?.preferences?.varName == "clearedvarname" ? "" : result?.preferences?.varName));
+		$('#waitTime').val(result?.preferences?.waitTimeSetInPreference == "" ? 2500 : (result?.preferences?.waitTimeSetInPreference == "clearedwaittime" ? "" : result?.preferences?.waitTimeSetInPreference));
+		$('#varNameWaitTime').val(result?.preferences?.varName == "" ? "defaultWaitTime" : (result?.preferences?.varName == "clearedvarname" ? "" : result?.preferences?.varName));
+
+	});
+});
+
+backArrow.addEventListener(clickEvt, function () {
+	$('.row.content').css('display', 'block');
+	$('.selectPrefrencesDiv').css('display', 'none');
+
+});
+
+submitPrefrences.addEventListener(clickEvt, function (event) {
+	// console.log($("#varNameWaitTime").val() == "" ? "clearedwaittime" : $("#varNameWaitTime").val());
+	// console.log(($('#waitTime').val() == "" ? "clearedvarname" : ""));
+	if ($("#varNameWaitTime").val() == "" && $('#waitTime').val() != "") {
+		alert("Var name for wait time is mandatory.");
+		return;
+	}
+	else if ($("#varNameWaitTime").val() != "" && $('#waitTime').val() == "") {
+		alert("Wait time is mandatory.");
+		return;
+	}
+	let value = [];
+	let varName = ($("#varNameWaitTime").val() == "" ? "clearedvarname" : $("#varNameWaitTime").val());
+	let waitTime = ($('#waitTime').val() == "" ? "clearedwaittime" : $("#waitTime").val());
+	if ($('#all').prop('checked')) {
+		value.push('all');
+	}
+	if ($('#id').prop('checked')) {
+		value.push('id');
+	}
+	if ($('#css').prop('checked')) {
+		value.push('css');
+	}
+	if ($('#xpath').prop('checked')) {
+		value.push('xpath');
+	}
+
+	let obj = { waitTimeSetInPreference: waitTime, varName: varName, selectors: value };
+	console.log(obj);
+
+	localStore?.set({ "preferences": obj }).then(() => {
+		console.log(obj);
+	})
+
+	alert("Preferences saved successfully.");
+});
+
+allButtonForSelectorPreference.addEventListener(clickEvt, function (event) {
+	if ($(this).prop('checked')) {
+		$('#id,#css,#xpath').prop('checked', false);
+	}
+})
+
+$('#id,#css,#xpath').click((event) => {
+	if ($('#id').prop('checked') || $('#css').prop('checked') || $('#xpath').prop('checked')) {
+		$('#all').prop('checked', false);
+	}
+})
 
 showHelp.addEventListener(
 	clickEvt,
@@ -256,6 +329,18 @@ document.getElementById('clearInfo').addEventListener(
 	false
 );
 
+
+document.getElementById('selectPrefrencesInfo').addEventListener(
+	clickEvt,
+	function () {
+		info(
+			'Select Prefrences',
+			'You can select the prefrences after clicking on this button.'
+		);
+	},
+	false
+);
+
 document.getElementById('copyToNexialInfo').addEventListener(
 	clickEvt,
 	function () {
@@ -277,10 +362,43 @@ document.getElementById('copyToNexialInfo').addEventListener(
 );
 
 window.onload = function () {
-	chrome.storage?.local?.get(['inspectStatus'], (result) => {
+	localStore?.get(['inspectStatus'], (result) => {
 		let inspectStatus = result?.inspectStatus;
 		if (inspectStatus === STATUS_START) start();
 		else if (inspectStatus === STATUS_PAUSE) pause();
 		else if (inspectStatus === STATUS_STOP) stop();
 	});
+
+	localStore?.get(["preferences"], (result) => {
+		console.log(result?.preferences)
+		let temp = result?.preferences ? result?.preferences : { waitTimeSetInPreference: "", varName: "", selectors: [] };
+		console.log(temp);
+		let obj = temp ? JSON.parse(JSON.stringify(temp)) : temp;
+		console.log(obj);
+		console.log(obj?.selectors.length > 0);
+		if (obj?.selectors.length > 0) {
+			obj?.selectors?.forEach((item) => {
+				$('#' + item).prop('checked', true);
+			})
+			preferredSelectors = result?.preferences?.selectors;
+		}
+		else {
+			$('#all').prop('checked', true);
+			preferredSelectors = ['all'];
+			obj.selectors = preferredSelectors;
+
+		}
+		console.log(obj);
+		let waitTimeSetInPreference = (obj?.waitTimeSetInPreference == "" ? 2500 : (obj?.waitTimeSetInPreference == "clearedwaittime" ? "" : ""));
+		let varName = (obj?.varName == "" ? "defaultWaitTime" : (obj?.varName == "clearedvarname" ? "" : ""));
+
+		$('#waitTime').val(waitTimeSetInPreference);
+		$('#varNameWaitTime').val(varName);
+		console.log(obj);
+		localStore.set({ "preferences": obj }, (result) => { });
+
+	});
+
+
+
 };

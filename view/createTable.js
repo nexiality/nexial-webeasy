@@ -110,15 +110,38 @@ function createSubTableRow(param_table, key, data, step, editable) {
 	let selectedLocator;
 	const id = key + '_' + step;
 	td.setAttribute('title', key);
-
-	if (key === 'locator' && data) {
+	// console.log(key);
+	// console.log(data);
+	if (key === 'locator' && data && Array.isArray(data)) {
 		element = createSelectElement(data, id, editable);
 		chrome?.storage?.local?.get(['inspectList'], (result) => {
+
 			const inspectListObject = getInspectListObject(step, result?.inspectList);
-			selectedLocator = inspectListObject?.actions['selectedLocator'];
+
+			if ($(element).find('optgroup[label="ID"]').attr('style') == 'display:none;') {
+				selectedLocator = inspectListObject?.actions['cssSelector'] ? inspectListObject?.actions['cssSelector'] : (inspectListObject?.actions['xpathLocator'] ? inspectListObject?.actions['xpathLocator'] : inspectListObject?.actions['nameLocator']);
+
+			}
+			else if ($(element).find('optgroup[label="CSS"]').attr('style') == 'display:none;') {
+				selectedLocator = inspectListObject?.actions['idLocator'] ? inspectListObject?.actions['idLocator'] : (inspectListObject?.actions['xpathLocator'] ? inspectListObject?.actions['xpathLocator'] : inspectListObject?.actions['nameLocator']);
+
+			}
+			else if ($(element).find('optgroup[label="XPATH"]').attr('style') == 'display:none;') {
+				selectedLocator = inspectListObject?.actions['cssSelector'] ? inspectListObject?.actions['cssSelector'] : (inspectListObject?.actions['xpathLocator'] ? inspectListObject?.actions['xpathLocator'] : inspectListObject?.actions['nameLocator']);
+
+			}
+			else {
+				selectedLocator = inspectListObject?.actions['selectedLocator'];
+			}
+
+			if ($(element).find('optgroup').length == 1 && $(element).find('optgroup').children().length == 1) {
+				$(element).find('optgroup').css('display', "block");
+			}
+
 			if (selectedLocator) {
 				element.value = selectedLocator.replace(/^xpath=/g, '');
 			}
+
 
 		});
 	} else if (key === 'locator' && !data) {
@@ -160,6 +183,7 @@ function updateParamCell(step) {
 	const paramArr = getCommandParam(document.getElementById('command_' + step).value);
 	chrome?.storage?.local?.get(['inspectList'], (result) => {
 		const inspectListObj = getInspectListObject(step, result?.inspectList).param;
+		// console.log(inspectListObj);
 		for (let index = 0; index < paramArr.length; index++) {
 			createSubTableRow(
 				document.getElementById('table_' + step),
@@ -617,7 +641,7 @@ function tableFromJson() {
 	const localStore = chrome?.storage?.local;
 	localStore?.get(['inspectList'], (result) => {
 		inspectElementList = result?.inspectList;
-
+		// console.log(inspectElementList);
 		inspectElementList.forEach((item, index) => {
 			item.step = index + 1;
 		});

@@ -103,13 +103,26 @@ function loadListener(url) {
 	localStore?.get([INSPECT_LIST], (result1) => {
 		let inspectElementList = result1?.inspectList;
 		localStore?.get([STEP], (result2) => {
-			inspectElementList.push({
-				step: result2?.step,
-				command: 'open(url)',
-				param: { url: url },
-				actions: '',
-			});
-			localStore?.set({ inspectList: inspectElementList }, () => { });
+			localStore?.get(['preferences'], (result3) => {
+				console.log(result3);
+				let step = result2?.step;
+				if (result3.preferences?.varName && result3.preferences?.waitTimeSetInPreference) {
+					inspectElementList.push({
+						step: step,
+						command: 'save(var,value)',
+						param: { value: result3.preferences?.waitTimeSetInPreference, locator: result3.preferences?.varName },
+						actions: '',
+					})
+				}
+
+				inspectElementList.push({
+					step: step++,
+					command: 'open(url)',
+					param: { url: url },
+					actions: '',
+				});
+				localStore?.set({ inspectList: inspectElementList }, () => { });
+			})
 		});
 	});
 }
@@ -204,6 +217,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 			}
 		});
 	});
+
 });
 
 /**

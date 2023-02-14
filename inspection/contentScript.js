@@ -30,6 +30,9 @@ const INPUT_CLICKABLE_TYPES = ['submit', 'reset', 'image', 'button'];
 const INPUT_TOGGLE_TYPES = ['radio', 'checkbox'];
 const HAS_PARENT = ['label', 'i', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'button']; //, "div", "span"]; // placed Orderwise
 const ATTRIB_HUMAN_READABLE = ['aria-label', 'placeholder', 'title', 'alt'];
+let localStore = chrome?.storage?.local;
+let varNameForWaitTime;
+let waitTimeSetInPreference;
 
 // Append Style on hover get element and show locator window
 let style = document.createElement('link');
@@ -52,6 +55,12 @@ function start(stepValue) {
 	document.addEventListener('mousedown', onClickElement);
 	document.addEventListener('mouseup', onMouseUp);
 	document.addEventListener('change', handleChange);
+
+	localStore?.get(['preferences'], (result) => {
+		//console.log(result);
+		varNameForWaitTime = result?.preferences?.varName;
+		waitTimeSetInPreference = result?.preferences?.waitTimeSetInPreference;
+	});
 }
 
 /**
@@ -119,17 +128,20 @@ function onMouseUp(event) {
 
 	if (focusedInput?.target.value) {
 		sendConsole('log', 'INPUT FOCUSOUT: ', focusedInput.target);
+		sendInspectInfo('waitForElementPresent(locator,waitMs)', event);
 		sendInspectInfo('type(locator,value)', focusedInput);
 		focusedInput = null;
 	}
 	if ((target.tagName === 'DIV' && target.innerText) || CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())) {
 		sendConsole('log', 'CLICK: ', target.tagName);
+		sendInspectInfo('waitForElementPresent(locator,waitMs)', event);
 		sendInspectInfo('click(locator)', event);
 		return;
 	}
 
 	if (target.tagName === 'INPUT') {
 		if (INPUT_CLICKABLE_TYPES.includes(target.type)) {
+			sendInspectInfo('waitForElementPresent(locator,waitMs)', event);
 			sendInspectInfo('click(locator)', event);
 			return;
 		}
@@ -256,6 +268,7 @@ function getLocator(e, paths, isFiltered) {
 		xpath = [],
 		css = [],
 		selectedLocator = null;
+	// console.log(paths);
 	const activeElnode = paths[paths.length - 1].node;
 
 	if (e.id) locator.push('id=' + e.id);
@@ -363,6 +376,7 @@ function getDomPath(el) {
 		el = el.parentNode;
 	}
 	// sendConsole("groupEnd", "");
+	// console.log("stack in DOm path", stack);
 	return stack;
 }
 
@@ -386,14 +400,16 @@ function filterDomPath(el) {
 	// sendConsole("log", "DOM PATH FILTER : ", domPathList);
 	for (let index = 0; index < domPathList.length; index++) {
 		const node = domPathList[index];
+		// console.log(node['node'])
 		if (FIND_PARENTS.includes(node['node']) || index === domPathList.length - 1) {
 			if (node['node'] === 'div') {
-				if (node.attribute?.id) {
+				if (node.attribute?.id || node.attribute?.class) {
 					domFilterList.push(node);
 				}
 			} else domFilterList.push(node);
 		}
 	}
+
 	if (domFilterList.length > 1)
 		return {
 			domPaths: domFilterList,
@@ -492,10 +508,35 @@ function validateLocators(locatorList) {
 		}
 		return true;
 	});
-
+	// console.log(locatorList);
 	locatorList.locator = filtered;
+
 	if (filtered && (!locatorList.selectedLocator || !filtered.includes(locatorList.selectedLocator))) {
 		locatorList.selectedLocator = filtered[0];
+	}
+
+	if (filtered) {
+		let xpathLocators = [], cssLocators = [], idLocators = [], nameLocators = []
+		filtered.forEach((item) => {
+			if (item.startsWith('id=')) {
+				idLocators.push(item);
+			}
+			else if (item.startsWith('css=')) {
+				cssLocators.push(item);
+			}
+			else if (item.startsWith('xpath=')) {
+				xpathLocators.push(item);
+			}
+			else if (item.startsWith('name=')) {
+				nameLocators.push(item);
+			}
+		})
+
+		locatorList.cssSelector = cssLocators.length > 0 ? cssLocators[0] : "";
+		locatorList.xpathLocator = xpathLocators.length > 0 ? xpathLocators[0] : "";
+		locatorList.idLocator = idLocators.length > 0 ? idLocators[0] : "";
+		locatorList.nameLocator = nameLocators.length > 0 ? nameLocators[0] : "";
+
 	}
 }
 
@@ -506,11 +547,12 @@ function validateLocators(locatorList) {
  */
 function getLocatorList(event) {
 	const paths = filterDomPath(event.target);
+
 	const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
 
 	// sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
 	// sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
-	sendConsole('log', 'LOCATOR LIST (filtered? ' + paths.isFiltered + '): ', locatorList);
+	// sendConsole('log', 'LOCATOR LIST (filtered? ' + paths.isFiltered + '): ', locatorList);
 
 	validateLocators(locatorList);
 	if (!locatorList.locator.length) {
@@ -536,8 +578,13 @@ function sendInspectInfo(command, event) {
 		param: {},
 		actions: {
 			selectedLocator: selectedLocator,
+			cssSelector: locatorList.cssSelector,
+			xpathLocator: locatorList.xpathLocator,
+			idLocator: locatorList.idLocator
 		},
 	};
+
+
 
 	switch (command) {
 		case 'click(locator)':
@@ -573,7 +620,7 @@ function sendInspectInfo(command, event) {
 		case 'waitUntilVisible(locator,waitMs)':
 		case 'waitUntilEnabled(locator,waitMs)':
 			data.param['locator'] = locator;
-			data.param['waitMs'] = '<MISSING>';
+			data.param['waitMs'] = varNameForWaitTime ? '${' + varNameForWaitTime + '}' : '25000';
 			break;
 		case 'checkAll(locator,waitMs)':
 		case 'uncheckAll(locator,waitMs)':
@@ -581,6 +628,7 @@ function sendInspectInfo(command, event) {
 			data.param['waitMs'] = '<MISSING>';
 			break;
 	}
+
 
 	// ToDo: for payload create user define datatype
 	const payload = {

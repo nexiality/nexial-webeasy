@@ -9,6 +9,10 @@ function createSelectElement(items, id, editable = true) {
 	let selectList = document.createElement('select');
 	selectList.setAttribute('class', 'form-control');
 	selectList.setAttribute('id', id);
+	// console.log(id, items);
+	//localStore?.get(["selectorsPreferences"], (result) => {
+	//preferredSelectors = result?.selectorsPreferences ? result?.selectorsPreferences : "";
+
 	if (!editable) {
 		selectList.setAttribute('disabled', 'true');
 	}
@@ -33,12 +37,21 @@ function createSelectElement(items, id, editable = true) {
 		}
 		option.value = optionText;
 		option.text = optionText;
+		// console.log(optgroup);
+		if (id.indexOf('locator') > -1) {
+			if (preferredSelectors?.indexOf(optgroupLabel) == -1) {
+				optgroup?.setAttribute('style', 'display:none;');
+			}
+		}
+
 		if (optgroup) {
 			optgroup.appendChild(option);
 			selectList.appendChild(optgroup);
 		} else {
 			selectList.appendChild(option);
 		}
+
 	}
+	//});
 	return selectList;
 }
