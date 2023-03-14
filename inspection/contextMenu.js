@@ -83,9 +83,9 @@ chrome.runtime.onInstalled.addListener(function () {
  */
 function callbackContextmenu(info, tab, command) {
 	if (command === 'findLocator') {
-		sendRunTimeMessage({action: 'findLocator'});
+		sendRunTimeMessage({ action: 'findLocator' });
 	} else {
-		sendRunTimeMessage({action: 'getContextMenuElement', command: command, selectionText: info.selectionText});
+		sendRunTimeMessage({ action: 'getContextMenuElement', command: command, selectionText: info.selectionText });
 	}
 }
 

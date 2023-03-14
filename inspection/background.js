@@ -11,6 +11,7 @@ const STATUS_START = 'start';
 const STATUS_PAUSE = 'paused';
 const STATUS_STOP = 'stop';
 const STATUS_CLEAR = 'clear';
+const STATUS_MIDDLE_START = 'middle_start';
 
 let localStore = chrome?.storage?.local;
 
@@ -41,7 +42,7 @@ function start(url) {
 	});
 
 	localStore?.set({ inspectStatus: STATUS_START }, () => { });
-	createOpenURLEntry(url);
+	createOpenURLEntry(url, false);
 	sendRunTimeMessage({ action: STATUS_START, startStep: 1 });
 }
 
@@ -53,6 +54,7 @@ function stop() {
 	localStore?.set({ inspectStatus: STATUS_STOP }, () => { });
 	sendRunTimeMessage({ action: STATUS_STOP });
 	updateBadge();
+
 }
 
 /**
@@ -73,6 +75,29 @@ function clear() {
 	updateBadge();
 }
 
+/** 
+	Start Inspection in middle of step
+**/
+function startInMiddle(url, step) {
+	printLog('group', `BACKGROUND RECEIVED START INSPECTING IN MIDDLE`);
+
+	localStore?.get([INSPECT_LIST], (result) => {
+		localStore?.set({ inspectList: result?.inspectList ? result?.inspectList : [] }, () => { });
+	});
+
+	localStore?.get(['isInspectInMiddle'], (result) => {
+		console.log(result);
+		if (result?.isInspectInMiddle == 'true') {
+			chrome.runtime.sendMessage({ startInspectingInMiddle: "CallInMiddle" });
+
+			localStore?.set({ inspectStatus: STATUS_MIDDLE_START }, () => { });
+			createOpenURLEntry(url, true);
+			sendRunTimeMessage({ action: STATUS_MIDDLE_START, startStep: step });
+
+		}
+	});
+}
+
 /**
  * add and remove badge from extension icon
  */
@@ -81,7 +106,7 @@ function updateBadge() {
 		let inspectStatus = result?.inspectStatus;
 		localStore?.get([INSPECT_TAB], (result2) => {
 			let inspectingTab = result2.inspectingTab ? result2.inspectingTab : null;
-			if (inspectStatus === STATUS_START && inspectingTab) {
+			if ((inspectStatus === STATUS_START && inspectingTab) || (inspectStatus === STATUS_MIDDLE_START && inspectingTab)) {
 				chrome.action.setBadgeBackgroundColor({ color: 'red' });
 				chrome.action.setBadgeText({ tabId: inspectingTab.tabId, text: ' ' });
 			} else {
@@ -98,48 +123,59 @@ function updateBadge() {
  * add open url inspection in inspectElementList
  * @param {*} url Its a web address
  */
-function loadListener(url) {
+function loadListener(url, isInspectInMiddle) {
 	printLog('log', 'CREATE OPEN URL ENTRY');
-	localStore?.get([INSPECT_LIST], (result1) => {
-		let inspectElementList = result1?.inspectList;
-		localStore?.get([STEP], (result2) => {
-			localStore?.get(['preferences'], (result3) => {
-				console.log(result3);
-				let step = result2?.step;
-				if (result3.preferences?.varName && result3.preferences?.waitTimeSetInPreference) {
-					inspectElementList.push({
-						step: step,
-						command: 'save(var,value)',
-						param: { value: result3.preferences?.waitTimeSetInPreference, locator: result3.preferences?.varName },
-						actions: '',
-					})
-				}
+	console.log(isInspectInMiddle);
+	if (!isInspectInMiddle)
+		localStore?.get([INSPECT_LIST], (result1) => {
+			let inspectElementList = result1?.inspectList;
+			localStore?.get([STEP], (result2) => {
+				localStore?.get(['preferences'], (result3) => {
+					let step = result2?.step;
+					if (result3.preferences?.varName && result3.preferences?.waitTimeSetInPreference) {
+						inspectElementList.push({
+							step: step,
+							command: 'save(var,value)',
+							param: { value: result3.preferences?.waitTimeSetInPreference, locator: result3.preferences?.varName },
+							actions: '',
+						})
+					}
 
-				inspectElementList.push({
-					step: step++,
-					command: 'open(url)',
-					param: { url: url },
-					actions: '',
-				});
-				localStore?.set({ inspectList: inspectElementList }, () => { });
-			})
+					inspectElementList.push({
+						step: step++,
+						command: 'open(url)',
+						param: { url: url },
+						actions: '',
+					});
+					localStore?.set({ inspectList: inspectElementList }, () => { });
+				})
+			});
 		});
-	});
 }
 
 /**
  * Open new tab if url exits and record inspecting tab
  * @param {*} url Its a web address
  */
-function createOpenURLEntry(url) {
-	if (url) {
+async function createOpenURLEntry(url, isInspectInMiddle) {
+	if (url && !isInspectInMiddle) {
 		chrome.tabs.create({ url: url }, function (tab) {
 			printLog('log', 'OPEN NEW PAGE');
 			localStore?.set({ inspectingTab: JSON.parse(JSON.stringify(tab)) }, () => { });
 			loadListener(url);
 			updateBadge();
 		});
-	} else {
+	}
+	else if (isInspectInMiddle) {
+		let queryOptions = { active: true, currentWindow: true };
+		let [tabs] = await chrome.tabs.query(queryOptions);
+		await localStore?.set({ inspectingTab: tabs }, () => { });
+		console.log(url);
+		await loadListener((tabs?.url ? tabs?.url : url), true);
+		updateBadge();
+
+	}
+	else {
 		chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
 			if (!tabs || tabs.length < 1) {
 				return;
@@ -156,12 +192,17 @@ function createOpenURLEntry(url) {
  * Used to communicated
  * @param {*} message its a data that we want to pass
  */
-function sendRunTimeMessage(message) {
-	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-		if (tabs[0]) {
-			chrome.tabs.sendMessage(tabs[0].id, message);
-		}
-	});
+async function sendRunTimeMessage(message) {
+
+	let queryOptions = { active: true, currentWindow: true };
+	let [tabs] = await chrome.tabs.query(queryOptions);
+	await localStore?.set({ inspectingTab: tabs }, () => { });
+	// console.log(await tabs);
+	//chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+	if (tabs) {
+		chrome.tabs.sendMessage(tabs.id, message);
+	}
+	//});
 }
 
 /**
@@ -171,7 +212,7 @@ function sendRunTimeMessage(message) {
 async function getCurrentTab() {
 	let queryOptions = { active: true, currentWindow: true };
 	let [tab] = await chrome.tabs.query(queryOptions);
-	return tab;
+	return await tab;
 }
 
 /**
@@ -224,14 +265,41 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
  */
 chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
+
 	switch (action.cmd) {
 		case 'inspecting': {
+
 			localStore?.get([INSPECT_LIST], function (result) {
-				if (result?.inspectList !== undefined) {
-					inspectElementList = result?.inspectList;
-				}
-				inspectElementList.push(action.value);
-				localStore?.set({ inspectList: inspectElementList }, () => { });
+				let inspectElementList = [];
+				localStore?.get(['isInspectInMiddle'], function (result2) {
+
+					localStore?.get(["middleStep"], (result3) => {
+						localStore?.get(["middleStepList"], (result4) => {
+							let middleStepNo = result3?.middleStep;
+							let firstHalfInspectList = [];
+							let secondHalfInspectList = [];
+							let middleInspectedList = result4?.middleStepList ? result4?.middleStepList : [];
+							if (result?.inspectList != undefined) {
+								inspectElementList = result?.inspectList;
+							}
+
+							if (result2.isInspectInMiddle == "true") {
+								// inspectElementList.splice((action?.value?.step - 1), 0, action?.value);
+
+								middleInspectedList.push(action?.value);
+								console.log(middleInspectedList);
+								localStore?.set({ "middleStepList": middleInspectedList }, () => { });
+							}
+							else {
+
+								inspectElementList.push(action.value);
+
+							}
+
+							localStore?.set({ inspectList: inspectElementList }, () => { });
+						});
+					});
+				});
 			});
 			break;
 		}
@@ -240,6 +308,11 @@ chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
 			break;
 		case STATUS_START:
 			start(action?.url);
+			break;
+		case STATUS_MIDDLE_START:
+			console.log(action);
+
+			startInMiddle(action?.url, action?.step);
 			break;
 		case STATUS_STOP:
 			stop();
@@ -255,5 +328,3 @@ chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
 	sendResponse();
 	return true;
 });
-
-

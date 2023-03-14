@@ -3,12 +3,11 @@ let currentStep = 0;
 let editMode = false;
 let newRowPosition;
 let isClickedOnNewButton = false;
-
+let localStore = chrome?.storage?.local;
 /**
  * Update changes to background
  */
 function updateBackground() {
-	const localStore = chrome?.storage?.local;
 	localStore?.get(['inspectList'], (result) => {
 		if (result?.inspectList) {
 			localStore?.set({ 'inspectList': result?.inspectList }, () => { });
@@ -214,7 +213,6 @@ function editRow(step) {
  * @param {*} step its an inspect object key that refer object on which save action is performed in inspectElementList
  */
 function saveRow(step) {
-	const localStore = chrome?.storage?.local;
 	localStore?.get(['inspectList'], (result) => {
 		toggleEditable(step, false);
 		inspectElementList = result?.inspectList;
@@ -255,6 +253,8 @@ function toggleActions(/*Number*/ i, /*Boolean*/ enable) {
 	document.getElementById('down_' + i).style.display = enable ? 'inline-block' : 'none';
 	document.getElementById('save_' + i).style.display = enable ? 'none' : 'inline-block';
 	document.getElementById('close_' + i).style.display = enable ? 'none' : 'inline-block';
+
+
 }
 
 /**
@@ -270,18 +270,29 @@ function createAddNewButton(step) {
 	button.innerHTML = '<i class="fas fa-plus"></i>';
 	currentStep = step;
 	button.onclick = function (e) {
-		const indexAt = document.getElementById('step_' + step).rowIndex;
-		newRowPosition = step;
-		isClickedOnNewButton = true;
-		const payload = {
-			step: '',
-			command: '',
-			param: {},
-			actions: {},
-		};
-		addRow(payload, indexAt, false);
-		updateTableRow();
-	};
+		console.log('in side click');
+		if (confirm('Do you want to inspect or add new step manually? Click on OK to inspect or click on cancel to add step manually')) {
+			localStore?.get(['inspectList'], (result) => {
+				localStore?.set({ isInspectInMiddle: "true" }, () => { });
+				chrome?.runtime?.sendMessage({ cmd: STATUS_MIDDLE_START, url: result?.inspectList[0]?.param?.url, step: step }, (response) => { });
+			});
+		}
+		else {
+			const indexAt = document.getElementById('step_' + step).rowIndex;
+			newRowPosition = step;
+			isClickedOnNewButton = true;
+			const payload = {
+				step: '',
+				command: '',
+				param: {},
+				actions: {},
+			};
+			addRow(payload, indexAt, false);
+			updateTableRow();
+		}
+
+
+	}
 	return button;
 }
 
@@ -300,8 +311,16 @@ function createDuplicateButton(step) {
 		const indexAt = document.getElementById('step_' + step).rowIndex;
 		chrome?.storage?.local?.get(['inspectList'], (result) => {
 			let payload = Object.assign({}, getInspectListObject(step, result?.inspectList));
-			payload.step = '';
+			let inspectElementList = result?.inspectList;
+			payload.step = indexAt + 1;
+			inspectElementList.splice((indexAt - 1), 0, payload);
+			inspectElementList.forEach((item, index) => {
+				item.step = index + 1;
+			});
 			addRow(payload, indexAt, true);
+			chrome?.storage?.local.set({ 'inspectList': inspectElementList }, () => {
+
+			});
 			updateTableRow();
 			updateBackground();
 		});
@@ -322,7 +341,6 @@ function createDeleteButton(step) {
 	button.innerHTML = '<i class="fa fa-trash"></i>';
 	button.onclick = function (e) {
 		document.getElementById('step_' + step).remove();
-		const localStore = chrome?.storage?.local;
 		localStore?.get(['inspectList'], (result) => {
 			inspectElementList = result?.inspectList;
 			let index = inspectElementList.findIndex((item) => item.step === step);
@@ -443,7 +461,8 @@ function createUpDownButton(step, direction) {
 		} else {
 			console.log('return');
 		}
-		updateTableRow();
+		// updateTableRow();
+
 	};
 	return button;
 }
@@ -550,6 +569,7 @@ function updateTableRow() {
 		} else if (i === rows.length - 1 && document.getElementById('down_' + step) !== undefined) {
 			document.getElementById('down_' + step).disabled = true;
 		}
+
 	}
 }
 
@@ -577,10 +597,11 @@ function createSubTable(data, step) {
  * @param swapColumns
  */
 function addRow(data, indexAt = -1, swapColumns) {
+	console.log(data);
 	let tr = table.tBodies[0].insertRow(indexAt);
 	if (!data['step']) {
 		data['step'] = newRowPosition + 1;
-		const localStore = chrome?.storage?.local;
+
 		localStore?.get(['inspectList'], (result) => {
 			inspectElementList = result?.inspectList;
 			inspectElementList.splice(newRowPosition, 0, data);
@@ -612,6 +633,7 @@ function addRow(data, indexAt = -1, swapColumns) {
 			cell.appendChild(createAddNewButton(currentStep));
 			cell.appendChild(createUpDownButton(currentStep, 1)); //down
 			cell.appendChild(createUpDownButton(currentStep, -1)); // up
+			// cell.appendChild(createInspectButton(currentStep));
 		} else if (key === 'param') {
 			const sub_table = createSubTable(data['param'], currentStep);
 			cell.appendChild(sub_table);
@@ -638,10 +660,9 @@ function tableFromJson() {
 	let col = [];
 	let inspectElementList = [];
 
-	const localStore = chrome?.storage?.local;
 	localStore?.get(['inspectList'], (result) => {
 		inspectElementList = result?.inspectList;
-		// console.log(inspectElementList);
+		console.log(inspectElementList);
 		inspectElementList.forEach((item, index) => {
 			item.step = index + 1;
 		});
@@ -696,7 +717,6 @@ function tableFromJson() {
 /* function which swaps items up and down in table */
 function swapUpOrDownItemInArrow(index, direction) {
 	let isList = [];
-	const localStore = chrome?.storage?.local;
 	localStore?.get(['inspectList'], (result) => {
 		isList = result?.inspectList;
 		if (direction === 1) {
@@ -710,6 +730,8 @@ function swapUpOrDownItemInArrow(index, direction) {
 		}
 
 		localStore?.set({ 'inspectList': isList }, () => { });
+		document.getElementById('inspect_table').remove();
+		tableFromJson();
 	});
 }
 

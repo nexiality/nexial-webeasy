@@ -56,6 +56,7 @@ function start(stepValue) {
 	document.addEventListener('mouseup', onMouseUp);
 	document.addEventListener('change', handleChange);
 
+
 	localStore?.get(['preferences'], (result) => {
 		//console.log(result);
 		varNameForWaitTime = result?.preferences?.varName;
@@ -572,6 +573,7 @@ function sendInspectInfo(command, event) {
 	let locatorList = getLocatorList(event);
 	let locator = locatorList.locator;
 	let selectedLocator = locatorList.selectedLocator;
+
 	let data = {
 		step: step++,
 		command: command,
@@ -580,7 +582,7 @@ function sendInspectInfo(command, event) {
 			selectedLocator: selectedLocator,
 			cssSelector: locatorList.cssSelector,
 			xpathLocator: locatorList.xpathLocator,
-			idLocator: locatorList.idLocator
+			idLocator: locatorList.idLocator,
 		},
 	};
 
@@ -666,7 +668,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			clickedElement = null;
 			break;
 		case STATUS_START:
-			start(request.startStep);
+			start(request.startStep, false);
+			break;
+		case STATUS_MIDDLE_START:
+			localStore?.set({ "middleStep": request.startStep }, () => { });
+			console.log(request?.startStep);
+			start(request.startStep, true);
 			break;
 		case STATUS_STOP:
 			stop();

@@ -3,6 +3,7 @@ const STATUS_PAUSE = 'paused';
 const STATUS_STOP = 'stop';
 const STATUS_CLEAR = 'clear';
 const clickEvt = 'click';
+const STATUS_MIDDLE_START = 'middle_start';
 
 function createSelectElement(items, id, editable = true) {
 	// Create and append select list
@@ -38,7 +39,7 @@ function createSelectElement(items, id, editable = true) {
 		option.value = optionText;
 		option.text = optionText;
 		// console.log(optgroup);
-		if (id.indexOf('locator') > -1) {
+		if (id.indexOf('locator') > -1 && preferredSelectors.indexOf('all') == -1) {
 			if (preferredSelectors?.indexOf(optgroupLabel) == -1) {
 				optgroup?.setAttribute('style', 'display:none;');
 			}
