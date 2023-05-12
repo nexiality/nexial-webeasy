@@ -8,11 +8,9 @@ const STATUS_MIDDLE_START = 'middle_start';
 function createSelectElement(items, id, editable = true) {
 	// Create and append select list
 	let selectList = document.createElement('select');
-	selectList.setAttribute('class', 'form-control');
+	selectList.setAttribute('class', 'form-control selectElement');
 	selectList.setAttribute('id', id);
-	// console.log(id, items);
-	//localStore?.get(["selectorsPreferences"], (result) => {
-	//preferredSelectors = result?.selectorsPreferences ? result?.selectorsPreferences : "";
+
 
 	if (!editable) {
 		selectList.setAttribute('disabled', 'true');
@@ -36,14 +34,12 @@ function createSelectElement(items, id, editable = true) {
 		if (optionText && optionText.startsWith('xpath=')) {
 			optionText = optionText.substring(6);
 		}
+
+		if (optionText && optionText.startsWith('user defined locator=')) {
+			optionText = optionText.split("=")[1];
+		}
 		option.value = optionText;
 		option.text = optionText;
-		// console.log(optgroup);
-		if (id.indexOf('locator') > -1 && preferredSelectors.indexOf('all') == -1) {
-			if (preferredSelectors?.indexOf(optgroupLabel) == -1) {
-				optgroup?.setAttribute('style', 'display:none;');
-			}
-		}
 
 		if (optgroup) {
 			optgroup.appendChild(option);
@@ -53,6 +49,7 @@ function createSelectElement(items, id, editable = true) {
 		}
 
 	}
+
 	//});
 	return selectList;
 }

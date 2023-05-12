@@ -326,7 +326,7 @@ footer {
 
 .copyParamIcon {
 	float: right;
-	left: 8%;
+	left: 2%;
 	position: relative;
 	bottom: 28px;
 	cursor: pointer;
@@ -338,6 +338,7 @@ footer {
 .selectPrefrencesDiv {
 	height: 500px;
 	display: none;
+	font-size: 14.56px;
 }
 
 /* // preference table css */
@@ -457,4 +458,22 @@ footer {
 	font-size: 9pt;
 	color: #777;
 	vertical-align: middle;
+}
+
+.selectElement,
+.inputBox {
+	width: 95% !important;
+}
+
+.customPathIcon {
+	float: right;
+	left: 17%;
+	position: relative;
+	bottom: 28px;
+	cursor: pointer;
+}
+
+#customLocatorDelete {
+	position: relative;
+	right: 120px;
 }

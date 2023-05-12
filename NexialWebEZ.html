@@ -3,6 +3,7 @@
 	<head>
 		<title>Nexial WebEZ</title>
 		<meta charset="utf-8" />
+		<link rel="stylesheet" href="resources/style/jquery-ui.css" />
 		<link rel="stylesheet" href="resources/style/bootstrap.min.css" />
 		<link rel="stylesheet" href="resources/style/all.min.css" />
 		<link rel="stylesheet" href="resources/style/default.css" />
@@ -99,12 +100,11 @@
 							<div class="card-body">
 								<h5 class="card-title">Set Wait Time</h5>
 								<p class="card-text">
-									Wait time you can specify here which will be applied for the command waitForElementPresent you can
-									find command details
+									Wait time you can specify here which will be applied for the command
 									<a
 										target="_blank"
 										href="https://nexiality.github.io/documentation/commands/web/waitForElementPresent(locator,waitMs)"
-										>here</a
+										>waitForElementPresent</a
 									>
 								</p>
 								<label>Wait time</label>
@@ -118,16 +118,12 @@
 							<div class="card-body">
 								<h5 class="card-title">Set Preferred Selector</h5>
 								<p class="card-text">You can specify which selectors type you prefer out of id, css, xpath.</p>
-								<input type="checkbox" id="all" name="all" value="all" />
-								<label for="all">All</label>&nbsp;&nbsp;
-								<input type="checkbox" id="id" name="id" value="id" />
-								<label for="id">Id</label>&nbsp;&nbsp;
-								<input type="checkbox" id="css" name="css" value="id" />
-								<label for="css">Css</label>&nbsp;&nbsp;
-								<input type="checkbox" id="xpath" name="xpath" value="xpath" />
-								<label for="xpath">Xpath</label>&nbsp;&nbsp;
-								<input type="checkbox" id="name" name="name" value="name" />
-								<label for="name">Name</label>&nbsp;&nbsp;
+								<ul class="list-group list-group-horizontal-sm" id="sortable">
+									<li class="list-group-item">Id</li>
+									<li class="list-group-item">Css</li>
+									<li class="list-group-item">Xpath</li>
+									<li class="list-group-item">Name</li>
+								</ul>
 							</div>
 						</div>
 					</div>
@@ -158,7 +154,81 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title fs-5" id="exampleModalLabel">Add New Steps</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						To add steps through inspection :
+						<button type="button" class="btn btn-secondary" id="inspectAddInMiddle">Inspect here</button><br />
+						<br />
+						<div class="input-group mb-3">
+							To add empty steps :
+							<div class="input-group-prepend ml-3">
+								<input
+									type="number"
+									value="1"
+									class="form-control"
+									id="inputForManualStepAdd"
+									placeholder=""
+									aria-label=""
+									aria-describedby="basic-addon1"
+									style="width: 85%" />
+							</div>
+							<button class="btn btn-secondary" id="manualStepAddInMiddle" type="button">Add Steps</button>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="customLocator" tabindex="-1" aria-labelledby="customLocatorLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title fs-5" id="customLocatorLabel">User Defined Locator</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="input-group mb-3">Add user defined locator here:</div>
+						<div class="input-group-prepend">
+							<input
+								type="text"
+								class="form-control"
+								id="customLocatorInput"
+								placeholder="custom locator"
+								aria-label=""
+								aria-describedby="basic-addon1"
+								style="width: 100%" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary float-left" data-dismiss="modal" id="customLocatorDelete">
+							Delete
+						</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal" id="customLocatorSave">Save</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal" id="customLocatorSaveAs">
+							Save As New
+						</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<script src="resources/js/jquery-3.5.1.slim.min.js"></script>
+		<script src="resources/js/jquery-ui.js"></script>
 		<script src="resources/js/bootstrap.min.js"></script>
 		<script src="env.js" type="text/javascript"></script>
 		<script src="model/webCommand.js" type="text/javascript"></script>

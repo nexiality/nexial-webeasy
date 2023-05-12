@@ -106,52 +106,71 @@ function createSubTableRow(param_table, key, data, step, editable) {
 	let tr = param_table.insertRow(-1);
 	let td = tr.insertCell(-1);
 	let element = '';
-	let selectedLocator;
+	let selectedLocator = "";
 	const id = key + '_' + step;
 	td.setAttribute('title', key);
-	// console.log(key);
-	// console.log(data);
 	if (key === 'locator' && data && Array.isArray(data)) {
 		element = createSelectElement(data, id, editable);
 		chrome?.storage?.local?.get(['inspectList'], (result) => {
 
 			const inspectListObject = getInspectListObject(step, result?.inspectList);
+			if (inspectListObject?.actions?.userSavedCustomLocator == undefined || inspectListObject?.actions?.userSavedCustomLocator == null) {
+				$('#sortable').children().each(function () {
+					let preferedOption = $(this).text();
+					if (selectedLocator == "") {
 
-			if ($(element).find('optgroup[label="ID"]').attr('style') == 'display:none;') {
-				selectedLocator = inspectListObject?.actions['cssSelector'] ? inspectListObject?.actions['cssSelector'] : (inspectListObject?.actions['xpathLocator'] ? inspectListObject?.actions['xpathLocator'] : inspectListObject?.actions['nameLocator']);
+						if (preferedOption?.trim() == 'Id' && inspectListObject?.actions['idLocator']?.length > 0) {
+							selectedLocator = inspectListObject?.actions['idLocator'][0];
+						}
 
-			}
-			else if ($(element).find('optgroup[label="CSS"]').attr('style') == 'display:none;') {
-				selectedLocator = inspectListObject?.actions['idLocator'] ? inspectListObject?.actions['idLocator'] : (inspectListObject?.actions['xpathLocator'] ? inspectListObject?.actions['xpathLocator'] : inspectListObject?.actions['nameLocator']);
+						if (preferedOption?.trim() == 'Css' && inspectListObject?.actions['cssSelector']?.length > 0) {
+							selectedLocator = inspectListObject?.actions['cssSelector'][0];
+						}
 
-			}
-			else if ($(element).find('optgroup[label="XPATH"]').attr('style') == 'display:none;') {
-				selectedLocator = inspectListObject?.actions['cssSelector'] ? inspectListObject?.actions['cssSelector'] : (inspectListObject?.actions['xpathLocator'] ? inspectListObject?.actions['xpathLocator'] : inspectListObject?.actions['nameLocator']);
+						if (preferedOption?.trim() == 'Xpath' && inspectListObject?.actions['xpathLocator']?.length > 0) {
+							selectedLocator = inspectListObject?.actions['xpathLocator'][0];
+						}
 
+						if (preferedOption?.trim() == 'Name' && inspectListObject?.actions['nameLocator']?.length > 0) {
+							selectedLocator = inspectListObject?.actions['nameLocator'][0];
+						}
+					}
+				})
+
+				if (selectedLocator == "") {
+
+					selectedLocator = inspectListObject?.actions['selectedLocator'];
+				}
+
+				console.log(selectedLocator);
+				if (selectedLocator != "" && selectedLocator != null) {
+
+					element.value = selectedLocator.replace(/^xpath=/g, '');
+				}
 			}
 			else {
-				selectedLocator = inspectListObject?.actions['selectedLocator'];
+
+
+				element.value = inspectListObject?.actions?.userSavedCustomLocator.replace(/^xpath=/g, '');
+
 			}
-
-			if ($(element).find('optgroup').length == 1 && $(element).find('optgroup').children().length == 1) {
-				$(element).find('optgroup').css('display', "block");
-			}
-
-			if (selectedLocator) {
-				element.value = selectedLocator.replace(/^xpath=/g, '');
-			}
-
-
+			console.log(result?.inspectList);
+			element.setAttribute('title', element.value);
 		});
 	} else if (key === 'locator' && !data) {
 		element = createInspectElement(key, step);
 	} else {
-		element = createInputBox(data, id, editable);
+		element = createInputBox(data, id, editable, key);
 	} // param is other than locator
 
 	// element.setAttribute("id", key + "_" + step);
 	td.appendChild(element);
 	td.appendChild(createCopyIcon('param'));
+
+	if ($(td).find('select').length > 0) {
+		td.appendChild(createCustomOption('param', step));
+	}
+
 }
 
 /**
@@ -182,7 +201,6 @@ function updateParamCell(step) {
 	const paramArr = getCommandParam(document.getElementById('command_' + step).value);
 	chrome?.storage?.local?.get(['inspectList'], (result) => {
 		const inspectListObj = getInspectListObject(step, result?.inspectList).param;
-		// console.log(inspectListObj);
 		for (let index = 0; index < paramArr.length; index++) {
 			createSubTableRow(
 				document.getElementById('table_' + step),
@@ -217,7 +235,9 @@ function saveRow(step) {
 		toggleEditable(step, false);
 		inspectElementList = result?.inspectList;
 		let objIndex = inspectElementList.findIndex((obj) => obj.step === step);
+		document.getElementById('locator_' + step).setAttribute('title', document.getElementById('locator_' + step).value);
 		inspectElementList[objIndex] = getCurrentInspectObject(step, inspectElementList);
+		console.log(inspectElementList);
 		localStore?.set({ 'inspectList': inspectElementList }, () => { });
 		updateBackground();
 	});
@@ -267,29 +287,56 @@ function createAddNewButton(step) {
 	button.setAttribute('class', 'btn text-dark');
 	button.setAttribute('id', 'addNew_' + step);
 	button.setAttribute('title', 'Add below');
+	button.setAttribute('data-toggle', 'modal');
+	button.setAttribute('data-target', '#exampleModal');
+
 	button.innerHTML = '<i class="fas fa-plus"></i>';
 	currentStep = step;
 	button.onclick = function (e) {
-		console.log('in side click');
-		if (confirm('Do you want to inspect or add new step manually? Click on OK to inspect or click on cancel to add step manually')) {
+
+		$("#inspectAddInMiddle").click(function () {
+			$('#exampleModal').modal('toggle');
 			localStore?.get(['inspectList'], (result) => {
 				localStore?.set({ isInspectInMiddle: "true" }, () => { });
 				chrome?.runtime?.sendMessage({ cmd: STATUS_MIDDLE_START, url: result?.inspectList[0]?.param?.url, step: step }, (response) => { });
 			});
-		}
-		else {
-			const indexAt = document.getElementById('step_' + step).rowIndex;
-			newRowPosition = step;
-			isClickedOnNewButton = true;
-			const payload = {
-				step: '',
-				command: '',
-				param: {},
-				actions: {},
-			};
-			addRow(payload, indexAt, false);
+		});
+
+		$("#manualStepAddInMiddle").click(function () {
+			$('#exampleModal').modal('toggle');
+			let noOfSteps = $("#inputForManualStepAdd").val() ? $("#inputForManualStepAdd").val() : 1;
+			let manuallyAddedSteps = [];
+
+			localStore?.get(['inspectList'], function (result) {
+				let inspectElementList = result?.inspectList;
+				let payload = {
+					step: '',
+					command: '',
+					param: {},
+					actions: {},
+				};
+
+				for (let index = 0; index < noOfSteps; index++) {
+					const indexAt = step - 1;
+					newRowPosition = step;
+					isClickedOnNewButton = true;
+					payload.step = step;
+					inspectElementList.splice(step, 0, payload);
+					manuallyAddedSteps.push(payload);
+					addRow(payload, indexAt, false);
+					step = step + 1;
+				};
+
+				chrome?.storage?.local.set({ 'inspectList': inspectElementList }, () => {
+					resetIdsOfTables();
+				});
+
+			});
+
 			updateTableRow();
-		}
+			$('#url_1').next().css('left', '7%');
+			$('.selectElement').parent().parent().next().find('input').css('width', '95%');
+		});
 
 
 	}
@@ -319,10 +366,13 @@ function createDuplicateButton(step) {
 			});
 			addRow(payload, indexAt, true);
 			chrome?.storage?.local.set({ 'inspectList': inspectElementList }, () => {
-
+				resetIdsOfTables();
 			});
-			updateTableRow();
-			updateBackground();
+			// updateTableRow();
+			// updateBackground();
+
+
+
 		});
 	};
 	return button;
@@ -346,8 +396,7 @@ function createDeleteButton(step) {
 			let index = inspectElementList.findIndex((item) => item.step === step);
 			if (index !== -1) inspectElementList.splice(index, 1);
 			localStore?.set({ 'inspectList': inspectElementList }, () => {
-				updateTableRow();
-				updateBackground();
+				resetIdsOfTables();
 			});
 		});
 	};
@@ -412,7 +461,10 @@ function createCloseButton(step) {
 			deleteParentTableRow(rowIndex);
 			addRow(getInspectListObject(step, inspectElementList), rowIndex - 1, true);
 			updateTableRow();
+			$('#url_1').next().css('left', '7%');
+			$('.selectElement').parent().parent().next().find('input').css('width', '95%');
 		});
+
 	};
 	return button;
 }
@@ -476,7 +528,7 @@ function createUpDownButton(step, direction) {
 function createInspectElement(key, step) {
 	let inspectElement = document.createElement('div');
 	inspectElement.setAttribute('class', 'input-group');
-	inspectElement.appendChild(createInputBox('', key + '_' + step));
+	inspectElement.appendChild(createInputBox('', key + '_' + step, true, key));
 
 	let subDiv = document.createElement('div');
 	subDiv.setAttribute('class', 'input-group-append');
@@ -512,10 +564,10 @@ function handleMultiline(inputValue) {
  * @param {*} editable Its boolean to set disable value of input box
  * @returns
  */
-function createInputBox(data, id, editable = true) {
+function createInputBox(data, id, editable = true, key) {
 	let input = document.createElement('INPUT');
 	input.setAttribute('type', 'text');
-	input.setAttribute('class', 'form-control');
+	input.setAttribute('class', 'form-control inputBox');
 	input.setAttribute('id', id);
 	input.setAttribute('value', handleMultiline(data));
 	if (!editable) input.setAttribute('disabled', 'true');
@@ -597,7 +649,6 @@ function createSubTable(data, step) {
  * @param swapColumns
  */
 function addRow(data, indexAt = -1, swapColumns) {
-	console.log(data);
 	let tr = table.tBodies[0].insertRow(indexAt);
 	if (!data['step']) {
 		data['step'] = newRowPosition + 1;
@@ -642,7 +693,6 @@ function addRow(data, indexAt = -1, swapColumns) {
 			const cmdDropdown = createSelectElement(cmd, id, false);
 			cmdDropdown.setAttribute('class', 'form-control command');
 			cmdDropdown.value = data[key];
-
 			cell.appendChild(cmdDropdown);
 			cell.appendChild(createDocLink(data[key], currentStep));
 			cell.appendChild(createCopyIcon('command'));
@@ -662,7 +712,6 @@ function tableFromJson() {
 
 	localStore?.get(['inspectList'], (result) => {
 		inspectElementList = result?.inspectList;
-		console.log(inspectElementList);
 		inspectElementList.forEach((item, index) => {
 			item.step = index + 1;
 		});
@@ -710,6 +759,8 @@ function tableFromJson() {
 
 			updateTableRow();
 			$(showDataDiv).show();
+			$('#url_1').next().css('left', '7%');
+			$('.selectElement').parent().parent().next().find('input').css('width', '95%');
 		});
 	});
 }
@@ -728,10 +779,10 @@ function swapUpOrDownItemInArrow(index, direction) {
 			isList[index - 2].step = index - 2;
 			isList[index - 1].step = index - 1;
 		}
+		localStore?.set({ 'inspectList': isList }, () => {
+			resetIdsOfTables();
+		});
 
-		localStore?.set({ 'inspectList': isList }, () => { });
-		document.getElementById('inspect_table').remove();
-		tableFromJson();
 	});
 }
 
@@ -760,3 +811,142 @@ function createCopyIcon(type) {
 	};
 	return copyIcon;
 }
+
+/**
+ * create copy icon to copy web command and param
+ * @returns
+ */
+function createCustomOption(type, step) {
+	const customPathIcon = document.createElement('SPAN');
+	customPathIcon.innerHTML = `<i class="fas fa-user-edit"></i>`;
+	customPathIcon.setAttribute('title', 'Set Custom Locator');
+	customPathIcon.setAttribute('class', 'customPathIcon');
+	customPathIcon.onclick = function (e) {
+		console.log('triggered');
+		let flagToEdit = false, count = 0;
+		let oldValueOfUserDefinedLocator = "";
+		locatorCategory = $('#locator_' + step).find('option[value= "' + $('#locator_' + step).val() + '"]').parent().attr('label');
+		customPathIcon.setAttribute('data-toggle', 'modal');
+		customPathIcon.setAttribute('data-target', '#customLocator');
+		console.log(locatorCategory);
+		console.log(step);
+		if (locatorCategory == 'CSS' || locatorCategory == 'ID' || locatorCategory == 'XPATH') {
+			$('#customLocatorSave').css('display', 'none');
+			$('#customLocatorDelete').css('display', 'none');
+		} else {
+			$('#customLocatorSaveAs').css('display', 'block');
+			$('#customLocatorSave').css('display', 'block');
+			$('#customLocatorDelete').css('display', 'block');
+		}
+		$('#locator_' + step).find('option').each(function (index, item) {
+
+			if (item.value == $('#locator_' + step).val()) {
+				console.log(item.value == $('#locator_' + step).val());
+
+
+				if ($(item).parent().attr('label').toLowerCase() == "user defined locator=") {
+					console.log($(item).parent().attr('label').toLowerCase() == "user defined locator=");
+					oldValueOfUserDefinedLocator = $('#locator_' + step).val();
+					$('#customLocatorInput').val($('#locator_' + step).val());
+					count++;
+				}
+				else {
+					oldValueOfUserDefinedLocator = $('#locator_' + step).val();
+					$('#customLocatorInput').val($('#locator_' + step).val());
+					console.log(oldValueOfUserDefinedLocator);
+				}
+
+			}
+		})
+
+		if (count > 0) {
+			flagToEdit = true;
+		}
+		$("#customLocatorSave").unbind('click').click(function (e) {
+
+			chrome?.storage?.local?.get(['inspectList'], (result) => {
+				const inspectElementListObj = result?.inspectList;
+				const indexOfLocator = inspectElementListObj[step - 1].param['locator']?.indexOf("user defined locator=" + oldValueOfUserDefinedLocator);
+
+				$('#locator_' + step).find('option[value= "' + oldValueOfUserDefinedLocator + '"]').attr('value', $('#customLocatorInput').val());
+				$('#locator_' + step).find('option[value="' + $('#customLocatorInput').val() + '"]').html($('#customLocatorInput').val());
+				inspectElementListObj[step - 1].param['locator'][indexOfLocator] = "user defined locator=" + $('#customLocatorInput').val();
+				inspectElementListObj[step - 1].actions.userSavedCustomLocator = $('#customLocatorInput').val();
+				$('#locator_' + step).val($('#customLocatorInput').val());
+				localStore?.set({ 'inspectList': inspectElementListObj }, () => {
+				});
+
+			});
+
+		});
+
+		$("#customLocatorSaveAs").unbind('click').click(function (e) {
+			console.log('triggered');
+			chrome?.storage?.local?.get(['inspectList'], (result) => {
+				const inspectElementListObj = result?.inspectList;
+				let userDefinedLocator;
+				let selectedValue = $('#customLocatorInput').val();
+				console.log(step);
+				console.log('in save as');
+				userDefinedLocator = "user defined locator=" + selectedValue;
+				inspectElementListObj[step - 1].param['locator'].push(userDefinedLocator);
+				inspectElementListObj[step - 1].actions.userSavedCustomLocator = selectedValue;
+
+				if ($('#locator_' + step).find('optgroup[label="USER DEFINED LOCATOR"]').length > 0) {
+
+					if ($('#locator_' + step).find('optgroup[label="USER DEFINED LOCATOR"]').find('option[value= "' + selectedValue + '"]').length == 0) {
+						let option = document.createElement('option');
+						option.value = selectedValue;
+						option.text = selectedValue;
+						$('#locator_' + step).find('optgroup[label="USER DEFINED LOCATOR"]').append(option);
+						$('#locator_' + step).val(selectedValue);
+					}
+				}
+				else {
+					let optgroup = document.createElement('optgroup');
+					optgroup.setAttribute('label', 'USER DEFINED LOCATOR');
+					let option = document.createElement('option');
+					option.value = selectedValue;
+					option.text = selectedValue;
+					console.log(option);
+					optgroup.appendChild(option);
+					console.log(optgroup);
+					$('#locator_' + step).append(optgroup);
+					$('#locator_' + step).val(selectedValue);
+				}
+
+
+				localStore?.set({ 'inspectList': inspectElementListObj }, () => {
+				});
+
+
+			});
+		});
+
+		$("#customLocatorDelete").unbind('click').click(function (e) {
+			chrome?.storage?.local?.get(['inspectList'], (result) => {
+				const inspectElementListObj = result?.inspectList;
+				console.log(oldValueOfUserDefinedLocator);
+				const locator = (oldValueOfUserDefinedLocator.indexOf("user defined locator=") > 0 ? oldValueOfUserDefinedLocator : ("user defined locator=" + oldValueOfUserDefinedLocator));
+				const indexOfLocator = inspectElementListObj[step - 1].param['locator']?.indexOf(locator);
+				inspectElementListObj[step - 1].param['locator'].splice(indexOfLocator, 1);
+				$('#locator_' + step).find('option[value= "' + oldValueOfUserDefinedLocator + '"]').remove();
+				inspectElementListObj[step - 1].actions.userSavedCustomLocator = undefined;
+				localStore?.set({ 'inspectList': inspectElementListObj }, () => {
+				});
+			});
+		});
+	};
+	return customPathIcon;
+}
+
+/* to Reset all ids of table and it's sub tables duplicate/sort/delete the steps */
+
+function resetIdsOfTables() {
+	if (document.getElementById('inspect_table') != null) {
+		document.getElementById('inspect_table').remove();
+	}
+	tableFromJson();
+}
+
+

@@ -58,7 +58,6 @@ function start(stepValue) {
 
 
 	localStore?.get(['preferences'], (result) => {
-		//console.log(result);
 		varNameForWaitTime = result?.preferences?.varName;
 		waitTimeSetInPreference = result?.preferences?.waitTimeSetInPreference;
 	});
@@ -269,7 +268,7 @@ function getLocator(e, paths, isFiltered) {
 		xpath = [],
 		css = [],
 		selectedLocator = null;
-	// console.log(paths);
+
 	const activeElnode = paths[paths.length - 1].node;
 
 	if (e.id) locator.push('id=' + e.id);
@@ -533,10 +532,10 @@ function validateLocators(locatorList) {
 			}
 		})
 
-		locatorList.cssSelector = cssLocators.length > 0 ? cssLocators[0] : "";
-		locatorList.xpathLocator = xpathLocators.length > 0 ? xpathLocators[0] : "";
-		locatorList.idLocator = idLocators.length > 0 ? idLocators[0] : "";
-		locatorList.nameLocator = nameLocators.length > 0 ? nameLocators[0] : "";
+		locatorList.cssSelector = cssLocators.length > 0 ? cssLocators : "";
+		locatorList.xpathLocator = xpathLocators.length > 0 ? xpathLocators : "";
+		locatorList.idLocator = idLocators.length > 0 ? idLocators : "";
+		locatorList.nameLocator = nameLocators.length > 0 ? nameLocators : "";
 
 	}
 }
@@ -550,10 +549,6 @@ function getLocatorList(event) {
 	const paths = filterDomPath(event.target);
 
 	const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
-
-	// sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
-	// sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
-	// sendConsole('log', 'LOCATOR LIST (filtered? ' + paths.isFiltered + '): ', locatorList);
 
 	validateLocators(locatorList);
 	if (!locatorList.locator.length) {
@@ -631,7 +626,6 @@ function sendInspectInfo(command, event) {
 			break;
 	}
 
-
 	// ToDo: for payload create user define datatype
 	const payload = {
 		cmd: 'inspecting',
@@ -672,7 +666,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			break;
 		case STATUS_MIDDLE_START:
 			localStore?.set({ "middleStep": request.startStep }, () => { });
-			console.log(request?.startStep);
 			start(request.startStep, true);
 			break;
 		case STATUS_STOP:

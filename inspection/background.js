@@ -86,7 +86,6 @@ function startInMiddle(url, step) {
 	});
 
 	localStore?.get(['isInspectInMiddle'], (result) => {
-		console.log(result);
 		if (result?.isInspectInMiddle == 'true') {
 			chrome.runtime.sendMessage({ startInspectingInMiddle: "CallInMiddle" });
 
@@ -170,7 +169,6 @@ async function createOpenURLEntry(url, isInspectInMiddle) {
 		let queryOptions = { active: true, currentWindow: true };
 		let [tabs] = await chrome.tabs.query(queryOptions);
 		await localStore?.set({ inspectingTab: tabs }, () => { });
-		console.log(url);
 		await loadListener((tabs?.url ? tabs?.url : url), true);
 		updateBadge();
 
@@ -264,40 +262,31 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 /**
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
  */
-chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (action, sender, sendResponse) => {
 
 	switch (action.cmd) {
 		case 'inspecting': {
 
-			localStore?.get([INSPECT_LIST], function (result) {
+			localStore?.get([INSPECT_LIST], async function (result) {
 				let inspectElementList = [];
-				localStore?.get(['isInspectInMiddle'], function (result2) {
+				localStore?.get(['isInspectInMiddle'], async function (result2) {
 
-					localStore?.get(["middleStep"], (result3) => {
-						localStore?.get(["middleStepList"], (result4) => {
-							let middleStepNo = result3?.middleStep;
-							let firstHalfInspectList = [];
-							let secondHalfInspectList = [];
-							let middleInspectedList = result4?.middleStepList ? result4?.middleStepList : [];
-							if (result?.inspectList != undefined) {
-								inspectElementList = result?.inspectList;
-							}
+					localStore?.get(["middleStepList"], async function (result4) {
+						let middleInspectedList = await result4?.middleStepList ? result4?.middleStepList : [];
+						if (result?.inspectList != undefined) {
+							inspectElementList = await result?.inspectList;
+						}
 
-							if (result2.isInspectInMiddle == "true") {
-								// inspectElementList.splice((action?.value?.step - 1), 0, action?.value);
+						if (result2.isInspectInMiddle == "true") {
+							middleInspectedList.push(action?.value);
+							localStore?.set({ "middleStepList": middleInspectedList }, () => { });
+						}
+						else {
+							await inspectElementList.push(action.value);
 
-								middleInspectedList.push(action?.value);
-								console.log(middleInspectedList);
-								localStore?.set({ "middleStepList": middleInspectedList }, () => { });
-							}
-							else {
+						}
 
-								inspectElementList.push(action.value);
-
-							}
-
-							localStore?.set({ inspectList: inspectElementList }, () => { });
-						});
+						await localStore?.set({ inspectList: inspectElementList }, () => { });
 					});
 				});
 			});
@@ -310,8 +299,6 @@ chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
 			start(action?.url);
 			break;
 		case STATUS_MIDDLE_START:
-			console.log(action);
-
 			startInMiddle(action?.url, action?.step);
 			break;
 		case STATUS_STOP:
@@ -326,5 +313,5 @@ chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
 	}
 	updateBadge();
 	sendResponse();
-	return true;
+	return await true;
 });

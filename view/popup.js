@@ -81,14 +81,10 @@ function stop() {
 			document.getElementById('showData').style.display = 'block';
 			document.getElementById('inspectDataOption').style.display = 'block';
 			let inspectElementList = [];
-			console.log(result);
 			localStore?.get(['isInspectInMiddle'], function (result2) {
-				console.log(result2);
 				if (result2.isInspectInMiddle == "true") {
 					localStore?.get(["middleStep"], (result3) => {
-						console.log(result3);
 						localStore?.get(["middleStepList"], (result4) => {
-							console.log(result4);
 							let middleStepNo = result3?.middleStep;
 							let firstHalfInspectList = [];
 							let secondHalfInspectList = [];
@@ -100,11 +96,8 @@ function stop() {
 
 							// inspectElementList.splice((action?.value?.step - 1), 0, action?.value);
 							firstHalfInspectList = inspectElementList.slice(0, middleStepNo);
-							console.log(firstHalfInspectList);
 							secondHalfInspectList = inspectElementList.slice(middleStepNo, inspectElementList.length);
-							console.log(secondHalfInspectList);
 							finalInspectList = [...firstHalfInspectList, ...middleInspectedList, ...secondHalfInspectList];
-							console.log(finalInspectList);
 							localStore?.set({ inspectList: finalInspectList }, () => { });
 							tableFromJson();
 
@@ -217,6 +210,11 @@ selectPrefrences.addEventListener(clickEvt, function () {
 });
 
 backArrow.addEventListener(clickEvt, function () {
+	if (document.getElementById('inspect_table')) {
+		document.getElementById('inspect_table').remove();
+		tableFromJson();
+	}
+
 	$('.row.content').css('display', 'block');
 	$('.selectPrefrencesDiv').css('display', 'none');
 
@@ -234,18 +232,10 @@ submitPrefrences.addEventListener(clickEvt, function (event) {
 	let value = [];
 	let varName = ($("#varNameWaitTime").val() == "" ? "clearedvarname" : $("#varNameWaitTime").val());
 	let waitTime = ($('#waitTime').val() == "" ? "clearedwaittime" : $("#waitTime").val());
-	if ($('#all').prop('checked')) {
-		value.push('all');
-	}
-	if ($('#id').prop('checked')) {
-		value.push('id');
-	}
-	if ($('#css').prop('checked')) {
-		value.push('css');
-	}
-	if ($('#xpath').prop('checked')) {
-		value.push('xpath');
-	}
+
+	$('#sortable').children().each(function () {
+		value.push($(this).text());
+	})
 
 	let obj = { waitTimeSetInPreference: waitTime, varName: varName, selectors: value };
 
@@ -254,17 +244,17 @@ submitPrefrences.addEventListener(clickEvt, function (event) {
 	alert("Preferences saved successfully.");
 });
 
-allButtonForSelectorPreference.addEventListener(clickEvt, function (event) {
-	if ($(this).prop('checked')) {
-		$('#id,#css,#xpath').prop('checked', false);
-	}
-})
+// allButtonForSelectorPreference.addEventListener(clickEvt, function (event) {
+// 	if ($(this).prop('checked')) {
+// 		$('#id,#css,#xpath').prop('checked', false);
+// 	}
+// })
 
-$('#id,#css,#xpath').click((event) => {
-	if ($('#id').prop('checked') || $('#css').prop('checked') || $('#xpath').prop('checked')) {
-		$('#all').prop('checked', false);
-	}
-})
+// $('#id,#css,#xpath').click((event) => {
+// 	if ($('#id').prop('checked') || $('#css').prop('checked') || $('#xpath').prop('checked')) {
+// 		$('#all').prop('checked', false);
+// 	}
+// })
 
 showHelp.addEventListener(
 	clickEvt,
@@ -405,17 +395,15 @@ window.onload = function () {
 		let temp = result?.preferences ? result?.preferences : { waitTimeSetInPreference: "", varName: "", selectors: [] };
 		let obj = temp ? JSON.parse(JSON.stringify(temp)) : temp;
 		if (obj?.selectors.length > 0) {
-			obj?.selectors?.forEach((item) => {
-				$('#' + item).prop('checked', true);
-			})
-			preferredSelectors = result?.preferences?.selectors;
-		}
-		else {
-			$('#all').prop('checked', true);
-			preferredSelectors = ['all'];
-			obj.selectors = preferredSelectors;
+			$('#sortable').html('');
+			let selectorsHtml = [];
 
+			obj?.selectors?.forEach((item) => {
+				selectorsHtml.push(`<li class="list-group-item"> ${item} </li>`);
+			});
+			$('#sortable').append(selectorsHtml);
 		}
+
 		let waitTimeSetInPreference = (obj?.waitTimeSetInPreference == "" ? 2500 : (obj?.waitTimeSetInPreference == "clearedwaittime" ? "" : ""));
 		let varName = (obj?.varName == "" ? "defaultWaitTime" : (obj?.varName == "clearedvarname" ? "" : ""));
 
@@ -426,15 +414,14 @@ window.onload = function () {
 	});
 
 	chrome?.runtime?.onMessage?.addListener((action, sender, sendResponse) => {
-		console.log(action);
 		if (action?.startInspectingInMiddle == "CallInMiddle") {
-			console.log('ala');
 			start();
 		}
-
 		sendResponse();
 		return true;
 	});
 
+	setTimeout(() => {
+		$('#sortable').sortable();
+	}, 1000);
 };
-
