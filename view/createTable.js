@@ -142,7 +142,6 @@ function createSubTableRow(param_table, key, data, step, editable) {
 					selectedLocator = inspectListObject?.actions['selectedLocator'];
 				}
 
-				console.log(selectedLocator);
 				if (selectedLocator != "" && selectedLocator != null) {
 
 					element.value = selectedLocator.replace(/^xpath=/g, '');
@@ -154,7 +153,6 @@ function createSubTableRow(param_table, key, data, step, editable) {
 				element.value = inspectListObject?.actions?.userSavedCustomLocator.replace(/^xpath=/g, '');
 
 			}
-			console.log(result?.inspectList);
 			element.setAttribute('title', element.value);
 		});
 	} else if (key === 'locator' && !data) {
@@ -237,7 +235,6 @@ function saveRow(step) {
 		let objIndex = inspectElementList.findIndex((obj) => obj.step === step);
 		document.getElementById('locator_' + step).setAttribute('title', document.getElementById('locator_' + step).value);
 		inspectElementList[objIndex] = getCurrentInspectObject(step, inspectElementList);
-		console.log(inspectElementList);
 		localStore?.set({ 'inspectList': inspectElementList }, () => { });
 		updateBackground();
 	});
@@ -822,14 +819,12 @@ function createCustomOption(type, step) {
 	customPathIcon.setAttribute('title', 'Set Custom Locator');
 	customPathIcon.setAttribute('class', 'customPathIcon');
 	customPathIcon.onclick = function (e) {
-		console.log('triggered');
 		let flagToEdit = false, count = 0;
 		let oldValueOfUserDefinedLocator = "";
 		locatorCategory = $('#locator_' + step).find('option[value= "' + $('#locator_' + step).val() + '"]').parent().attr('label');
 		customPathIcon.setAttribute('data-toggle', 'modal');
 		customPathIcon.setAttribute('data-target', '#customLocator');
-		console.log(locatorCategory);
-		console.log(step);
+		
 		if (locatorCategory == 'CSS' || locatorCategory == 'ID' || locatorCategory == 'XPATH') {
 			$('#customLocatorSave').css('display', 'none');
 			$('#customLocatorDelete').css('display', 'none');
@@ -841,11 +836,8 @@ function createCustomOption(type, step) {
 		$('#locator_' + step).find('option').each(function (index, item) {
 
 			if (item.value == $('#locator_' + step).val()) {
-				console.log(item.value == $('#locator_' + step).val());
-
-
+				
 				if ($(item).parent().attr('label').toLowerCase() == "user defined locator=") {
-					console.log($(item).parent().attr('label').toLowerCase() == "user defined locator=");
 					oldValueOfUserDefinedLocator = $('#locator_' + step).val();
 					$('#customLocatorInput').val($('#locator_' + step).val());
 					count++;
@@ -853,7 +845,6 @@ function createCustomOption(type, step) {
 				else {
 					oldValueOfUserDefinedLocator = $('#locator_' + step).val();
 					$('#customLocatorInput').val($('#locator_' + step).val());
-					console.log(oldValueOfUserDefinedLocator);
 				}
 
 			}
@@ -873,6 +864,7 @@ function createCustomOption(type, step) {
 				inspectElementListObj[step - 1].param['locator'][indexOfLocator] = "user defined locator=" + $('#customLocatorInput').val();
 				inspectElementListObj[step - 1].actions.userSavedCustomLocator = $('#customLocatorInput').val();
 				$('#locator_' + step).val($('#customLocatorInput').val());
+				$('#locator_' + step).attr('title',$('#customLocatorInput').val());
 				localStore?.set({ 'inspectList': inspectElementListObj }, () => {
 				});
 
@@ -881,13 +873,10 @@ function createCustomOption(type, step) {
 		});
 
 		$("#customLocatorSaveAs").unbind('click').click(function (e) {
-			console.log('triggered');
 			chrome?.storage?.local?.get(['inspectList'], (result) => {
 				const inspectElementListObj = result?.inspectList;
 				let userDefinedLocator;
 				let selectedValue = $('#customLocatorInput').val();
-				console.log(step);
-				console.log('in save as');
 				userDefinedLocator = "user defined locator=" + selectedValue;
 				inspectElementListObj[step - 1].param['locator'].push(userDefinedLocator);
 				inspectElementListObj[step - 1].actions.userSavedCustomLocator = selectedValue;
@@ -900,6 +889,7 @@ function createCustomOption(type, step) {
 						option.text = selectedValue;
 						$('#locator_' + step).find('optgroup[label="USER DEFINED LOCATOR"]').append(option);
 						$('#locator_' + step).val(selectedValue);
+						$('#locator_' + step).attr('title',selectedValue);
 					}
 				}
 				else {
@@ -908,11 +898,10 @@ function createCustomOption(type, step) {
 					let option = document.createElement('option');
 					option.value = selectedValue;
 					option.text = selectedValue;
-					console.log(option);
 					optgroup.appendChild(option);
-					console.log(optgroup);
 					$('#locator_' + step).append(optgroup);
 					$('#locator_' + step).val(selectedValue);
+					$('#locator_' + step).attr('title',selectedValue);
 				}
 
 
@@ -926,7 +915,6 @@ function createCustomOption(type, step) {
 		$("#customLocatorDelete").unbind('click').click(function (e) {
 			chrome?.storage?.local?.get(['inspectList'], (result) => {
 				const inspectElementListObj = result?.inspectList;
-				console.log(oldValueOfUserDefinedLocator);
 				const locator = (oldValueOfUserDefinedLocator.indexOf("user defined locator=") > 0 ? oldValueOfUserDefinedLocator : ("user defined locator=" + oldValueOfUserDefinedLocator));
 				const indexOfLocator = inspectElementListObj[step - 1].param['locator']?.indexOf(locator);
 				inspectElementListObj[step - 1].param['locator'].splice(indexOfLocator, 1);

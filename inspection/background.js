@@ -124,7 +124,6 @@ function updateBadge() {
  */
 function loadListener(url, isInspectInMiddle) {
 	printLog('log', 'CREATE OPEN URL ENTRY');
-	console.log(isInspectInMiddle);
 	if (!isInspectInMiddle)
 		localStore?.get([INSPECT_LIST], (result1) => {
 			let inspectElementList = result1?.inspectList;

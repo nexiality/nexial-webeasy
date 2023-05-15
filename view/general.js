@@ -36,7 +36,7 @@ function createSelectElement(items, id, editable = true) {
 		}
 
 		if (optionText && optionText.startsWith('user defined locator=')) {
-			optionText = optionText.split("=")[1];
+			optionText = optionText.split("user defined locator=")[1];
 		}
 		option.value = optionText;
 		option.text = optionText;
