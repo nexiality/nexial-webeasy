@@ -365,11 +365,6 @@ function createDuplicateButton(step) {
 			chrome?.storage?.local.set({ 'inspectList': inspectElementList }, () => {
 				resetIdsOfTables();
 			});
-			// updateTableRow();
-			// updateBackground();
-
-
-
 		});
 	};
 	return button;

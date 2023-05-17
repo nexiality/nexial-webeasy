@@ -356,8 +356,9 @@ document.getElementById('selectPrefrencesInfo').addEventListener(
 	clickEvt,
 	function () {
 		info(
-			'Select Prefrences',
-			'You can select the prefrences after clicking on this button.'
+			'Preferences',
+			'Various settings to control the behavior of Nexial WebEZ. Settings will be saved only to this computer; ' +
+			'not synchronized across Chrome browsers on other devices.'
 		);
 	},
 	false
