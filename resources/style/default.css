@@ -61,6 +61,7 @@ header {
 .container-fluid {
 	width: 790px;
 	padding: 10px;
+	height: 320px;
 }
 
 /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
@@ -310,26 +311,32 @@ footer {
 
 .command-link {
 	display: inline-block;
-	padding: 6px 0 0 0;
+	padding: 5px 4px;
 	color: #333;
 	border-radius: 5px;
 	font-size: 10pt !important;
 	float: right;
 	cursor: pointer;
+	width: 20px;
+	position: relative;
 }
 
 .copyicon {
-	left: 3%;
+	float: right;
 	position: relative;
 	cursor: pointer;
+	width: 20px;
+	right: 1%;
+	padding: 3px 4px;
 }
 
 .copyParamIcon {
 	float: right;
-	left: 2%;
+	left: 4%;
 	position: relative;
 	bottom: 28px;
 	cursor: pointer;
+	width: 20px;
 }
 #backArrow {
 	cursor: pointer;
@@ -467,13 +474,54 @@ footer {
 
 .customPathIcon {
 	float: right;
-	left: 17%;
+	left: 19%;
 	position: relative;
 	bottom: 28px;
 	cursor: pointer;
+	width: 20px;
 }
 
 #customLocatorDelete {
 	position: relative;
 	right: 120px;
+}
+
+.copyParamIcon:hover,
+.copyicon:hover,
+.customPathIcon:hover,
+#customLocatorDelete:hover,
+.command-link:hover {
+	background-color: rgba(20, 40, 20, 0.15);
+	color: #fff !important;
+	text-shadow: 1px 1px 5px black;
+}
+
+.modal-content {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+/* width */
+.modal-content::-webkit-scrollbar {
+	width: 3px !important;
+}
+
+/* Track */
+.modal-content::-webkit-scrollbar-track {
+	background: #f1f1f1 !important;
+}
+
+/* Handle */
+.modal-content::-webkit-scrollbar-thumb {
+	background: #888 !important;
+}
+
+/* Handle on hover */
+.modal-content::-webkit-scrollbar-thumb:hover {
+	background: #555 !important;
+}
+
+.alignToBottom {
+	position: relative;
+	top: 150px;
 }

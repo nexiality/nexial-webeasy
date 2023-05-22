@@ -331,7 +331,6 @@ function createAddNewButton(step) {
 			});
 
 			updateTableRow();
-			$('#url_1').next().css('left', '7%');
 			$('.selectElement').parent().parent().next().find('input').css('width', '95%');
 		});
 
@@ -453,7 +452,6 @@ function createCloseButton(step) {
 			deleteParentTableRow(rowIndex);
 			addRow(getInspectListObject(step, inspectElementList), rowIndex - 1, true);
 			updateTableRow();
-			$('#url_1').next().css('left', '7%');
 			$('.selectElement').parent().parent().next().find('input').css('width', '95%');
 		});
 
@@ -751,7 +749,6 @@ function tableFromJson() {
 
 			updateTableRow();
 			$(showDataDiv).show();
-			$('#url_1').next().css('left', '7%');
 			$('.selectElement').parent().parent().next().find('input').css('width', '95%');
 		});
 	});
@@ -931,5 +928,3 @@ function resetIdsOfTables() {
 	}
 	tableFromJson();
 }
-
-

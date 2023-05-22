@@ -56,7 +56,6 @@ function start(stepValue) {
 	document.addEventListener('mouseup', onMouseUp);
 	document.addEventListener('change', handleChange);
 
-
 	localStore?.get(['preferences'], (result) => {
 		varNameForWaitTime = result?.preferences?.varName;
 		waitTimeSetInPreference = result?.preferences?.waitTimeSetInPreference;
@@ -245,10 +244,10 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
 				);
 				res['css'].push(
 					'css=' +
-					el.node +
-					(attr === 'id' ? `#${value}` : `[${attr}='${value}']`) +
-					`[type='${el.attribute['type']}']` +
-					baseCssPath
+						el.node +
+						(attr === 'id' ? `#${value}` : `[${attr}='${value}']`) +
+						`[type='${el.attribute['type']}']` +
+						baseCssPath
 				);
 			}
 		}
@@ -516,27 +515,26 @@ function validateLocators(locatorList) {
 	}
 
 	if (filtered) {
-		let xpathLocators = [], cssLocators = [], idLocators = [], nameLocators = []
+		let xpathLocators = [],
+			cssLocators = [],
+			idLocators = [],
+			nameLocators = [];
 		filtered.forEach((item) => {
 			if (item.startsWith('id=')) {
 				idLocators.push(item);
-			}
-			else if (item.startsWith('css=')) {
+			} else if (item.startsWith('css=')) {
 				cssLocators.push(item);
-			}
-			else if (item.startsWith('xpath=')) {
+			} else if (item.startsWith('xpath=')) {
 				xpathLocators.push(item);
-			}
-			else if (item.startsWith('name=')) {
+			} else if (item.startsWith('name=')) {
 				nameLocators.push(item);
 			}
-		})
+		});
 
-		locatorList.cssSelector = cssLocators.length > 0 ? cssLocators : "";
-		locatorList.xpathLocator = xpathLocators.length > 0 ? xpathLocators : "";
-		locatorList.idLocator = idLocators.length > 0 ? idLocators : "";
-		locatorList.nameLocator = nameLocators.length > 0 ? nameLocators : "";
-
+		locatorList.cssSelector = cssLocators.length > 0 ? cssLocators : '';
+		locatorList.xpathLocator = xpathLocators.length > 0 ? xpathLocators : '';
+		locatorList.idLocator = idLocators.length > 0 ? idLocators : '';
+		locatorList.nameLocator = nameLocators.length > 0 ? nameLocators : '';
 	}
 }
 
@@ -581,8 +579,6 @@ function sendInspectInfo(command, event) {
 		},
 	};
 
-
-
 	switch (command) {
 		case 'click(locator)':
 		case 'assertElementPresent(locator)':
@@ -617,12 +613,12 @@ function sendInspectInfo(command, event) {
 		case 'waitUntilVisible(locator,waitMs)':
 		case 'waitUntilEnabled(locator,waitMs)':
 			data.param['locator'] = locator;
-			data.param['waitMs'] = varNameForWaitTime ? '${' + varNameForWaitTime + '}' : '25000';
+			data.param['waitMs'] = varNameForWaitTime ? '${' + varNameForWaitTime + '}' : '2500';
 			break;
 		case 'checkAll(locator,waitMs)':
 		case 'uncheckAll(locator,waitMs)':
 			data.param['locator'] = locator;
-			data.param['waitMs'] = '<MISSING>';
+			data.param['waitMs'] = varNameForWaitTime ? '${' + varNameForWaitTime + '}' : '2500';
 			break;
 	}
 
@@ -634,7 +630,6 @@ function sendInspectInfo(command, event) {
 
 	if (!chrome || !chrome.runtime || !payload) return;
 	sendConsole('log', 'SEND PAYLOAD :', payload);
-
 	chrome.runtime.sendMessage(payload);
 }
 
@@ -665,7 +660,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			start(request.startStep, false);
 			break;
 		case STATUS_MIDDLE_START:
-			localStore?.set({ "middleStep": request.startStep }, () => { });
+			localStore?.set({'middleStep': request.startStep}, () => {});
 			start(request.startStep, true);
 			break;
 		case STATUS_STOP:
