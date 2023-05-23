@@ -69,6 +69,7 @@ function stop() {
 	document.removeEventListener('focus', handleFocus, true);
 	document.removeEventListener('mousedown', onClickElement);
 	document.removeEventListener('change', handleChange);
+	document.removeEventListener('mouseup', onMouseUp);
 }
 
 /**
@@ -83,7 +84,8 @@ function handleFocus(event) {
 
 	if (INPUT_TYPE_ELEMENT.includes(target.type) || target.tagName === 'TEXTAREA') {
 		// any previously trapped focusedInput?
-		if (focusedInput) {
+
+		if (focusedInput && focusedInput?.target != event?.target) {
 			sendInspectInfo('type(locator,value)', focusedInput);
 		}
 		focusedInput = event;
@@ -127,7 +129,6 @@ function onMouseUp(event) {
 
 	if (focusedInput?.target.value) {
 		sendConsole('log', 'INPUT FOCUSOUT: ', focusedInput.target);
-		sendInspectInfo('waitForElementPresent(locator,waitMs)', event);
 		sendInspectInfo('type(locator,value)', focusedInput);
 		focusedInput = null;
 	}
