@@ -190,38 +190,25 @@ function createOpenURLEntry(url, isInspectInMiddle) {
  * @param {*} message its a data that we want to pass
  */
 function sendRunTimeMessage(message) {
-	let [tabs] = [];
-	try {
-		chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+	chrome.tabs.query({active: true, lastFocusedWindow: true}, async (tabs) => {
+		try {
 			if (!tabs || tabs.length < 1) {
 				return;
 			}
 			localStore?.set({inspectingTab: JSON.parse(JSON.stringify(tabs))}, () => {});
 			if (tabs) {
-				const response = chrome.tabs.sendMessage(tabs[0].id, message);
+				await chrome.tabs.sendMessage(tabs[0].id, message);
 			}
-		});
-	} catch (error) {
-		try {
+		} catch (error) {
+			console.log(error);
 			if (error == 'Error: Could not establish connection. Receiving end does not exist.') {
-				chrome.windows.getAll({populate: true}, function (windows) {
-					for (let i = 0; i < windows.length; i++) {
-						let currentTabs = getCurrentTab();
-						for (let j = 0; j < currentTabs.length; j++) {
-							let currentWindowTab = currentTabs[j];
-							// Skip chrome:// and https:// pages
-							if (currentWindowTab.url && !currentWindowTab.url.match(/(chrome|https):\/\//gi)) {
-								injectIntoTab(currentWindowTab);
-							}
-						}
-					}
-				});
 				setTimeout(() => {
 					sendRunTimeMessage(message);
 				}, 1000);
 			}
-		} catch (error) {}
-	}
+		}
+	});
+
 	//});
 }
 
@@ -286,7 +273,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
  */
 chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
-	console.log(action);
 	try {
 		switch (action.cmd) {
 			case 'inspecting': {
