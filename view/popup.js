@@ -401,7 +401,9 @@ window.onload = function () {
 	});
 
 	localStore?.get(['preferences'], (result) => {
-		let temp = result?.preferences ? result?.preferences : {waitTimeSetInPreference: '', varName: '', selectors: []};
+		let temp = result?.preferences
+			? result?.preferences
+			: {waitTimeSetInPreference: '2500', varName: 'defaultWaitTime', selectors: []};
 		let obj = temp ? JSON.parse(JSON.stringify(temp)) : temp;
 		if (obj?.selectors.length > 0) {
 			$('#sortable').html('');
@@ -414,8 +416,12 @@ window.onload = function () {
 		}
 
 		let waitTimeSetInPreference =
-			obj?.waitTimeSetInPreference == '' ? 2500 : obj?.waitTimeSetInPreference == 'clearedwaittime' ? '' : '';
-		let varName = obj?.varName == '' ? 'defaultWaitTime' : obj?.varName == 'clearedvarname' ? '' : '';
+			obj?.waitTimeSetInPreference == ''
+				? 2500
+				: obj?.waitTimeSetInPreference == 'clearedwaittime'
+				? ''
+				: obj?.waitTimeSetInPreference;
+		let varName = obj?.varName == '' ? 'defaultWaitTime' : obj?.varName == 'clearedvarname' ? '' : obj?.varName;
 
 		$('#waitTime').val(waitTimeSetInPreference);
 		$('#varNameWaitTime').val(varName);
