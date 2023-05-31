@@ -694,12 +694,15 @@ function tableFromJson() {
 		inspectElementList = JSON.parse(JSON.stringify(result?.inspectList));
 		localStore?.get(['preferences'], (result2) => {
 			let temp = JSON.parse(JSON.stringify(result2?.preferences));
-			inspectElementList[0].param.value = temp.waitTimeSetInPreference;
-			inspectElementList[0].param.locator = temp.varName;
+
 			inspectElementList.forEach((item, index) => {
 				item.step = index + 1;
 				if (item?.command == 'waitForElementPresent(locator,waitMs)') {
 					item.param.waitMs = '${' + temp.varName + '}';
+				}
+				if (item?.command == 'save(var,value)') {
+					item.param.value = temp.waitTimeSetInPreference;
+					item.param.locator = temp.varName;
 				}
 			});
 

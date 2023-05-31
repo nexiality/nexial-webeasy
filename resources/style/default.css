@@ -32,8 +32,8 @@ header {
 }
 
 .badge#nowInspectInfo {
-	top: -10px;
-	right: 0;
+	top: -7px;
+	right: -5px;
 }
 
 .badge {
@@ -332,7 +332,7 @@ footer {
 
 .copyParamIcon {
 	float: right;
-	left: 4%;
+	left: 5px;
 	position: relative;
 	bottom: 28px;
 	cursor: pointer;
@@ -442,7 +442,7 @@ footer {
 }
 
 .sub-table {
-	width: 90%;
+	width: 100%;
 	font-size: 11pt;
 	margin: 2px 0 !important;
 }
@@ -454,7 +454,7 @@ footer {
 .sub-table td,
 .sub-table th {
 	border: none !important;
-	padding: 3px 5px !important;
+	padding: 3px 3px 0px 3px !important;
 }
 
 .sub-table .param-idx {
@@ -469,12 +469,12 @@ footer {
 
 .selectElement,
 .inputBox {
-	width: 95% !important;
+	width: 85% !important;
 }
 
 .customPathIcon {
 	float: right;
-	left: 19%;
+	/* left: 19%; */
 	position: relative;
 	bottom: 28px;
 	cursor: pointer;
