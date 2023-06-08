@@ -272,28 +272,27 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 /**
  * Chrome Extension Api for more help https://developer.chrome.com/docs/extensions/reference/runtime/
  */
-chrome.runtime.onMessage.addListener((action, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (action, sender, sendResponse) => {
 	try {
 		switch (action.cmd) {
 			case 'inspecting': {
-				localStore?.get([INSPECT_LIST], function (result) {
-					let inspectElementList = [];
-					localStore?.get(['isInspectInMiddle'], function (result2) {
-						localStore?.get(['middleStepList'], function (result4) {
-							let middleInspectedList = result4?.middleStepList ? result4?.middleStepList : [];
-							if (result?.inspectList != undefined) {
-								inspectElementList = result?.inspectList;
-							}
-
-							if (result2.isInspectInMiddle == 'true') {
-								middleInspectedList.push(action?.value);
-								localStore?.set({'middleStepList': middleInspectedList}, () => {});
-							} else {
-								inspectElementList.push(action.value);
-							}
-
-							localStore?.set({inspectList: inspectElementList}, () => {});
-						});
+				localStore?.get([INSPECT_LIST], async function (result) {
+					let inspectElementList = (await result?.inspectList) ? result?.inspectList : [];
+					await inspectElementList.push(action.value);
+					console.log(await inspectElementList);
+					await localStore?.set({inspectList: inspectElementList}, () => {});
+				});
+				break;
+			}
+			case 'inspectingInMiddle': {
+				console.log('inspecting in middle..');
+				localStore?.get(['isInspectInMiddle'], function (result2) {
+					localStore?.get(['middleStepList'], function (result4) {
+						let middleInspectedList = result4?.middleStepList ? result4?.middleStepList : [];
+						if (result2.isInspectInMiddle == 'true') {
+							middleInspectedList.push(action?.value);
+							localStore?.set({'middleStepList': middleInspectedList}, () => {});
+						}
 					});
 				});
 				break;

@@ -2,6 +2,7 @@
 let isClick = 1;
 let focusedInput = null;
 let step = null;
+let flagInspection;
 const HAS_ATTRIBUTES = ['name', 'id', 'aria-label', 'placeholder', 'title', 'alt', 'class', 'value', 'type']; //Order priority wise
 const CLICKABLE_ELEMENT = [
 	'button',
@@ -91,11 +92,14 @@ function handleFocus(event) {
 		focusedInput = event;
 		sendConsole('log', 'INPUT FOCUS:', target);
 	}
-
+	console.log(target);
 	target.addEventListener('keyup', function (event) {
 		// Number 13 is the "Enter" key on the keyboard
-		if (event.keyCode === 13 && focusedInput && target.tagName !== 'TEXTAREA') {
-			event.preventDefault();
+		console.log(event.keyCode === 13);
+		console.log(focusedInput);
+		if (event.keyCode === 13 && focusedInput) {
+			console.log('inside..');
+			// event.preventDefault();
 			focusedInput.target.value += '{ENTER}';
 			sendConsole('log', 'INPUT ENTER PRESS :', focusedInput.target.value);
 			sendInspectInfo('typeKeys(locator,value)', focusedInput);
@@ -135,14 +139,19 @@ function onMouseUp(event) {
 	if ((target.tagName === 'DIV' && target.innerText) || CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())) {
 		sendConsole('log', 'CLICK: ', target.tagName);
 		sendInspectInfo('waitForElementPresent(locator,waitMs)', event);
-		sendInspectInfo('click(locator)', event);
+		setTimeout(() => {
+			sendInspectInfo('click(locator)', event);
+		}, 200);
+
 		return;
 	}
 
 	if (target.tagName === 'INPUT') {
 		if (INPUT_CLICKABLE_TYPES.includes(target.type)) {
 			sendInspectInfo('waitForElementPresent(locator,waitMs)', event);
-			sendInspectInfo('click(locator)', event);
+			setTimeout(() => {
+				sendInspectInfo('click(locator)', event);
+			}, 200);
 			return;
 		}
 		if (INPUT_TOGGLE_TYPES.includes(target.type)) {
@@ -453,22 +462,24 @@ function getCssPath(el) {
 	if (!(el instanceof Element)) return;
 
 	let path = [];
-	while (el.nodeType === Node.ELEMENT_NODE) {
-		let selector = el.nodeName.toLowerCase();
-		if (el.id) {
-			selector += '#' + el.id;
-			path.unshift(selector);
-			break;
-		} else {
-			let sib = el,
-				nth = 1;
-			while ((sib = sib.previousElementSibling)) {
-				if (sib.nodeName.toLowerCase() === selector) nth++;
+	if (el != null) {
+		while (el.nodeType === Node.ELEMENT_NODE) {
+			let selector = el.nodeName.toLowerCase();
+			if (el.id) {
+				selector += '#' + el.id;
+				path.unshift(selector);
+				break;
+			} else {
+				let sib = el,
+					nth = 1;
+				while ((sib = sib.previousElementSibling)) {
+					if (sib.nodeName.toLowerCase() === selector) nth++;
+				}
+				selector += ':nth-of-type(' + nth + ')';
 			}
-			selector += ':nth-of-type(' + nth + ')';
+			path.unshift(selector);
+			el = el.parentNode;
 		}
-		path.unshift(selector);
-		el = el.parentNode;
 	}
 	return path.join(' > ');
 }
@@ -624,13 +635,23 @@ function sendInspectInfo(command, event) {
 	}
 
 	// ToDo: for payload create user define datatype
-	const payload = {
-		cmd: 'inspecting',
-		value: data,
-	};
+	let payload;
+	if (flagInspection) {
+		payload = {
+			cmd: 'inspectingInMiddle',
+			value: data,
+		};
+	} else {
+		payload = {
+			cmd: 'inspecting',
+			value: data,
+		};
+	}
 
+	console.log(payload);
 	if (!chrome || !chrome.runtime || !payload) return;
 	sendConsole('log', 'SEND PAYLOAD :', payload);
+
 	chrome.runtime.sendMessage(payload);
 }
 
@@ -658,9 +679,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			clickedElement = null;
 			break;
 		case STATUS_START:
-			start(request.startStep, false);
+			flagInspection = false;
+			start(request.startStep);
 			break;
 		case STATUS_MIDDLE_START:
+			flagInspection = true;
 			localStore?.set({'middleStep': request.startStep}, () => {});
 			start(request.startStep, true);
 			break;
