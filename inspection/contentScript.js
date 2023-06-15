@@ -92,13 +92,10 @@ function handleFocus(event) {
 		focusedInput = event;
 		sendConsole('log', 'INPUT FOCUS:', target);
 	}
-	console.log(target);
+
 	target.addEventListener('keyup', function (event) {
 		// Number 13 is the "Enter" key on the keyboard
-		console.log(event.keyCode === 13);
-		console.log(focusedInput);
 		if (event.keyCode === 13 && focusedInput) {
-			console.log('inside..');
 			// event.preventDefault();
 			focusedInput.target.value += '{ENTER}';
 			sendConsole('log', 'INPUT ENTER PRESS :', focusedInput.target.value);
@@ -648,7 +645,6 @@ function sendInspectInfo(command, event) {
 		};
 	}
 
-	console.log(payload);
 	if (!chrome || !chrome.runtime || !payload) return;
 	sendConsole('log', 'SEND PAYLOAD :', payload);
 
@@ -675,7 +671,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 				console.error('No element found');
 				break;
 			}
-			sendInspectInfo(request.command, clickedElement);
+			if (request.command == 'assertText(locator,text)' && clickedElement.target.tagName == 'INPUT') {
+				sendInspectInfo('assertValue(locator,value)', clickedElement);
+			} else {
+				sendInspectInfo(request.command, clickedElement);
+			}
 			clickedElement = null;
 			break;
 		case STATUS_START:
