@@ -382,7 +382,6 @@ function getDomPath(el) {
 		el = el.parentNode;
 	}
 	// sendConsole("groupEnd", "");
-	// console.log("stack in DOm path", stack);
 	return stack;
 }
 
@@ -397,7 +396,6 @@ function filterDomPath(el) {
 
 	for (let i = 0; i < HAS_PARENT.length; i++) {
 		const index = domPathList.findIndex((x) => x.node === HAS_PARENT[i]);
-		// console.log(HAS_PARENT[i], index);
 		if (index !== -1) {
 			domPathList.length = index + 1;
 			break;
@@ -406,7 +404,6 @@ function filterDomPath(el) {
 	// sendConsole("log", "DOM PATH FILTER : ", domPathList);
 	for (let index = 0; index < domPathList.length; index++) {
 		const node = domPathList[index];
-		// console.log(node['node'])
 		if (FIND_PARENTS.includes(node['node']) || index === domPathList.length - 1) {
 			if (node['node'] === 'div') {
 				if (node.attribute?.id || node.attribute?.class) {
@@ -516,7 +513,6 @@ function validateLocators(locatorList) {
 		}
 		return true;
 	});
-	// console.log(locatorList);
 	locatorList.locator = filtered;
 
 	if (filtered && (!locatorList.selectedLocator || !filtered.includes(locatorList.selectedLocator))) {
@@ -603,8 +599,13 @@ function sendInspectInfo(command, event) {
 			break;
 		case 'assertText(locator,text)':
 			data.param['locator'] = locator;
-			if (event.target.tagName === 'SELECT') data.param['text'] = event.target[event.target.selectedIndex].text;
-			else data.param['text'] = event.target.textContent || event.target.innerText || '<MISSING>';
+			if (event.target.tagName === 'SELECT')
+				data.param['text'] = event.target[event.target.selectedIndex].text.replaceAll('\n      ', '');
+			else
+				data.param['text'] =
+					event.target.textContent.replaceAll('\n      ', '') ||
+					event.target.innerText.replaceAll('\n      ', '') ||
+					'<MISSING>';
 			break;
 		case 'select(locator,text)':
 			data.param['locator'] = locator;
@@ -612,7 +613,7 @@ function sendInspectInfo(command, event) {
 			break;
 		case 'assertTextPresent(text)':
 		case 'waitForTextPresent(text)':
-			data.param['text'] = selectionText || event.target.innerText || '<MISSING>';
+			data.param['text'] = selectionText || event.target.innerText.replaceAll('\n      ', '') || '<MISSING>';
 			break;
 		case 'waitForElementTextPresent(locator,text)':
 			data.param['locator'] = locator;

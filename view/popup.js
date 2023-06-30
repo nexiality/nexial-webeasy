@@ -393,6 +393,13 @@ document.getElementById('copyToNexialInfo').addEventListener(
 );
 
 window.onload = function () {
+	localStore.get(['refreshed'], async (result) => {
+		if (result?.refreshed == 'true') {
+			alert('Please refresh the webpage as extension got reloaded.');
+			await localStore?.set({'refreshed': 'false'}, () => {});
+		}
+	});
+
 	localStore?.get(['inspectStatus'], (result) => {
 		let inspectStatus = result?.inspectStatus;
 		if (inspectStatus === STATUS_START || inspectStatus === STATUS_MIDDLE_START) start();

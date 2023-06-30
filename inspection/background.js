@@ -200,11 +200,7 @@ function sendRunTimeMessage(message) {
 				await chrome.tabs.sendMessage(tabs[0].id, message);
 			}
 		} catch (error) {
-			console.log(error);
 			if (error == 'Error: Could not establish connection. Receiving end does not exist.') {
-				setTimeout(() => {
-					sendRunTimeMessage(message);
-				}, 1000);
 			}
 		}
 	});
@@ -279,13 +275,11 @@ chrome.runtime.onMessage.addListener(async (action, sender, sendResponse) => {
 				localStore?.get([INSPECT_LIST], async function (result) {
 					let inspectElementList = (await result?.inspectList) ? result?.inspectList : [];
 					await inspectElementList.push(action.value);
-					console.log(await inspectElementList);
 					await localStore?.set({inspectList: inspectElementList}, () => {});
 				});
 				break;
 			}
 			case 'inspectingInMiddle': {
-				console.log('inspecting in middle..');
 				localStore?.get(['isInspectInMiddle'], function (result2) {
 					localStore?.get(['middleStepList'], function (result4) {
 						let middleInspectedList = result4?.middleStepList ? result4?.middleStepList : [];
@@ -322,4 +316,13 @@ chrome.runtime.onMessage.addListener(async (action, sender, sendResponse) => {
 	updateBadge();
 	sendResponse();
 	return true;
+});
+
+chrome.runtime.onInstalled.addListener(async (details) => {
+	if (
+		details.reason === chrome.runtime.OnInstalledReason.UPDATE ||
+		details.reason === chrome.runtime.OnInstalledReason.INSTALL
+	) {
+		await localStore?.set({'refreshed': 'true'}, () => {});
+	}
 });
