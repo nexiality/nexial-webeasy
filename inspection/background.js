@@ -199,10 +199,7 @@ function sendRunTimeMessage(message) {
 			if (tabs) {
 				await chrome.tabs.sendMessage(tabs[0].id, message);
 			}
-		} catch (error) {
-			if (error == 'Error: Could not establish connection. Receiving end does not exist.') {
-			}
-		}
+		} catch (error) {}
 	});
 
 	//});

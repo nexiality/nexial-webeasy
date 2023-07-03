@@ -84,8 +84,6 @@ function handleFocus(event) {
 	if (!INPUT_TAGS.includes(target.tagName)) return;
 
 	if (INPUT_TYPE_ELEMENT.includes(target.type) || target.tagName === 'TEXTAREA') {
-		// any previously trapped focusedInput?
-
 		if (focusedInput && focusedInput?.target != event?.target) {
 			sendInspectInfo('type(locator,value)', focusedInput);
 		}
@@ -96,7 +94,6 @@ function handleFocus(event) {
 	target.addEventListener('keyup', function (event) {
 		// Number 13 is the "Enter" key on the keyboard
 		if (event.keyCode === 13 && focusedInput) {
-			// event.preventDefault();
 			focusedInput.target.value += '{ENTER}';
 			sendConsole('log', 'INPUT ENTER PRESS :', focusedInput.target.value);
 			sendInspectInfo('typeKeys(locator,value)', focusedInput);
@@ -370,7 +367,6 @@ function createNode(el) {
  * @returns path of el
  */
 function getDomPath(el) {
-	// sendConsole("group", "DOM PATH LIST");
 	let stack = [];
 	while (el.parentNode != null) {
 		if (['html', 'body'].includes(el.nodeName.toLowerCase())) {
@@ -378,10 +374,8 @@ function getDomPath(el) {
 			continue;
 		}
 		stack.unshift(createNode(el));
-		// sendConsole("log", "ENTRY NODE : ", node["node"]);
 		el = el.parentNode;
 	}
-	// sendConsole("groupEnd", "");
 	return stack;
 }
 
@@ -401,7 +395,6 @@ function filterDomPath(el) {
 			break;
 		}
 	}
-	// sendConsole("log", "DOM PATH FILTER : ", domPathList);
 	for (let index = 0; index < domPathList.length; index++) {
 		const node = domPathList[index];
 		if (FIND_PARENTS.includes(node['node']) || index === domPathList.length - 1) {
@@ -488,13 +481,11 @@ function validateLocators(locatorList) {
 		if (locator.startsWith('css=')) {
 			let css = locator.substring(4);
 			let matches = document.querySelectorAll(css);
-			// sendConsole("log", "testing css selector " + css, matches);
 			return matches?.length === 1;
 		}
 		if (locator.startsWith('xpath=')) {
 			let xpath = locator.substring(6);
 			let matches = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
-			// sendConsole("log", "testing xpath selector " + xpath, matches);
 			// must return exactly 1 result
 			if (matches?.resultType === 4) {
 				if (!matches.iterateNext()) return false;
@@ -600,11 +591,11 @@ function sendInspectInfo(command, event) {
 		case 'assertText(locator,text)':
 			data.param['locator'] = locator;
 			if (event.target.tagName === 'SELECT')
-				data.param['text'] = event.target[event.target.selectedIndex].text.replaceAll('\n      ', '');
+				data.param['text'] = trimSpacesAndNewLines(event.target[event.target.selectedIndex].text);
 			else
 				data.param['text'] =
-					event.target.textContent.replaceAll('\n      ', '') ||
-					event.target.innerText.replaceAll('\n      ', '') ||
+					trimSpacesAndNewLines(event.target.textContent) ||
+					trimSpacesAndNewLines(event.target.innerText) ||
 					'<MISSING>';
 			break;
 		case 'select(locator,text)':
@@ -613,7 +604,7 @@ function sendInspectInfo(command, event) {
 			break;
 		case 'assertTextPresent(text)':
 		case 'waitForTextPresent(text)':
-			data.param['text'] = selectionText || event.target.innerText.replaceAll('\n      ', '') || '<MISSING>';
+			data.param['text'] = selectionText || trimSpacesAndNewLines(event.target.innerText) || '<MISSING>';
 			break;
 		case 'waitForElementTextPresent(locator,text)':
 			data.param['locator'] = locator;
@@ -707,7 +698,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			break;
 	}
 	sendConsole('info', `BROWSER : ${request.action} INSPECTING`);
-	// }
 	sendResponse();
 	return true;
 });
+
+function trimSpacesAndNewLines(string) {
+	return string.replace(/\n/g, '').replace(/\s+/g, ' ');
+}

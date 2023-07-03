@@ -395,7 +395,7 @@ document.getElementById('copyToNexialInfo').addEventListener(
 window.onload = function () {
 	localStore.get(['refreshed'], async (result) => {
 		if (result?.refreshed == 'true') {
-			alert('Please refresh the webpage as extension got reloaded.');
+			alert('Please refresh the current web page to reload this extension.');
 			await localStore?.set({'refreshed': 'false'}, () => {});
 		}
 	});
