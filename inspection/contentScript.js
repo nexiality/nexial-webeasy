@@ -703,5 +703,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 });
 
 function trimSpacesAndNewLines(string) {
-	return string.replace(/\n/g, '').replace(/\s+/g, ' ');
+	return string.replace(/\n/g, '').replace(/\s+/g, ' ').tirm();
 }
