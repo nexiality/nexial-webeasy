@@ -144,5 +144,6 @@ const cmd = [
   "waitUntilEnabled(locator,waitMs)",
   "waitUntilHidden(locator,waitMs)",
   "waitUntilVisible(locator,waitMs)",
-  "waitWhileElementNotPresent(locator,waitMs)"
+  "waitWhileElementNotPresent(locator,waitMs)",
+  "save(var,value)"
 ];

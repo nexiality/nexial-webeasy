@@ -3,12 +3,15 @@ const STATUS_PAUSE = 'paused';
 const STATUS_STOP = 'stop';
 const STATUS_CLEAR = 'clear';
 const clickEvt = 'click';
+const STATUS_MIDDLE_START = 'middle_start';
 
 function createSelectElement(items, id, editable = true) {
 	// Create and append select list
 	let selectList = document.createElement('select');
-	selectList.setAttribute('class', 'form-control');
+	selectList.setAttribute('class', 'form-control selectElement');
 	selectList.setAttribute('id', id);
+
+
 	if (!editable) {
 		selectList.setAttribute('disabled', 'true');
 	}
@@ -31,14 +34,22 @@ function createSelectElement(items, id, editable = true) {
 		if (optionText && optionText.startsWith('xpath=')) {
 			optionText = optionText.substring(6);
 		}
+
+		if (optionText && optionText.startsWith('user defined locator=')) {
+			optionText = optionText.split("user defined locator=")[1];
+		}
 		option.value = optionText;
 		option.text = optionText;
+
 		if (optgroup) {
 			optgroup.appendChild(option);
 			selectList.appendChild(optgroup);
 		} else {
 			selectList.appendChild(option);
 		}
+
 	}
+
+	//});
 	return selectList;
 }

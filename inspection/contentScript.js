@@ -2,6 +2,7 @@
 let isClick = 1;
 let focusedInput = null;
 let step = null;
+let flagInspection;
 const HAS_ATTRIBUTES = ['name', 'id', 'aria-label', 'placeholder', 'title', 'alt', 'class', 'value', 'type']; //Order priority wise
 const CLICKABLE_ELEMENT = [
 	'button',
@@ -30,6 +31,9 @@ const INPUT_CLICKABLE_TYPES = ['submit', 'reset', 'image', 'button'];
 const INPUT_TOGGLE_TYPES = ['radio', 'checkbox'];
 const HAS_PARENT = ['label', 'i', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'button']; //, "div", "span"]; // placed Orderwise
 const ATTRIB_HUMAN_READABLE = ['aria-label', 'placeholder', 'title', 'alt'];
+let localStore = chrome?.storage?.local;
+let varNameForWaitTime;
+let waitTimeSetInPreference;
 
 // Append Style on hover get element and show locator window
 let style = document.createElement('link');
@@ -52,6 +56,11 @@ function start(stepValue) {
 	document.addEventListener('mousedown', onClickElement);
 	document.addEventListener('mouseup', onMouseUp);
 	document.addEventListener('change', handleChange);
+
+	localStore?.get(['preferences'], (result) => {
+		varNameForWaitTime = result?.preferences?.varName;
+		waitTimeSetInPreference = result?.preferences?.waitTimeSetInPreference;
+	});
 }
 
 /**
@@ -61,6 +70,7 @@ function stop() {
 	document.removeEventListener('focus', handleFocus, true);
 	document.removeEventListener('mousedown', onClickElement);
 	document.removeEventListener('change', handleChange);
+	document.removeEventListener('mouseup', onMouseUp);
 }
 
 /**
@@ -74,8 +84,7 @@ function handleFocus(event) {
 	if (!INPUT_TAGS.includes(target.tagName)) return;
 
 	if (INPUT_TYPE_ELEMENT.includes(target.type) || target.tagName === 'TEXTAREA') {
-		// any previously trapped focusedInput?
-		if (focusedInput) {
+		if (focusedInput && focusedInput?.target != event?.target) {
 			sendInspectInfo('type(locator,value)', focusedInput);
 		}
 		focusedInput = event;
@@ -84,8 +93,7 @@ function handleFocus(event) {
 
 	target.addEventListener('keyup', function (event) {
 		// Number 13 is the "Enter" key on the keyboard
-		if (event.keyCode === 13 && focusedInput && target.tagName !== 'TEXTAREA') {
-			event.preventDefault();
+		if (event.keyCode === 13 && focusedInput) {
 			focusedInput.target.value += '{ENTER}';
 			sendConsole('log', 'INPUT ENTER PRESS :', focusedInput.target.value);
 			sendInspectInfo('typeKeys(locator,value)', focusedInput);
@@ -124,13 +132,20 @@ function onMouseUp(event) {
 	}
 	if ((target.tagName === 'DIV' && target.innerText) || CLICKABLE_ELEMENT.includes(target.tagName.toLowerCase())) {
 		sendConsole('log', 'CLICK: ', target.tagName);
-		sendInspectInfo('click(locator)', event);
+		sendInspectInfo('waitForElementPresent(locator,waitMs)', event);
+		setTimeout(() => {
+			sendInspectInfo('click(locator)', event);
+		}, 200);
+
 		return;
 	}
 
 	if (target.tagName === 'INPUT') {
 		if (INPUT_CLICKABLE_TYPES.includes(target.type)) {
-			sendInspectInfo('click(locator)', event);
+			sendInspectInfo('waitForElementPresent(locator,waitMs)', event);
+			setTimeout(() => {
+				sendInspectInfo('click(locator)', event);
+			}, 200);
 			return;
 		}
 		if (INPUT_TOGGLE_TYPES.includes(target.type)) {
@@ -233,10 +248,10 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
 				);
 				res['css'].push(
 					'css=' +
-					el.node +
-					(attr === 'id' ? `#${value}` : `[${attr}='${value}']`) +
-					`[type='${el.attribute['type']}']` +
-					baseCssPath
+						el.node +
+						(attr === 'id' ? `#${value}` : `[${attr}='${value}']`) +
+						`[type='${el.attribute['type']}']` +
+						baseCssPath
 				);
 			}
 		}
@@ -256,6 +271,7 @@ function getLocator(e, paths, isFiltered) {
 		xpath = [],
 		css = [],
 		selectedLocator = null;
+
 	const activeElnode = paths[paths.length - 1].node;
 
 	if (e.id) locator.push('id=' + e.id);
@@ -351,7 +367,6 @@ function createNode(el) {
  * @returns path of el
  */
 function getDomPath(el) {
-	// sendConsole("group", "DOM PATH LIST");
 	let stack = [];
 	while (el.parentNode != null) {
 		if (['html', 'body'].includes(el.nodeName.toLowerCase())) {
@@ -359,10 +374,8 @@ function getDomPath(el) {
 			continue;
 		}
 		stack.unshift(createNode(el));
-		// sendConsole("log", "ENTRY NODE : ", node["node"]);
 		el = el.parentNode;
 	}
-	// sendConsole("groupEnd", "");
 	return stack;
 }
 
@@ -377,23 +390,22 @@ function filterDomPath(el) {
 
 	for (let i = 0; i < HAS_PARENT.length; i++) {
 		const index = domPathList.findIndex((x) => x.node === HAS_PARENT[i]);
-		// console.log(HAS_PARENT[i], index);
 		if (index !== -1) {
 			domPathList.length = index + 1;
 			break;
 		}
 	}
-	// sendConsole("log", "DOM PATH FILTER : ", domPathList);
 	for (let index = 0; index < domPathList.length; index++) {
 		const node = domPathList[index];
 		if (FIND_PARENTS.includes(node['node']) || index === domPathList.length - 1) {
 			if (node['node'] === 'div') {
-				if (node.attribute?.id) {
+				if (node.attribute?.id || node.attribute?.class) {
 					domFilterList.push(node);
 				}
 			} else domFilterList.push(node);
 		}
 	}
+
 	if (domFilterList.length > 1)
 		return {
 			domPaths: domFilterList,
@@ -437,22 +449,24 @@ function getCssPath(el) {
 	if (!(el instanceof Element)) return;
 
 	let path = [];
-	while (el.nodeType === Node.ELEMENT_NODE) {
-		let selector = el.nodeName.toLowerCase();
-		if (el.id) {
-			selector += '#' + el.id;
-			path.unshift(selector);
-			break;
-		} else {
-			let sib = el,
-				nth = 1;
-			while ((sib = sib.previousElementSibling)) {
-				if (sib.nodeName.toLowerCase() === selector) nth++;
+	if (el != null) {
+		while (el.nodeType === Node.ELEMENT_NODE) {
+			let selector = el.nodeName.toLowerCase();
+			if (el.id) {
+				selector += '#' + el.id;
+				path.unshift(selector);
+				break;
+			} else {
+				let sib = el,
+					nth = 1;
+				while ((sib = sib.previousElementSibling)) {
+					if (sib.nodeName.toLowerCase() === selector) nth++;
+				}
+				selector += ':nth-of-type(' + nth + ')';
 			}
-			selector += ':nth-of-type(' + nth + ')';
+			path.unshift(selector);
+			el = el.parentNode;
 		}
-		path.unshift(selector);
-		el = el.parentNode;
 	}
 	return path.join(' > ');
 }
@@ -467,13 +481,11 @@ function validateLocators(locatorList) {
 		if (locator.startsWith('css=')) {
 			let css = locator.substring(4);
 			let matches = document.querySelectorAll(css);
-			// sendConsole("log", "testing css selector " + css, matches);
 			return matches?.length === 1;
 		}
 		if (locator.startsWith('xpath=')) {
 			let xpath = locator.substring(6);
 			let matches = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
-			// sendConsole("log", "testing xpath selector " + xpath, matches);
 			// must return exactly 1 result
 			if (matches?.resultType === 4) {
 				if (!matches.iterateNext()) return false;
@@ -492,10 +504,33 @@ function validateLocators(locatorList) {
 		}
 		return true;
 	});
-
 	locatorList.locator = filtered;
+
 	if (filtered && (!locatorList.selectedLocator || !filtered.includes(locatorList.selectedLocator))) {
 		locatorList.selectedLocator = filtered[0];
+	}
+
+	if (filtered) {
+		let xpathLocators = [],
+			cssLocators = [],
+			idLocators = [],
+			nameLocators = [];
+		filtered.forEach((item) => {
+			if (item.startsWith('id=')) {
+				idLocators.push(item);
+			} else if (item.startsWith('css=')) {
+				cssLocators.push(item);
+			} else if (item.startsWith('xpath=')) {
+				xpathLocators.push(item);
+			} else if (item.startsWith('name=')) {
+				nameLocators.push(item);
+			}
+		});
+
+		locatorList.cssSelector = cssLocators.length > 0 ? cssLocators : '';
+		locatorList.xpathLocator = xpathLocators.length > 0 ? xpathLocators : '';
+		locatorList.idLocator = idLocators.length > 0 ? idLocators : '';
+		locatorList.nameLocator = nameLocators.length > 0 ? nameLocators : '';
 	}
 }
 
@@ -506,11 +541,8 @@ function validateLocators(locatorList) {
  */
 function getLocatorList(event) {
 	const paths = filterDomPath(event.target);
-	const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
 
-	// sendConsole("log", "DOM PATH LIST : ", paths.domPaths);
-	// sendConsole("log", "IS DOM-PATH-LIST FILTERED : ", paths.isFiltered);
-	sendConsole('log', 'LOCATOR LIST (filtered? ' + paths.isFiltered + '): ', locatorList);
+	const locatorList = getLocator(event.target, paths.domPaths, paths.isFiltered);
 
 	validateLocators(locatorList);
 	if (!locatorList.locator.length) {
@@ -530,12 +562,16 @@ function sendInspectInfo(command, event) {
 	let locatorList = getLocatorList(event);
 	let locator = locatorList.locator;
 	let selectedLocator = locatorList.selectedLocator;
+
 	let data = {
 		step: step++,
 		command: command,
 		param: {},
 		actions: {
 			selectedLocator: selectedLocator,
+			cssSelector: locatorList.cssSelector,
+			xpathLocator: locatorList.xpathLocator,
+			idLocator: locatorList.idLocator,
 		},
 	};
 
@@ -554,8 +590,13 @@ function sendInspectInfo(command, event) {
 			break;
 		case 'assertText(locator,text)':
 			data.param['locator'] = locator;
-			if (event.target.tagName === 'SELECT') data.param['text'] = event.target[event.target.selectedIndex].text;
-			else data.param['text'] = event.target.textContent || event.target.innerText || '<MISSING>';
+			if (event.target.tagName === 'SELECT')
+				data.param['text'] = trimSpacesAndNewLines(event.target[event.target.selectedIndex].text);
+			else
+				data.param['text'] =
+					trimSpacesAndNewLines(event.target.textContent) ||
+					trimSpacesAndNewLines(event.target.innerText) ||
+					'<MISSING>';
 			break;
 		case 'select(locator,text)':
 			data.param['locator'] = locator;
@@ -563,7 +604,7 @@ function sendInspectInfo(command, event) {
 			break;
 		case 'assertTextPresent(text)':
 		case 'waitForTextPresent(text)':
-			data.param['text'] = selectionText || event.target.innerText || '<MISSING>';
+			data.param['text'] = selectionText || trimSpacesAndNewLines(event.target.innerText) || '<MISSING>';
 			break;
 		case 'waitForElementTextPresent(locator,text)':
 			data.param['locator'] = locator;
@@ -573,20 +614,28 @@ function sendInspectInfo(command, event) {
 		case 'waitUntilVisible(locator,waitMs)':
 		case 'waitUntilEnabled(locator,waitMs)':
 			data.param['locator'] = locator;
-			data.param['waitMs'] = '<MISSING>';
+			data.param['waitMs'] = varNameForWaitTime ? '${' + varNameForWaitTime + '}' : '2500';
 			break;
 		case 'checkAll(locator,waitMs)':
 		case 'uncheckAll(locator,waitMs)':
 			data.param['locator'] = locator;
-			data.param['waitMs'] = '<MISSING>';
+			data.param['waitMs'] = varNameForWaitTime ? '${' + varNameForWaitTime + '}' : '2500';
 			break;
 	}
 
 	// ToDo: for payload create user define datatype
-	const payload = {
-		cmd: 'inspecting',
-		value: data,
-	};
+	let payload;
+	if (flagInspection) {
+		payload = {
+			cmd: 'inspectingInMiddle',
+			value: data,
+		};
+	} else {
+		payload = {
+			cmd: 'inspecting',
+			value: data,
+		};
+	}
 
 	if (!chrome || !chrome.runtime || !payload) return;
 	sendConsole('log', 'SEND PAYLOAD :', payload);
@@ -614,11 +663,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 				console.error('No element found');
 				break;
 			}
-			sendInspectInfo(request.command, clickedElement);
+			if (request.command == 'assertText(locator,text)' && clickedElement.target.tagName == 'INPUT') {
+				sendInspectInfo('assertValue(locator,value)', clickedElement);
+			} else {
+				sendInspectInfo(request.command, clickedElement);
+			}
 			clickedElement = null;
 			break;
 		case STATUS_START:
+			flagInspection = false;
 			start(request.startStep);
+			break;
+		case STATUS_MIDDLE_START:
+			flagInspection = true;
+			localStore?.set({'middleStep': request.startStep}, () => {});
+			start(request.startStep, true);
 			break;
 		case STATUS_STOP:
 			stop();
@@ -639,7 +698,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			break;
 	}
 	sendConsole('info', `BROWSER : ${request.action} INSPECTING`);
-	// }
 	sendResponse();
 	return true;
 });
+
+function trimSpacesAndNewLines(string) {
+	return string.replace(/\n/g, '').replace(/\s+/g, ' ').tirm();
+}

@@ -1,97 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>Nexial WebEZ</title>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="resources/style/bootstrap.min.css">
-  <link rel="stylesheet" href="resources/style/all.min.css">
-  <link rel="stylesheet" href="resources/style/default.css">
-</head>
-<body>
-  <header>
-    Nexial WebEZ
-    <ul class="nav float-right headerOption">
-      <li id="showHelp" title="Click to learn more about Nexial WebEZ"><i class="fa fa-question-circle" aria-hidden="true"></i></li>
-      <li id="maximizePopup" title="Open Nexial WebEZ in a separate tab"><i class="fa fa-window-maximize" aria-hidden="true"></i></li>
-      <li id="closePopup" title="Hide Nexial WebEZ"><i class="fa fa-times" aria-hidden="true"></i></li>
-    </ul>
-  </header>
-  <div class="container-fluid" id="nexial-container">
-    <div class="row content">
-      <div class="col-12">
-        <div class="mt-1">
-          <form>
-            <div class="form-row" id="startOption">
-              <div class="form-group col-9">
-                <div class="form-row">
-                  <div>
-                    <label for="url" class="col-form-label ml-3 mr-2">Enter URL:</label>
-                  </div>
-                  <div class="col-7">
-                    <input type="text" class="form-control" id="url" placeholder="URL">
-                    <div class="valid-feedback">Please enter a valid URL (e.g. <code>https://www.google.com</code>)</div>
-                  </div>
-                  <div class="col">
-                    <input type="button" class="btn btn-primary mb-1" id="startInspect" value="Inspect">
-                    <span class="badge" data-toggle="modal" data-target="#infoModal" id="startInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group col-3" style="text-align: end;">
-                <input type="button" class="btn btn-primary mb-1" id="nowInspect" value="Inspect Current Page">
-                <span class="badge" data-toggle="modal" data-target="#infoModal" id="nowInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
-              </div>
-            </div>
-          </form>
-        </div>
+	<head>
+		<title>Nexial WebEZ</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="resources/style/jquery-ui.css" />
+		<link rel="stylesheet" href="resources/style/bootstrap.min.css" />
+		<link rel="stylesheet" href="resources/style/all.min.css" />
+		<link rel="stylesheet" href="resources/style/default.css" />
+	</head>
+	<body>
+		<header>
+			Nexial WebEZ
+			<ul class="nav float-right headerOption">
+				<li id="showHelp" title="Click to learn more about Nexial WebEZ">
+					<i class="fa fa-question-circle" aria-hidden="true"></i>
+				</li>
+				<li id="maximizePopup" title="Open Nexial WebEZ in a separate tab">
+					<i class="fa fa-window-maximize" aria-hidden="true"></i>
+				</li>
+				<li id="closePopup" title="Hide Nexial WebEZ"><i class="fa fa-times" aria-hidden="true"></i></li>
+			</ul>
+		</header>
+		<div class="container-fluid" id="nexial-container">
+			<div class="row content">
+				<div class="col-12">
+					<div class="mt-1">
+						<form>
+							<div class="form-row" id="startOption">
+								<div class="form-group col-9">
+									<div class="form-row">
+										<div>
+											<label for="url" class="col-form-label ml-3 mr-2">Enter URL:</label>
+										</div>
+										<div class="col-7">
+											<input type="text" class="form-control" id="url" placeholder="URL" />
+											<div class="valid-feedback">
+												Please enter a valid URL (e.g. <code>https://www.google.com</code>)
+											</div>
+										</div>
+										<div class="col">
+											<input type="button" class="btn btn-primary mb-1" id="startInspect" value="Inspect" />
+											<span class="badge" data-toggle="modal" data-target="#infoModal" id="startInspectInfo"
+												><i class="fa fa-info-circle" aria-hidden="true"></i
+											></span>
+										</div>
+									</div>
+								</div>
+								<div class="form-group col-3">
+										<div class="form-row">
+											<input type="button" class="btn btn-primary mb-1" id="nowInspect" value="Inspect Current Page">
+											<span class="badge" data-toggle="modal" data-target="#infoModal" id="nowInspectInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+										</div>
+								</div>
+							</div>
+						</form>
+					</div>
 
-        <div class="webezDisplay">
-          <div id="showStatus"><div class="loader"></div> Inspection in progress...</div>
-          <div id="showData"></div>
-        </div>
+					<div class="webezDisplay">
+						<div id="showStatus">
+							<div class="loader"></div>
+							Inspection in progress...
+						</div>
+						<div id="showData"></div>
+					</div>
 
-        <div class="mt-3">
-          <form>
-            <div class="form-group" id="stopOption">
-              <input type="button" class="btn btn-primary mb-1 mr-2" id="pauseInspect" value="Pause">
-              <input type="button" class="btn btn-primary mb-1 mr-2" id="stopInspect" value="Stop">
-            </div>
-            <div class="form-group float-right" id="inspectDataOption">
-              <button class="btn btn-secondary" id="clear">Clear</button>
-              <span class="badge" data-toggle="modal" data-target="#infoModal" id="clearInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
-              <button class="btn btn-success" id="copyToNexial">Copy to Nexial script</button>
-              <span class="badge" data-toggle="modal" data-target="#infoModal" id="copyToNexialInfo"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
-            </div>
-          </form>
-        </div>
+					<div class="mt-3" id="bottomRow">
+						<form>
+							<div class="form-group" id="stopOption">
+								<input type="button" class="btn btn-primary mb-1 mr-2" id="pauseInspect" value="Pause" />
+								<input type="button" class="btn btn-primary mb-1 mr-2" id="stopInspect" value="Stop" />
+							</div>
+							<div class="form-group float-left" style="text-align: end">
+								<input type="button" class="btn btn-primary mb-1" id="selectPrefrences" value="Preferences" />
+								<span class="badge" data-toggle="modal" data-target="#infoModal" id="selectPrefrencesInfo"
+									><i class="fa fa-info-circle" aria-hidden="true"></i
+								></span>
+							</div>
+							<div class="form-group float-right" id="inspectDataOption">
+								<button class="btn btn-secondary" id="clear">Clear</button>
+								<span class="badge" data-toggle="modal" data-target="#infoModal" id="clearInfo"
+									><i class="fa fa-info-circle" aria-hidden="true"></i
+								></span>
+								<button class="btn btn-success" id="copyToNexial">Copy to Nexial script</button>
+								<span class="badge" data-toggle="modal" data-target="#infoModal" id="copyToNexialInfo"
+									><i class="fa fa-info-circle" aria-hidden="true"></i
+								></span>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="row selectPrefrencesDiv">
+				<div class="col-12">
+					<div id="backArrow" title="back"><i class="fa fa-arrow-left" aria-hidden="true"></i></div>
+					<hr />
+					<div class="col-12">
+						<h3>Preferences</h3>
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Set Wait Time</h5>
+								<p class="card-text">
+									Wait time you can specify here which will be applied for the command
+									<a
+										target="_blank"
+										href="https://nexiality.github.io/documentation/commands/web/waitForElementPresent(locator,waitMs)"
+										>waitForElementPresent</a
+									>
+								</p>
+								<label>Wait time</label>
+								<input type="number" id="waitTime" />
+								<label>Variable Name Wait Time</label>
+								<input type="text" id="varNameWaitTime" />
+							</div>
+						</div>
 
-      </div>
-    </div>
-  </div>
-  <!-- Modal -->
-<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="infoModalLabel">Help Desk</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="infoModelBody">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-  <script src="resources/js/jquery-3.5.1.slim.min.js"></script>
-  <script src="resources/js/bootstrap.min.js"></script>
-  <script src="env.js" type="text/javascript"></script>
-  <script src="model/webCommand.js" type="text/javascript"></script>
-  <script src="view/general.js" type="text/javascript"></script>
-  <script src="view/createTable.js" type="text/javascript"></script>
-  <script src="view/popup.js" type="text/javascript"></script>
-</body>
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Set Preferred Selector</h5>
+								<p class="card-text">You can specify which selectors type you prefer out of id, css, xpath.</p>
+								<ul class="list-group list-group-horizontal-sm" id="sortable">
+									<li class="list-group-item">Id</li>
+									<li class="list-group-item">Css</li>
+									<li class="list-group-item">Xpath</li>
+									<li class="list-group-item">Name</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<button class="btn btn-primary mt-1 float-right" id="submitPrefrences" type="submit">Save</button>
+				</div>
+			</div>
+		</div>
+		<!-- Modal -->
+		<div
+			class="modal fade"
+			id="infoModal"
+			tabindex="-1"
+			role="dialog"
+			aria-labelledby="infoModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="infoModalLabel">Help Desk</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body" id="infoModelBody"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title fs-5" id="exampleModalLabel">Add New Steps</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						To add steps through inspection :
+						<button type="button" class="btn btn-secondary" id="inspectAddInMiddle">Inspect here</button><br />
+						<br />
+						<div class="input-group mb-3">
+							To add empty steps :
+							<div class="input-group-prepend ml-3">
+								<input
+									type="number"
+									value="1"
+									class="form-control"
+									id="inputForManualStepAdd"
+									placeholder=""
+									aria-label=""
+									aria-describedby="basic-addon1"
+									style="width: 85%" />
+							</div>
+							<button class="btn btn-secondary" id="manualStepAddInMiddle" type="button">Add Steps</button>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="customLocator" tabindex="-1" aria-labelledby="customLocatorLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title fs-5" id="customLocatorLabel">User Defined Locator</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="input-group mb-3">Add user defined locator here:</div>
+						<div class="input-group-prepend">
+							<input
+								type="text"
+								class="form-control"
+								id="customLocatorInput"
+								placeholder="custom locator"
+								aria-label=""
+								aria-describedby="basic-addon1"
+								style="width: 100%" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary float-left" data-dismiss="modal" id="customLocatorDelete">
+							Delete
+						</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal" id="customLocatorSave">Save</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal" id="customLocatorSaveAs">
+							Save As New
+						</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="resources/js/jquery-3.5.1.slim.min.js"></script>
+		<script src="resources/js/jquery-ui.js"></script>
+		<script src="resources/js/bootstrap.min.js"></script>
+		<script src="env.js" type="text/javascript"></script>
+		<script src="model/webCommand.js" type="text/javascript"></script>
+		<script src="view/general.js" type="text/javascript"></script>
+		<script src="view/createTable.js" type="text/javascript"></script>
+		<script src="view/popup.js" type="text/javascript"></script>
+	</body>
 </html>

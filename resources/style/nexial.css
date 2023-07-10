@@ -1,177 +1,178 @@
 [nexial-locator-data-tooltip] {
-  position: absolute;
-  z-index:  1000;
+	position: absolute;
+	z-index: 1000;
 }
 
 [nexial-locator-data-tooltip]:before {
-  position:              absolute;
-  bottom:                150%;
-  left:                  50%;
-  margin-bottom:         5px;
-  margin-left:           -10px;
-  padding:               2px 4px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius:    3px;
-  border-radius:         3px;
-  background-color:      #000;
-  background-color:      hsla(0, 0%, 20%, 0.9);
-  color:                 #fff;
-  content:               attr(nexial-locator-data-tooltip);
-  text-align:            center;
-  font-size:             14px;
-  line-height:           1.2;
+	position: absolute;
+	bottom: 150%;
+	left: 50%;
+	margin-bottom: 5px;
+	margin-left: -10px;
+	padding: 2px 4px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	background-color: #000;
+	background-color: hsla(0, 0%, 20%, 0.9);
+	color: #fff;
+	content: attr(nexial-locator-data-tooltip);
+	text-align: center;
+	font-size: 14px;
+	line-height: 1.2;
 }
 
 [nexial-locator-data-tooltip]:after {
-  position:     absolute;
-  bottom:       150%;
-  left:         50%;
-  margin-left:  -5px;
-  width:        0;
-  border-top:   5px solid #000;
-  border-top:   5px solid hsla(0, 0%, 20%, 0.9);
-  border-right: 5px solid transparent;
-  border-left:  5px solid transparent;
-  content:      " ";
-  font-size:    0;
-  line-height:  0;
+	position: absolute;
+	bottom: 150%;
+	left: 50%;
+	margin-left: -5px;
+	width: 0;
+	border-top: 5px solid #000;
+	border-top: 5px solid hsla(0, 0%, 20%, 0.9);
+	border-right: 5px solid transparent;
+	border-left: 5px solid transparent;
+	content: ' ';
+	font-size: 0;
+	line-height: 0;
 }
 
 .nexial-hover {
-  background: rgb(196, 196, 196);
+	background: rgb(196, 196, 196);
 }
 
 nexial-webez-show-locator {
-  background-color: rgba(40, 60, 40, 0.5);
-  width:            300px;
-  height:           100%;
-  overflow-x:       hidden;
-  position:         fixed;
-  right:            0;
-  top:              0;
-  transition:       1s;
-  z-index:          9999999;
-  border-left:      2px solid rgba(0, 0, 0, 0.5);
-  box-shadow:       -6px 0 10px rgb(0 0 0 / 25%);
-  line-height:      2.0em;
-  backdrop-filter:  blur(5px) brightness(0.9);
+	background-color: rgba(40, 60, 40, 0.5);
+	width: 300px;
+	height: 100%;
+	overflow-x: hidden;
+	position: fixed;
+	right: 0;
+	top: 0;
+	transition: 1s;
+	z-index: 9999999;
+	border-left: 2px solid rgba(0, 0, 0, 0.5);
+	box-shadow: -6px 0 10px rgb(0 0 0 / 25%);
+	line-height: 2em;
+	backdrop-filter: blur(5px) brightness(0.9);
 }
 
 nexial-webez-show-locator #nexial-show-locator-header {
-  height:          30px;
-  font-family:     "Calibri", sans-serif;
-  font-size:       15pt;
-  font-weight:     bold;
-  background:      rgba(70, 70, 70, 0.9) url(https://nexiality.github.io/documentation/image/nexial-64.png) no-repeat 4px 3px;
-  background-size: 48px;
-  padding:         7px 0 4px 55px !important;
-  color:           #ddd;
-  text-shadow:     2px 2px 5px black;
-  box-shadow:      0 3px 3px rgb(0 0 0 / 75%);
-  box-sizing:      content-box;
-  user-select:     none;
+	height: 30px;
+	font-family: 'Calibri', sans-serif;
+	font-size: 15pt;
+	font-weight: bold;
+	background: rgba(70, 70, 70, 0.9) url(https://nexiality.github.io/documentation/image/nexial-64.png) no-repeat 4px 3px;
+	background-size: 48px;
+	padding: 7px 0 4px 55px !important;
+	color: #ddd;
+	text-shadow: 2px 2px 5px black;
+	box-shadow: 0 3px 3px rgb(0 0 0 / 75%);
+	box-sizing: content-box;
+	user-select: none;
 }
 
 nexial-webez-show-locator #nexial-show-locator-header .headerOption {
-  text-shadow: none;
-  margin:      -4px 0 0 0;
-  float:       right;
-  font-size:   10pt;
-  line-height: 1em;
-  padding:     0 !important;
+	text-shadow: none;
+	margin: -4px 0 0 0;
+	float: right;
+	font-size: 10pt;
+	line-height: 1em;
+	padding: 0 !important;
 }
 
 nexial-webez-show-locator #nexial-show-locator-header .nav li {
-  background:    gray;
-  color:         rgba(255, 255, 255, 0.5) !important;
-  border:        1px lightgray solid;
-  cursor:        pointer;
-  padding:       2px 6px 3px;
-  overflow:      hidden;
-  margin:        0px 3px 0 -2px;
-  display:       inline-block;
-  font-weight:   normal;
-  border-radius: 10px;
+	background: gray;
+	color: rgba(255, 255, 255, 0.5) !important;
+	border: 1px lightgray solid;
+	cursor: pointer;
+	padding: 2px 6px 3px;
+	overflow: hidden;
+	margin: 0px 3px 0 -2px;
+	display: inline-block;
+	font-weight: normal;
+	border-radius: 10px;
 }
 
 nexial-webez-show-locator #nexial-show-locator-header .nav li:hover {
-  color:       #fff !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.50);
+	color: #fff !important;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 nexial-webez-show-locator button {
-  float:            right;
-  padding:          5px 8px;
-  border:           1px solid #355138;
-  margin:           10px 0;
-  border-radius:    5px;
-  background-color: rgba(95, 130, 65, 0.8);
-  color:            #fff;
-  font-weight:      bold;
-  cursor:           pointer;
+	float: right;
+	padding: 5px 8px;
+	border: 1px solid #355138;
+	margin: 10px 0;
+	border-radius: 5px;
+	background-color: rgba(95, 130, 65, 0.8);
+	color: #fff;
+	font-weight: bold;
+	cursor: pointer;
 }
 
 nexial-webez-show-locator a {
-  color:           #818181;
-  display:         block;
-  font-size:       25px;
-  padding:         8px 8px 8px 32px;
-  text-decoration: none;
-  transition:      .3s;
+	color: #818181;
+	display: block;
+	font-size: 25px;
+	padding: 8px 8px 8px 32px;
+	text-decoration: none;
+	transition: 0.3s;
 }
 
-nexial-webez-show-locator a:hover, .offcanvas a:focus {
-  color: #f1f1f1;
+nexial-webez-show-locator a:hover,
+.offcanvas a:focus {
+	color: #f1f1f1;
 }
 
 nexial-webez-show-locator .closebtn {
-  float:       right;
-  font-size:   20px;
-  position:    absolute;
-  right:       15px;
-  top:         20px;
+	float: right;
+	font-size: 20px;
+	position: absolute;
+	right: 15px;
+	top: 20px;
 
-  background:  lightgray;
-  padding:     3px 5px;
-  line-height: 1;
+	background: lightgray;
+	padding: 3px 5px;
+	line-height: 1;
 }
 
 nexial-webez-show-locator .locator_options {
-  margin:      15px auto;
-  width:       280px;
-  line-height: 1.35em;
-  font-size:   11pt;
-  font-family: "Calibri", Arial, sans-serif;
-  color:       #eee;
+	margin: 15px auto;
+	width: 280px;
+	line-height: 1.35em;
+	font-size: 11pt;
+	font-family: 'Calibri', Arial, sans-serif;
+	color: #eee;
 }
 
 nexial-webez-show-locator .copybtn {
-  margin-top:   10px;
-  margin-right: 10px;
+	margin-top: 10px;
+	margin-right: 10px;
 }
 
 nexial-webez-show-locator select {
-  width:            280px !important;
-  padding:          4px;
-  border:           1px solid #7a8188 !important;
-  border-radius:    5px;
-  font-family:      "Consolas", monospace;
-  font-size:        10pt;
-  color:            #333;
-  background-color: rgba(255, 255, 255, 0.9);
+	width: 280px !important;
+	padding: 4px;
+	border: 1px solid #7a8188 !important;
+	border-radius: 5px;
+	font-family: 'Consolas', monospace;
+	font-size: 10pt;
+	color: #333;
+	background-color: rgba(255, 255, 255, 0.9);
 }
 
 nexial-webez-show-locator #nexial-selected-locator {
-  width:                 270px !important;
-  height:                125px;
-  display:               block;
-  border:                1px solid #7a8188;
-  border-radius:         5px;
-  padding:               4px;
-  font-family:           "Consolas", monospace;
-  font-size:             10pt;
-  background:            rgba(255, 255, 255, 0.9);
-  background-blend-mode: color-burn;
-  box-sizing:            content-box !important;
-  color:                 #333;
+	width: 270px !important;
+	height: 125px;
+	display: block;
+	border: 1px solid #7a8188;
+	border-radius: 5px;
+	padding: 4px;
+	font-family: 'Consolas', monospace;
+	font-size: 10pt;
+	background: rgba(255, 255, 255, 0.9);
+	background-blend-mode: color-burn;
+	box-sizing: content-box !important;
+	color: #333;
 }
