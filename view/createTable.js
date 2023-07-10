@@ -692,6 +692,8 @@ function tableFromJson() {
 
 	localStore?.get(['inspectList'], (result) => {
 		inspectElementList = JSON.parse(JSON.stringify(result?.inspectList));
+		console.log(inspectElementList);
+		var allLocators = [];
 		localStore?.get(['preferences'], (result2) => {
 			let temp = JSON.parse(JSON.stringify(result2?.preferences));
 
@@ -704,6 +706,19 @@ function tableFromJson() {
 					item.param.value = temp.waitTimeSetInPreference;
 					item.param.locator = temp.varName;
 				}
+
+				allLocators.push({
+					locators: item.param.locator,
+				});
+			});
+
+			console.log(allLocators);
+			localStore?.get(['allLocators'], (result3) => {
+				console.log(result3);
+				if (result3?.allLocators?.length == 0 || result3?.allLocators == undefined || result3?.allLocators == null) {
+					localStore?.set({'allLocators': allLocators}, () => {});
+				}
+				console.log(result3.allLocators);
 			});
 
 			localStore?.set({'inspectList': inspectElementList}, () => {
@@ -881,41 +896,109 @@ function createCustomOption(type, step) {
 			.unbind('click')
 			.click(function (e) {
 				chrome?.storage?.local?.get(['inspectList'], (result) => {
-					const inspectElementListObj = result?.inspectList;
-					let userDefinedLocator;
-					let selectedValue = $('#customLocatorInput').val();
-					userDefinedLocator = 'user defined locator=' + selectedValue;
-					inspectElementListObj[step - 1].param['locator'].push(userDefinedLocator);
-					inspectElementListObj[step - 1].actions.userSavedCustomLocator = selectedValue;
+					chrome?.storage?.local?.get(['allLocators'], (resultAllocators) => {
+						console.log($('#locator_' + step).val());
+						const inspectElementListObj = result?.inspectList;
+						const oldValueLocator = $('#locator_' + step).val();
+						console.log(resultAllocators);
+						const allLocators = resultAllocators?.allLocators;
+						let userDefinedLocator;
+						let selectedValue = $('#customLocatorInput').val();
+						userDefinedLocator = 'user defined locator=' + selectedValue;
+						var confirmWhetherToUpdateAllLocators = confirm(
+							'There are matching locators in other steps do you to update all of them '
+						);
 
-					if ($('#locator_' + step).find('optgroup[label="USER DEFINED LOCATOR"]').length > 0) {
-						if (
-							$('#locator_' + step)
-								.find('optgroup[label="USER DEFINED LOCATOR"]')
-								.find('option[value= "' + selectedValue + '"]').length == 0
-						) {
-							let option = document.createElement('option');
-							option.value = selectedValue;
-							option.text = selectedValue;
-							$('#locator_' + step)
-								.find('optgroup[label="USER DEFINED LOCATOR"]')
-								.append(option);
-							$('#locator_' + step).val(selectedValue);
-							$('#locator_' + step).attr('title', selectedValue);
+						if (confirmWhetherToUpdateAllLocators) {
+							console.log(allLocators);
+							allLocators.forEach((item, parentIndex) => {
+								console.log(item);
+								if (
+									typeof item === 'object' &&
+									item !== null &&
+									typeof item.locators === 'object' &&
+									item.locators !== null
+								) {
+									item?.locators?.forEach((actualLocator, index) => {
+										let locator =
+											actualLocator.indexOf('xpath=') > -1 ? actualLocator?.split('xpath=')[1] : actualLocator;
+										console.log(locator);
+										console.log(oldValueLocator);
+										console.log(locator === oldValueLocator);
+										if (locator === oldValueLocator) {
+											console.log('par');
+											inspectElementListObj[parentIndex + 1].param['locator'].push(userDefinedLocator);
+											inspectElementListObj[parentIndex + 1].actions.userSavedCustomLocator = selectedValue;
+											if (
+												$('#locator_' + (parentIndex + 1)).find('optgroup[label="USER DEFINED LOCATOR"]').length > 0
+											) {
+												console.log('inside1');
+												if (
+													$('#locator_' + (parentIndex + 1))
+														.find('optgroup[label="USER DEFINED LOCATOR"]')
+														.find('option[value= "' + selectedValue + '"]').length == 0
+												) {
+													console.log('inside2');
+													let option = document.createElement('option');
+													option.value = selectedValue;
+													option.text = selectedValue;
+													$('#locator_' + (parentIndex + 1))
+														.find('optgroup[label="USER DEFINED LOCATOR"]')
+														.append(option);
+													$('#locator_' + (parentIndex + 1)).val(selectedValue);
+													$('#locator_' + (parentIndex + 1)).attr('title', selectedValue);
+												}
+											} else {
+												console.log('inside else');
+												let optgroup = document.createElement('optgroup');
+												optgroup.setAttribute('label', 'USER DEFINED LOCATOR');
+												let option = document.createElement('option');
+												option.value = selectedValue;
+												option.text = selectedValue;
+												optgroup.appendChild(option);
+												$('#locator_' + (parentIndex + 1)).append(optgroup);
+												$('#locator_' + (parentIndex + 1)).val(selectedValue);
+												$('#locator_' + (parentIndex + 1)).attr('title', selectedValue);
+											}
+										}
+									});
+								}
+							});
+						} else {
+							console.log('inside else if click on cancel..');
+							inspectElementListObj[step - 1].param['locator'].push(userDefinedLocator);
+							inspectElementListObj[step - 1].actions.userSavedCustomLocator = selectedValue;
+
+							if ($('#locator_' + step).find('optgroup[label="USER DEFINED LOCATOR"]').length > 0) {
+								if (
+									$('#locator_' + step)
+										.find('optgroup[label="USER DEFINED LOCATOR"]')
+										.find('option[value= "' + selectedValue + '"]').length == 0
+								) {
+									let option = document.createElement('option');
+									option.value = selectedValue;
+									option.text = selectedValue;
+									$('#locator_' + step)
+										.find('optgroup[label="USER DEFINED LOCATOR"]')
+										.append(option);
+									$('#locator_' + step).val(selectedValue);
+									$('#locator_' + step).attr('title', selectedValue);
+								}
+							} else {
+								let optgroup = document.createElement('optgroup');
+								optgroup.setAttribute('label', 'USER DEFINED LOCATOR');
+								let option = document.createElement('option');
+								option.value = selectedValue;
+								option.text = selectedValue;
+								optgroup.appendChild(option);
+								$('#locator_' + step).append(optgroup);
+								$('#locator_' + step).val(selectedValue);
+								$('#locator_' + step).attr('title', selectedValue);
+							}
 						}
-					} else {
-						let optgroup = document.createElement('optgroup');
-						optgroup.setAttribute('label', 'USER DEFINED LOCATOR');
-						let option = document.createElement('option');
-						option.value = selectedValue;
-						option.text = selectedValue;
-						optgroup.appendChild(option);
-						$('#locator_' + step).append(optgroup);
-						$('#locator_' + step).val(selectedValue);
-						$('#locator_' + step).attr('title', selectedValue);
-					}
-
-					localStore?.set({'inspectList': inspectElementListObj}, () => {});
+						console.log(inspectElementListObj);
+						localStore?.set({'inspectList': inspectElementListObj}, () => {});
+					});
 				});
 			});
 

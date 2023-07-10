@@ -71,6 +71,7 @@ function pause() {
  */
 function clear() {
 	localStore?.set({inspectList: []}, () => {});
+	localStore?.set({allLocators: []}, () => {});
 	updateBadge();
 }
 
