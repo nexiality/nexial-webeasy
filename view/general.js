@@ -11,7 +11,6 @@ function createSelectElement(items, id, editable = true) {
 	selectList.setAttribute('class', 'form-control selectElement');
 	selectList.setAttribute('id', id);
 
-
 	if (!editable) {
 		selectList.setAttribute('disabled', 'true');
 	}
@@ -36,7 +35,7 @@ function createSelectElement(items, id, editable = true) {
 		}
 
 		if (optionText && optionText.startsWith('user defined locator=')) {
-			optionText = optionText.split("user defined locator=")[1];
+			optionText = optionText.split('user defined locator=')[1];
 		}
 		option.value = optionText;
 		option.text = optionText;
@@ -47,7 +46,6 @@ function createSelectElement(items, id, editable = true) {
 		} else {
 			selectList.appendChild(option);
 		}
-
 	}
 
 	//});

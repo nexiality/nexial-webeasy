@@ -123,19 +123,19 @@ function createSubTableRow(param_table, key, data, step, editable) {
 						let preferedOption = $(this).text();
 						if (selectedLocator == '') {
 							if (preferedOption?.trim() == 'Id' && inspectListObject?.actions['idLocator']?.length > 0) {
-								selectedLocator = inspectListObject?.actions['idLocator'][0];
+								selectedLocator = getIndexOfAriaLabel(inspectListObject?.actions['idLocator']);
 							}
 
 							if (preferedOption?.trim() == 'Css' && inspectListObject?.actions['cssSelector']?.length > 0) {
-								selectedLocator = inspectListObject?.actions['cssSelector'][0];
+								selectedLocator = getIndexOfAriaLabel(inspectListObject?.actions['cssSelector']);
 							}
 
 							if (preferedOption?.trim() == 'Xpath' && inspectListObject?.actions['xpathLocator']?.length > 0) {
-								selectedLocator = inspectListObject?.actions['xpathLocator'][0];
+								selectedLocator = getIndexOfAriaLabel(inspectListObject?.actions['xpathLocator']);
 							}
 
 							if (preferedOption?.trim() == 'Name' && inspectListObject?.actions['nameLocator']?.length > 0) {
-								selectedLocator = inspectListObject?.actions['nameLocator'][0];
+								selectedLocator = getIndexOfAriaLabel(inspectListObject?.actions['nameLocator']);
 							}
 						}
 					});
@@ -692,7 +692,6 @@ function tableFromJson() {
 
 	localStore?.get(['inspectList'], (result) => {
 		inspectElementList = JSON.parse(JSON.stringify(result?.inspectList));
-		console.log(inspectElementList);
 		var allLocators = [];
 		localStore?.get(['preferences'], (result2) => {
 			let temp = JSON.parse(JSON.stringify(result2?.preferences));
@@ -712,13 +711,10 @@ function tableFromJson() {
 				});
 			});
 
-			console.log(allLocators);
 			localStore?.get(['allLocators'], (result3) => {
-				console.log(result3);
 				if (result3?.allLocators?.length == 0 || result3?.allLocators == undefined || result3?.allLocators == null) {
 					localStore?.set({'allLocators': allLocators}, () => {});
 				}
-				console.log(result3.allLocators);
 			});
 
 			localStore?.set({'inspectList': inspectElementList}, () => {
@@ -897,10 +893,8 @@ function createCustomOption(type, step) {
 			.click(function (e) {
 				chrome?.storage?.local?.get(['inspectList'], (result) => {
 					chrome?.storage?.local?.get(['allLocators'], (resultAllocators) => {
-						console.log($('#locator_' + step).val());
 						const inspectElementListObj = result?.inspectList;
 						const oldValueLocator = $('#locator_' + step).val();
-						console.log(resultAllocators);
 						const allLocators = resultAllocators?.allLocators;
 						let userDefinedLocator;
 						let selectedValue = $('#customLocatorInput').val();
@@ -910,9 +904,7 @@ function createCustomOption(type, step) {
 						);
 
 						if (confirmWhetherToUpdateAllLocators) {
-							console.log(allLocators);
 							allLocators.forEach((item, parentIndex) => {
-								console.log(item);
 								if (
 									typeof item === 'object' &&
 									item !== null &&
@@ -922,23 +914,17 @@ function createCustomOption(type, step) {
 									item?.locators?.forEach((actualLocator, index) => {
 										let locator =
 											actualLocator.indexOf('xpath=') > -1 ? actualLocator?.split('xpath=')[1] : actualLocator;
-										console.log(locator);
-										console.log(oldValueLocator);
-										console.log(locator === oldValueLocator);
 										if (locator === oldValueLocator) {
-											console.log('par');
 											inspectElementListObj[parentIndex + 1].param['locator'].push(userDefinedLocator);
 											inspectElementListObj[parentIndex + 1].actions.userSavedCustomLocator = selectedValue;
 											if (
 												$('#locator_' + (parentIndex + 1)).find('optgroup[label="USER DEFINED LOCATOR"]').length > 0
 											) {
-												console.log('inside1');
 												if (
 													$('#locator_' + (parentIndex + 1))
 														.find('optgroup[label="USER DEFINED LOCATOR"]')
 														.find('option[value= "' + selectedValue + '"]').length == 0
 												) {
-													console.log('inside2');
 													let option = document.createElement('option');
 													option.value = selectedValue;
 													option.text = selectedValue;
@@ -949,7 +935,6 @@ function createCustomOption(type, step) {
 													$('#locator_' + (parentIndex + 1)).attr('title', selectedValue);
 												}
 											} else {
-												console.log('inside else');
 												let optgroup = document.createElement('optgroup');
 												optgroup.setAttribute('label', 'USER DEFINED LOCATOR');
 												let option = document.createElement('option');
@@ -965,7 +950,6 @@ function createCustomOption(type, step) {
 								}
 							});
 						} else {
-							console.log('inside else if click on cancel..');
 							inspectElementListObj[step - 1].param['locator'].push(userDefinedLocator);
 							inspectElementListObj[step - 1].actions.userSavedCustomLocator = selectedValue;
 
@@ -996,7 +980,6 @@ function createCustomOption(type, step) {
 								$('#locator_' + step).attr('title', selectedValue);
 							}
 						}
-						console.log(inspectElementListObj);
 						localStore?.set({'inspectList': inspectElementListObj}, () => {});
 					});
 				});
@@ -1031,4 +1014,14 @@ function resetIdsOfTables() {
 		document.getElementById('inspect_table').remove();
 	}
 	tableFromJson();
+}
+
+function getIndexOfAriaLabel(locators) {
+	let obj = {isAriaLabeled: true, index: 0};
+	locators.forEach((locator, index) => {
+		if (locator.indexOf('aria-label') > -1) {
+			obj = {isAriaLabeled: true, index: index};
+		}
+	});
+	return obj.isAriaLabeled ? locators[obj.index] : locators[obj.index];
 }

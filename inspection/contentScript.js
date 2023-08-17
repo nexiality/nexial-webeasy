@@ -238,19 +238,29 @@ function createPaths(el, baseXpathNode, baseCssPath, isFiltered) {
 			}
 		} else {
 			if (attr === 'for') break;
-			res['xpath'].push('xpath=//' + el.node + `[@${attr}='${value}']` + baseXpathNode);
-			res['css'].push('css=' + el.node + (attr === 'id' ? `#${value}` : `[${attr}='${value}']`) + baseCssPath);
+			var valueSingleQuoteCheck = value.match(/'/g);
+			var valueDoubleQuoteCheck = value.match(/"/g);
+
+			value =
+				valueSingleQuoteCheck && valueSingleQuoteCheck.length > 0
+					? value.replaceAll(/\'/g, "\\'")
+					: valueDoubleQuoteCheck && valueDoubleQuoteCheck.length > 0
+					? value.replaceAll(/\"/g, '\\"')
+					: value;
+
+			res['xpath'].push('xpath=//' + el.node + `[@${attr}="${value}"]` + baseXpathNode);
+			res['css'].push('css=' + el.node + (attr === 'id' ? `#${value}` : `[${attr}="${value}"]`) + baseCssPath);
 
 			// special treatment for input element
 			if (el.node === 'input' && attr !== 'type' && el.attribute.hasOwnProperty('type')) {
 				res['xpath'].push(
-					'xpath=//' + el.node + `[@${attr}='${value}' and @type='${el.attribute['type']}']` + baseXpathNode
+					'xpath=//' + el.node + `[@${attr}="${value}" and @type="${el.attribute['type']}"]` + baseXpathNode
 				);
 				res['css'].push(
 					'css=' +
 						el.node +
-						(attr === 'id' ? `#${value}` : `[${attr}='${value}']`) +
-						`[type='${el.attribute['type']}']` +
+						(attr === 'id' ? `#${value}` : `[${attr}="${value}"]`) +
+						`[type="${el.attribute['type']}"]` +
 						baseCssPath
 				);
 			}
@@ -271,7 +281,9 @@ function getLocator(e, paths, isFiltered) {
 		xpath = [],
 		css = [],
 		selectedLocator = null;
-
+	console.log(e);
+	console.log(paths);
+	console.log(isFiltered);
 	const activeElnode = paths[paths.length - 1].node;
 
 	if (e.id) locator.push('id=' + e.id);
@@ -480,7 +492,9 @@ function validateLocators(locatorList) {
 	let filtered = locatorList.locator.filter((locator) => {
 		if (locator.startsWith('css=')) {
 			let css = locator.substring(4);
+			console.log(css);
 			let matches = document.querySelectorAll(css);
+			console.log(matches);
 			return matches?.length === 1;
 		}
 		if (locator.startsWith('xpath=')) {
@@ -676,7 +690,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			break;
 		case STATUS_MIDDLE_START:
 			flagInspection = true;
-			localStore?.set({'middleStep': request.startStep}, () => {});
+			localStore?.set({middleStep: request.startStep}, () => {});
 			start(request.startStep, true);
 			break;
 		case STATUS_STOP:
@@ -703,5 +717,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 });
 
 function trimSpacesAndNewLines(string) {
-	return string.replace(/\n/g, '').replace(/\s+/g, ' ').tirm();
+	return string.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
 }
